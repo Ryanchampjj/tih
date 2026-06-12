@@ -1,0 +1,15 @@
+{
+  "name": "ศูนย์รวมระบบงาน — Thai International Hospital Phangan",
+  "short_name": "ระบบงาน TIH",
+  "description": "ศูนย์รวมระบบงานภายใน รพ.ไทยอินเตอร์เนชั่นแนล เกาะพะงัน (HR · แจ้งซ่อม · แจ้งขอใช้รถ · แจ้งแม่บ้าน)",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#AACCD6",
+  "theme_color": "#2B4CA0",
+  "icons": [
+    { "src": "icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
