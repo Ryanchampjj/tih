@@ -111,6 +111,20 @@
   if(msg)hint.innerHTML=msg;
 </script>
 
+<script>
+/* ดึงลิงก์สดจาก links.json ทุกครั้งที่เปิดหน้า — เปลี่ยนลิงก์แค่แก้ links.json ไม่ต้องแตะไฟล์นี้
+   (ถ้าดึงไม่ได้ เช่น ออฟไลน์ ใช้ลิงก์ที่ฝังไว้ใน href เดิมเป็น fallback) */
+(function(){
+  var MAP={scan:'.scanbtn',hr:'.c-hr',fix:'.c-fix',car:'.c-car',maid:'.c-maid'};
+  fetch('links.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(links){
+    Object.keys(MAP).forEach(function(k){
+      if(!links[k])return;
+      document.querySelectorAll('a'+MAP[k]).forEach(function(a){a.href=links[k];});
+    });
+  }).catch(function(){});
+})();
+</script>
+
 </div>
 </body>
 </html>

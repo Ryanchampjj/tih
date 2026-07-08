@@ -1,4 +1,4 @@
-var CACHE = 'tih-portal-v3';
+var CACHE = 'tih-portal-v4';
 var ASSETS = ['./', './index.html', './manifest.json', './icon.png'];
 self.addEventListener('install', function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(ASSETS).catch(function(){}); }));
@@ -13,6 +13,11 @@ self.addEventListener('activate', function(e){
 });
 self.addEventListener('fetch', function(e){
   var req = e.request;
+  // links.json: network-only เสมอ ห้ามเสิร์ฟจาก cache (ลิงก์ต้องสดตลอด)
+  if (req.url.indexOf('links.json') !== -1) {
+    e.respondWith(fetch(req, {cache: 'no-store'}));
+    return;
+  }
   // network-first for page navigations (HTML) so updates show immediately
   if (req.mode === 'navigate' || (req.headers.get('accept')||'').indexOf('text/html') !== -1) {
     e.respondWith(
