@@ -99,7 +99,7 @@
   var isLine=/\bLine\//i.test(ua);
   var isSafari=/safari/i.test(ua)&&!/crios|fxios|chrome|edg/i.test(ua);
   var bar=document.getElementById('installBar'), btn=document.getElementById('installBtn'), hint=document.getElementById('installHint');
-  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+  if('serviceWorker' in navigator){var _rl=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(_rl)return;_rl=true;window.location.reload();});navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(reg){reg.update();setInterval(function(){reg.update();},60000);}).catch(function(){});}
   var dp=null;
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;bar.style.display='block';btn.style.display='block';});
   btn.addEventListener('click',function(){if(!dp)return;dp.prompt();dp.userChoice.then(function(){dp=null;btn.style.display='none';});});
