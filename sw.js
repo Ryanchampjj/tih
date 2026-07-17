@@ -1,5 +1,5 @@
-var CACHE = 'tih-portal-v4';
-var ASSETS = ['./', './index.html', './manifest.json', './icon.png'];
+var CACHE = 'tih-portal-v5';
+var ASSETS = ['./', './index.html', './manifest.json', './icon.png', './risk.png'];
 self.addEventListener('install', function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(ASSETS).catch(function(){}); }));
   self.skipWaiting();
