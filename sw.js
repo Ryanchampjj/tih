@@ -1,4 +1,4 @@
-var CACHE = 'tih-portal-v8';
+var CACHE = 'tih-portal-v9';
 var ASSETS = ['./', './index.html', './manifest.json', './icon.png',
   './logo.png', './hr.png', './fix.png', './car.png', './maid.png', './risk.png'];
 self.addEventListener('install', function(e){
