@@ -40,6 +40,7 @@
   .c-fix .ico{background:#FDEBDA;}.c-fix .ico svg{stroke:#C56A0E;}
   .c-car .ico{background:#E2F4EC;}.c-car .ico svg{stroke:#0E7A54;}
   .c-maid .ico{background:#FBE6E7;}.c-maid .ico svg{stroke:var(--red);}
+  .c-sign .ico{background:#EDE9FE;}.c-sign .ico svg{stroke:#6D28D9;}
   .card.is-img{padding:0;overflow:hidden;line-height:0;border-top:1px solid var(--border);border-radius:16px;}
   .card.is-img img{width:100%;height:auto;display:block;border-radius:0;}
   footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center;}
@@ -89,10 +90,16 @@
       <img src="risk.png" alt="แจ้งความเสี่ยง — รายงานอุบัติการณ์">
     </a>
 
+    <a class="card c-sign" href="https://incident-report-one.vercel.app/sign.html">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 4-2.5 6-2.5S11 21 13.5 21 17 18 20 18"/><path d="M8 15 18 5a2.1 2.1 0 0 0-3-3L5 12v3z"/></svg></span>
+      <span><span class="title">เซ็นเอกสาร (ผอ.)</span><span class="desc">ส่งเอกสารให้ผู้อำนวยการลงนาม</span></span>
+      <span class="arrow"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    </a>
+
   </nav>
 
   <div id="installBar" style="display:none;margin:20px auto 0;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 8px 18px rgba(0,0,0,.12);">
-    <button id="installBtn" style="display:none;width:100%;padding:14px;border:none;border-radius:12px;background:#2B4CA0;color:#fff;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:10px;">⬇️ ติดตั้งแอปลงเครื่อง</button>
+    <button id="installBtn" style="display:none;width:100%;padding:14px;border:none;border-radius:12px;background:#2B4CA0;color:#fff;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:10px;">ติดตั้งแอปลงเครื่อง</button>
     <div id="installHint" style="font-size:13.5px;color:#444;line-height:1.7;"></div>
   </div>
 
@@ -109,9 +116,9 @@
   btn.addEventListener('click',function(){if(!dp)return;dp.prompt();dp.userChoice.then(function(){dp=null;btn.style.display='none';});});
   var msg='';
   if(standalone){bar.style.display='none';}
-  else if(isLine){msg='📲 <b>เปิดในเบราว์เซอร์ก่อน</b><br>กดเมนู ⋯ มุมขวาบน → “เปิดด้วยเบราว์เซอร์อื่น” (Safari/Chrome) แล้วค่อยติดตั้ง';bar.style.display='block';}
-  else if(isIOS){msg=isSafari?'📲 <b>ติดตั้งบน iPhone:</b><br>1. กดปุ่ม แชร์ (สี่เหลี่ยมมีลูกศรขึ้น)<br>2. เลือก “เพิ่มไปยังหน้าจอเริ่มต้น”':'📲 <b>iPhone ต้องใช้ Safari</b><br>ก็อปลิงก์นี้ไปเปิดใน Safari แล้วเพิ่มลงหน้าจอโฮม';bar.style.display='block';}
-  else if(isAndroid){msg='📲 <b>ติดตั้งบน Android:</b> รอปุ่มเหลือง “ติดตั้งแอป” สักครู่แล้วกด หรือเมนู ⋮ → “เพิ่มลงในหน้าจอหลัก”';bar.style.display='block';}
+  else if(isLine){msg='<b>เปิดในเบราว์เซอร์ก่อน</b><br>กดเมนู ⋯ มุมขวาบน → “เปิดด้วยเบราว์เซอร์อื่น” (Safari/Chrome) แล้วค่อยติดตั้ง';bar.style.display='block';}
+  else if(isIOS){msg=isSafari?'<b>ติดตั้งบน iPhone:</b><br>1. กดปุ่ม แชร์ (สี่เหลี่ยมมีลูกศรขึ้น)<br>2. เลือก “เพิ่มไปยังหน้าจอเริ่มต้น”':'<b>iPhone ต้องใช้ Safari</b><br>ก็อปลิงก์นี้ไปเปิดใน Safari แล้วเพิ่มลงหน้าจอโฮม';bar.style.display='block';}
+  else if(isAndroid){msg='<b>ติดตั้งบน Android:</b> รอปุ่มเหลือง “ติดตั้งแอป” สักครู่แล้วกด หรือเมนู ⋮ → “เพิ่มลงในหน้าจอหลัก”';bar.style.display='block';}
   if(msg)hint.innerHTML=msg;
 </script>
 
@@ -119,7 +126,7 @@
 /* ดึงลิงก์สดจาก links.json ทุกครั้งที่เปิดหน้า — เปลี่ยนลิงก์แค่แก้ links.json ไม่ต้องแตะไฟล์นี้
    (ถ้าดึงไม่ได้ เช่น ออฟไลน์ ใช้ลิงก์ที่ฝังไว้ใน href เดิมเป็น fallback) */
 (function(){
-  var MAP={scan:'.scanbtn',hr:'.c-hr',fix:'.c-fix',car:'.c-car',maid:'.c-maid',risk:'.c-risk'};
+  var MAP={scan:'.scanbtn',hr:'.c-hr',fix:'.c-fix',car:'.c-car',maid:'.c-maid',risk:'.c-risk',sign:'.c-sign'};
   fetch('links.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(links){
     Object.keys(MAP).forEach(function(k){
       if(!links[k])return;
