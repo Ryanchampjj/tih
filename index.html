@@ -90,9 +90,8 @@
       <img src="risk.png" alt="แจ้งความเสี่ยง">
     </a>
 
-    <a class="tile c-cheer soon" href="#" onclick="return notReady()" aria-label="แจ้งชื่นชม (ยังไม่เปิดใช้งาน)">
+    <a class="tile c-cheer" href="https://incident-report-one.vercel.app/compliment.html">
       <img src="cheer.png" alt="แจ้งชื่นชม">
-      <span class="soonbadge">เร็ว ๆ นี้</span>
     </a>
 
     <a class="tile c-sign" href="https://incident-report-one.vercel.app/sign.html">
@@ -141,7 +140,7 @@
 /* ดึงลิงก์สดจาก links.json ทุกครั้งที่เปิดหน้า — เปลี่ยนลิงก์แค่แก้ links.json ไม่ต้องแตะไฟล์นี้
    (ถ้าดึงไม่ได้ เช่น ออฟไลน์ ใช้ลิงก์ที่ฝังไว้ใน href เดิมเป็น fallback) */
 (function(){
-  var MAP={scan:'.scanbtn',hr:'.c-hr',fix:'.c-fix',car:'.c-car',maid:'.c-maid',risk:'.c-risk',sign:'.c-sign'};
+  var MAP={scan:'.scanbtn',hr:'.c-hr',fix:'.c-fix',car:'.c-car',maid:'.c-maid',risk:'.c-risk',cheer:'.c-cheer',sign:'.c-sign'};
   fetch('links.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(links){
     Object.keys(MAP).forEach(function(k){
       if(!links[k])return;
