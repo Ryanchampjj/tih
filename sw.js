@@ -1,6 +1,7 @@
-var CACHE = 'tih-portal-v9';
+var CACHE = 'tih-portal-v10';
 var ASSETS = ['./', './index.html', './manifest.json', './icon.png',
-  './logo.png', './hr.png', './fix.png', './car.png', './maid.png', './risk.png'];
+  './logo.png', './hr.png', './fix.png', './car.png', './maid.png', './risk.png',
+  './cheer.png', './sign.png', './goodday.png'];
 self.addEventListener('install', function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(ASSETS).catch(function(){}); }));
   self.skipWaiting();

@@ -26,23 +26,23 @@
   .logo{width:100%;max-width:560px;height:auto;margin:0 auto 18px;display:block;}
   .sub{font-size:16px;color:var(--muted);font-weight:500;}
   .divider{width:64px;height:4px;border-radius:2px;background:var(--red);margin:14px auto 0;}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;display:flex;align-items:center;gap:16px;text-decoration:none;color:inherit;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;border-top:4px solid var(--blue);box-shadow:0 12px 22px rgba(0,0,0,.30);}
-  .card:hover{transform:translateY(-4px);box-shadow:0 18px 34px rgba(0,0,0,.38);border-color:var(--blue);}
-  .card:focus-visible{outline:3px solid var(--blue);outline-offset:2px;}
-  .ico{width:56px;height:56px;flex-shrink:0;border-radius:14px;display:flex;align-items:center;justify-content:center;}
-  .ico svg{width:30px;height:30px;}
-  .card .title{font-size:19px;font-weight:600;line-height:1.2;}
-  .card .desc{font-size:14px;color:var(--muted);margin-top:3px;}
-  .arrow{margin-left:auto;color:#C2C9D8;flex-shrink:0;transition:color .15s,transform .15s;}
-  .card:hover .arrow{color:var(--blue);transform:translateX(3px);}
-  .c-hr .ico{background:#E7EEFB;}.c-hr .ico svg{stroke:var(--blue);}
-  .c-fix .ico{background:#FDEBDA;}.c-fix .ico svg{stroke:#C56A0E;}
-  .c-car .ico{background:#E2F4EC;}.c-car .ico svg{stroke:#0E7A54;}
-  .c-maid .ico{background:#FBE6E7;}.c-maid .ico svg{stroke:var(--red);}
-  .c-sign .ico{background:#EDE9FE;}.c-sign .ico svg{stroke:#6D28D9;}
-  .card.is-img{padding:0;overflow:hidden;line-height:0;border-top:1px solid var(--border);border-radius:16px;}
-  .card.is-img img{width:100%;height:auto;display:block;border-radius:0;}
+  /* กริดไร้ขอบสไตล์ Chobani — ไทล์จัตุรัสชนกันสนิท 2 คอลัมน์ */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:18px;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.28);}
+  .tile{position:relative;display:block;aspect-ratio:1/1;overflow:hidden;text-decoration:none;-webkit-tap-highlight-color:transparent;background:#e9edf3;}
+  .tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .28s ease;}
+  .tile:hover img{transform:scale(1.045);}
+  .tile:active img{transform:scale(1.0);}
+  .tile:focus-visible{outline:3px solid #fff;outline-offset:-4px;}
+  /* การ์ด "ยังไม่เปิดใช้" */
+  .tile.soon{cursor:default;}
+  .tile.soon img{filter:brightness(.86) saturate(.9);}
+  .tile.soon:hover img{transform:none;}
+  .soonbadge{position:absolute;top:12px;right:12px;background:rgba(20,25,45,.74);color:#fff;font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:20px;letter-spacing:.2px;}
+  /* การ์ดตกแต่ง กดไม่ได้ */
+  .tile.deco{cursor:default;}
+  .tile.deco:hover img{transform:none;}
+  #toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(18px);background:rgba(20,25,45,.95);color:#fff;padding:13px 22px;border-radius:12px;font-size:15px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.35);max-width:88vw;text-align:center;}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center;}
   .scanbtn{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#2B4CA0,#3A63C8);color:#fff;border-radius:16px;padding:20px 22px;text-decoration:none;margin-bottom:18px;box-shadow:0 12px 22px rgba(0,0,0,.30);transition:transform .15s ease,box-shadow .15s ease;}
   .scanbtn:hover{transform:translateY(-3px);box-shadow:0 18px 34px rgba(0,0,0,.40);}
@@ -52,7 +52,7 @@
   .scanbtn .t{font-size:20px;font-weight:600;line-height:1.15;}
   .scanbtn .d{font-size:13px;opacity:.92;margin-top:3px;}
   .scanbtn .ar{margin-left:auto;font-size:24px;line-height:1;}
-  @media (max-width:600px){.grid{grid-template-columns:1fr;}body{padding:24px 14px 36px;}.card{padding:18px;}.card .title{font-size:18px;}}
+  @media (max-width:600px){body{padding:22px 12px 34px;}.grid{border-radius:14px;}}
 </style>
 </head>
 <body>
@@ -70,38 +70,53 @@
 
   <nav class="grid" aria-label="เมนูระบบงาน">
 
-    <a class="card is-img c-hr" href="https://script.google.com/macros/s/AKfycbwshwpfmuG9FDqbxpmn3iwxoT-JiHSXtRf16pJVjnKJy7fpMjh1TXfp4lm09hMnowtT/exec">
-      <img src="hr.png" alt="HR — ระบบงานบุคคล">
+    <a class="tile c-hr" href="https://script.google.com/macros/s/AKfycbwshwpfmuG9FDqbxpmn3iwxoT-JiHSXtRf16pJVjnKJy7fpMjh1TXfp4lm09hMnowtT/exec">
+      <img src="hr.png" alt="ระบบงาน HR">
     </a>
 
-    <a class="card is-img c-fix" href="https://script.google.com/macros/s/AKfycbw2EGIH626woM3X4BiX7oJPP-otiB0RAXl7H8ZelU2RdVvvuJltmGOOYbv7stqi8mD2/exec?view=request">
-      <img src="fix.png" alt="แจ้งซ่อม — แจ้งซ่อมบำรุง">
+    <a class="tile c-fix" href="https://script.google.com/macros/s/AKfycbw2EGIH626woM3X4BiX7oJPP-otiB0RAXl7H8ZelU2RdVvvuJltmGOOYbv7stqi8mD2/exec?view=request">
+      <img src="fix.png" alt="แจ้งซ่อม">
     </a>
 
-    <a class="card is-img c-car" href="https://script.google.com/macros/s/AKfycbyeeGoVjCFsqno3gh3TKphiD7X18cSa7OOh7Gu8EIMCCJw54LkpD0_jiZJvK_59I2uN/exec">
-      <img src="car.png" alt="แจ้งขอใช้รถ — จองยานพาหนะ">
+    <a class="tile c-car" href="https://script.google.com/macros/s/AKfycbyeeGoVjCFsqno3gh3TKphiD7X18cSa7OOh7Gu8EIMCCJw54LkpD0_jiZJvK_59I2uN/exec">
+      <img src="car.png" alt="แจ้งขอใช้รถ">
     </a>
 
-    <a class="card is-img c-maid" href="https://script.google.com/macros/s/AKfycbxZ0PviqiCfoAoRqKoHaGzsvDnOAG96C2gY6hcUq_sNU8fVNX60eFLGnwvL7MEdJf0R2Q/exec">
-      <img src="maid.png" alt="แจ้งแม่บ้าน — งานทั่วไป / แม่บ้าน">
+    <a class="tile c-maid" href="https://script.google.com/macros/s/AKfycbxZ0PviqiCfoAoRqKoHaGzsvDnOAG96C2gY6hcUq_sNU8fVNX60eFLGnwvL7MEdJf0R2Q/exec">
+      <img src="maid.png" alt="แจ้งขอรับบริการแม่บ้าน">
     </a>
 
-    <a class="card is-img c-risk" href="https://incident-report-one.vercel.app/">
-      <img src="risk.png" alt="แจ้งความเสี่ยง — รายงานอุบัติการณ์">
+    <a class="tile c-risk" href="https://incident-report-one.vercel.app/">
+      <img src="risk.png" alt="แจ้งความเสี่ยง">
     </a>
 
-    <a class="card c-sign" href="https://incident-report-one.vercel.app/sign.html">
-      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M8 16c1.2-1.6 2.2-1.6 3.2 0s2 1.6 3.2 0"/></svg></span>
-      <span><span class="title">ส่งเอกสารให้ ผอ.</span><span class="desc">ส่งให้ผู้อำนวยการลงนาม</span></span>
-      <span class="arrow"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    <a class="tile c-cheer soon" href="#" onclick="return notReady()" aria-label="แจ้งชื่นชม (ยังไม่เปิดใช้งาน)">
+      <img src="cheer.png" alt="แจ้งชื่นชม">
+      <span class="soonbadge">เร็ว ๆ นี้</span>
     </a>
+
+    <a class="tile c-sign" href="https://incident-report-one.vercel.app/sign.html">
+      <img src="sign.png" alt="ส่งเอกสารให้ ผอ. เซ็น">
+    </a>
+
+    <div class="tile deco" aria-hidden="true">
+      <img src="goodday.png" alt="">
+    </div>
 
   </nav>
+
+  <div id="toast" role="status" aria-live="polite"></div>
 
   <div id="installBar" style="display:none;margin:20px auto 0;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 8px 18px rgba(0,0,0,.12);">
     <button id="installBtn" style="display:none;width:100%;padding:14px;border:none;border-radius:12px;background:#2B4CA0;color:#fff;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:10px;">ติดตั้งแอปลงเครื่อง</button>
     <div id="installHint" style="font-size:13.5px;color:#444;line-height:1.7;"></div>
   </div>
+
+<script>
+  /* toast + การ์ดที่ยังไม่เปิดใช้ */
+  function tihToast(t){var el=document.getElementById('toast');if(!el)return;el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},2400);}
+  function notReady(){tihToast('ระบบแจ้งชื่นชมยังไม่เปิดใช้งาน — เปิดเร็ว ๆ นี้');return false;}
+</script>
 
 <script>
   var ua=navigator.userAgent||'';
