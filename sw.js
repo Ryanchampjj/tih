@@ -1,4 +1,4 @@
-var CACHE = 'tih-portal-v11';
+var CACHE = 'tih-portal-v12';
 var ASSETS = ['./', './index.html', './manifest.json', './icon.png',
   './logo.png', './hr.png', './fix.png', './car.png', './maid.png', './risk.png',
   './cheer.png', './sign.png', './goodday.png'];

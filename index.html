@@ -52,6 +52,26 @@
   .scanbtn .t{font-size:20px;font-weight:600;line-height:1.15;}
   .scanbtn .d{font-size:13px;opacity:.92;margin-top:3px;}
   .scanbtn .ar{margin-left:auto;font-size:24px;line-height:1;}
+  /* ---- login gate ---- */
+  .card{background:var(--card);border-radius:16px;box-shadow:0 12px 26px rgba(0,0,0,.18);padding:24px 20px;margin-bottom:18px;}
+  .card h2{font-size:20px;font-weight:700;color:var(--blue);margin-bottom:4px;}
+  .card .csub{font-size:13.5px;color:var(--muted);margin-bottom:18px;line-height:1.55;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:6px;}
+  .field select,.field input{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:11px;font-size:16px;font-family:inherit;color:var(--text);background:#fff;}
+  .field select:focus,.field input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(43,76,160,.14);}
+  .btn-primary{width:100%;padding:15px;border:none;border-radius:12px;background:var(--blue);color:#fff;font-size:17px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .15s,transform .1s;}
+  .btn-primary:hover{background:#24408a;}
+  .btn-primary:active{transform:scale(.99);}
+  .btn-primary:disabled{opacity:.6;cursor:default;}
+  .err{color:var(--red);font-size:13.5px;font-weight:600;margin-top:12px;min-height:1em;text-align:center;display:none;}
+  .err.show{display:block;}
+  .userbar{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:13px 17px;margin-bottom:16px;box-shadow:0 8px 18px rgba(0,0,0,.12);}
+  .userbar .who{font-size:15px;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .userbar .who small{display:block;font-size:12px;color:var(--muted);font-weight:500;}
+  .logoutbtn{flex-shrink:0;background:#fff;border:1.5px solid var(--border);color:var(--blue);font-size:13.5px;font-weight:600;font-family:inherit;padding:10px 16px;border-radius:10px;cursor:pointer;}
+  .logoutbtn:hover{border-color:var(--blue);}
+  .hidden{display:none!important;}
   @media (max-width:600px){body{padding:22px 12px 34px;}.grid{border-radius:14px;}}
 </style>
 </head>
@@ -62,47 +82,76 @@
     <div class="divider"></div>
   </header>
 
+  <!-- สแกนหน้า: เปิดได้เสมอ ไม่ต้องล็อกอินพอร์ทัล (ใช้ใบหน้ายืนยัน + เป็นที่ตั้ง PIN ครั้งแรก) -->
   <a class="scanbtn" href="https://attendance-live-thaiinter.vercel.app/">
     <span class="sico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10.5v1"/><path d="M15 10.5v1"/><path d="M9 14.5c1 1 5 1 6 0"/></svg></span>
     <span><span class="t">สแกนหน้า เข้า/ออกงาน</span><span class="d">ลงเวลาทำงานประจำวัน</span></span>
     <span class="ar">&#8594;</span>
   </a>
 
-  <nav class="grid" aria-label="เมนูระบบงาน">
+  <!-- หน้าเข้าสู่ระบบ (โชว์เมื่อยังไม่ได้ล็อกอิน) -->
+  <div class="card hidden" id="loginCard">
+    <h2>เข้าสู่ระบบ</h2>
+    <div class="csub">เลือกชื่อของคุณ แล้วใส่ PIN (ตัวเดียวกับที่ใช้ในแอปสแกนหน้าเข้างาน)</div>
+    <div class="field">
+      <label for="lgDept">แผนก</label>
+      <select id="lgDept"><option value="">— เลือกแผนก —</option></select>
+    </div>
+    <div class="field">
+      <label for="lgName">ชื่อ</label>
+      <select id="lgName"><option value="">— เลือกแผนกก่อน —</option></select>
+    </div>
+    <div class="field">
+      <label for="lgPin">PIN</label>
+      <input id="lgPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="PIN 4–6 หลัก">
+    </div>
+    <button class="btn-primary" id="lgBtn">เข้าสู่ระบบ</button>
+    <div class="err" id="lgErr"></div>
+  </div>
 
-    <a class="tile c-hr" href="https://script.google.com/macros/s/AKfycbwshwpfmuG9FDqbxpmn3iwxoT-JiHSXtRf16pJVjnKJy7fpMjh1TXfp4lm09hMnowtT/exec">
-      <img src="hr.png" alt="ระบบงาน HR">
-    </a>
-
-    <a class="tile c-fix" href="https://script.google.com/macros/s/AKfycbw2EGIH626woM3X4BiX7oJPP-otiB0RAXl7H8ZelU2RdVvvuJltmGOOYbv7stqi8mD2/exec?view=request">
-      <img src="fix.png" alt="แจ้งซ่อม">
-    </a>
-
-    <a class="tile c-car" href="https://script.google.com/macros/s/AKfycbyeeGoVjCFsqno3gh3TKphiD7X18cSa7OOh7Gu8EIMCCJw54LkpD0_jiZJvK_59I2uN/exec">
-      <img src="car.png" alt="แจ้งขอใช้รถ">
-    </a>
-
-    <a class="tile c-maid" href="https://script.google.com/macros/s/AKfycbxZ0PviqiCfoAoRqKoHaGzsvDnOAG96C2gY6hcUq_sNU8fVNX60eFLGnwvL7MEdJf0R2Q/exec">
-      <img src="maid.png" alt="แจ้งขอรับบริการแม่บ้าน">
-    </a>
-
-    <a class="tile c-risk" href="https://incident-report-one.vercel.app/">
-      <img src="risk.png" alt="แจ้งความเสี่ยง">
-    </a>
-
-    <a class="tile c-cheer" href="https://incident-report-one.vercel.app/compliment.html">
-      <img src="cheer.png" alt="แจ้งชื่นชม">
-    </a>
-
-    <a class="tile c-sign" href="https://incident-report-one.vercel.app/sign.html">
-      <img src="sign.png" alt="ส่งเอกสารให้ ผอ. เซ็น">
-    </a>
-
-    <div class="tile deco" aria-hidden="true">
-      <img src="goodday.png" alt="">
+  <!-- เมนูระบบงาน (โชว์เมื่อล็อกอินแล้ว) -->
+  <div class="hidden" id="appMenu">
+    <div class="userbar">
+      <div class="who" id="lgWho"></div>
+      <button class="logoutbtn" id="lgOut">ออกจากระบบ</button>
     </div>
 
-  </nav>
+    <nav class="grid" aria-label="เมนูระบบงาน">
+
+      <a class="tile c-hr" href="https://script.google.com/macros/s/AKfycbwshwpfmuG9FDqbxpmn3iwxoT-JiHSXtRf16pJVjnKJy7fpMjh1TXfp4lm09hMnowtT/exec">
+        <img src="hr.png" alt="ระบบงาน HR">
+      </a>
+
+      <a class="tile c-fix" href="https://script.google.com/macros/s/AKfycbw2EGIH626woM3X4BiX7oJPP-otiB0RAXl7H8ZelU2RdVvvuJltmGOOYbv7stqi8mD2/exec?view=request">
+        <img src="fix.png" alt="แจ้งซ่อม">
+      </a>
+
+      <a class="tile c-car" href="https://script.google.com/macros/s/AKfycbyeeGoVjCFsqno3gh3TKphiD7X18cSa7OOh7Gu8EIMCCJw54LkpD0_jiZJvK_59I2uN/exec">
+        <img src="car.png" alt="แจ้งขอใช้รถ">
+      </a>
+
+      <a class="tile c-maid" href="https://script.google.com/macros/s/AKfycbxZ0PviqiCfoAoRqKoHaGzsvDnOAG96C2gY6hcUq_sNU8fVNX60eFLGnwvL7MEdJf0R2Q/exec">
+        <img src="maid.png" alt="แจ้งขอรับบริการแม่บ้าน">
+      </a>
+
+      <a class="tile c-risk" href="https://incident-report-one.vercel.app/">
+        <img src="risk.png" alt="แจ้งความเสี่ยง">
+      </a>
+
+      <a class="tile c-cheer" href="https://incident-report-one.vercel.app/compliment.html">
+        <img src="cheer.png" alt="แจ้งชื่นชม">
+      </a>
+
+      <a class="tile c-sign" href="https://incident-report-one.vercel.app/sign.html">
+        <img src="sign.png" alt="ส่งเอกสารให้ ผอ. เซ็น">
+      </a>
+
+      <div class="tile deco" aria-hidden="true">
+        <img src="goodday.png" alt="">
+      </div>
+
+    </nav>
+  </div>
 
   <div id="toast" role="status" aria-live="polite"></div>
 
@@ -115,6 +164,87 @@
   /* toast + การ์ดที่ยังไม่เปิดใช้ */
   function tihToast(t){var el=document.getElementById('toast');if(!el)return;el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},2400);}
   function notReady(){tihToast('ระบบแจ้งชื่นชมยังไม่เปิดใช้งาน — เปิดเร็ว ๆ นี้');return false;}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+</script>
+
+<script>
+/* ===================== ล็อกอินพอร์ทัล (SSO) =====================
+   - ล็อกอินทีเดียว → เก็บ "ตั๋ว" (token) ไว้ในเครื่อง (localStorage) จำได้ 12 ชม.
+   - เข้าแอปในเมนู = แนบตั๋วไปให้แอปรู้ว่าใคร (?tk=...)
+   - สแกนหน้าเข้า/ออกงาน = เปิดได้เสมอ ไม่ผ่านประตูนี้
+   - ตัวจริงกันปลอมอยู่ที่เซิร์ฟเวอร์แต่ละแอป (ตรวจตั๋วทุกครั้ง) — หน้านี้แค่ประตูให้สะดวก */
+(function(){
+  var AUTH='https://attendance-live-thaiinter.vercel.app';
+  var TK='tih_sso';
+  var GATED=['.c-hr','.c-fix','.c-car','.c-maid','.c-risk','.c-cheer','.c-sign'];
+
+  var loginCard=document.getElementById('loginCard'),
+      appMenu=document.getElementById('appMenu'),
+      deptSel=document.getElementById('lgDept'),
+      nameSel=document.getElementById('lgName'),
+      pinIn=document.getElementById('lgPin'),
+      lgBtn=document.getElementById('lgBtn'),
+      lgErr=document.getElementById('lgErr'),
+      lgWho=document.getElementById('lgWho'),
+      lgOut=document.getElementById('lgOut');
+
+  function b64urlToStr(s){ s=String(s).replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4)s+='='; var bin=atob(s); var by=Uint8Array.from(bin,function(c){return c.charCodeAt(0);}); return new TextDecoder('utf-8').decode(by); }
+  function parseTok(t){ try{ if(!t)return null; var b=String(t).split('.')[0]; if(!b)return null; var p=JSON.parse(b64urlToStr(b)); if(p.exp&&Math.floor(Date.now()/1000)>p.exp)return null; return p; }catch(e){ return null; } }
+  function getTok(){ try{ return localStorage.getItem(TK)||''; }catch(e){ return ''; } }
+  function showErr(m){ lgErr.textContent=m||''; lgErr.className='err'+(m?' show':''); }
+
+  function withTk(url){ var t=getTok(); if(!t)return url; return url+(url.indexOf('?')<0?'?':'&')+'tk='+encodeURIComponent(t); }
+
+  var EMPS=[], BYDEPT={};
+  function loadEmps(){
+    fetch(AUTH+'/api/employees').then(function(r){return r.json();}).then(function(list){
+      EMPS=list||[]; BYDEPT={};
+      EMPS.forEach(function(e){ if(!e.dept)return; (BYDEPT[e.dept]=BYDEPT[e.dept]||[]).push(e); });
+      var depts=Object.keys(BYDEPT).sort(function(a,b){return a.localeCompare(b,'th');});
+      deptSel.innerHTML='<option value="">— เลือกแผนก —</option>'+depts.map(function(d){return '<option>'+esc(d)+'</option>';}).join('');
+    }).catch(function(){ showErr('โหลดรายชื่อไม่สำเร็จ ลองรีเฟรช'); });
+  }
+  deptSel.addEventListener('change',function(){
+    var arr=(BYDEPT[this.value]||[]).slice().sort(function(a,b){return a.name.localeCompare(b.name,'th');});
+    nameSel.innerHTML='<option value="">'+(this.value?'— เลือกชื่อ —':'— เลือกแผนกก่อน —')+'</option>'+
+      arr.map(function(e){return '<option value="'+esc(e.id)+'">'+esc(e.name)+'</option>';}).join('');
+    showErr('');
+  });
+
+  function doLogin(){
+    if(!deptSel.value){ showErr('กรุณาเลือกแผนก'); return; }
+    var emp=nameSel.value; if(!emp){ showErr('กรุณาเลือกชื่อของคุณ'); return; }
+    var pin=(pinIn.value||'').trim(); if(!/^\d{4,6}$/.test(pin)){ showErr('กรุณาใส่ PIN 4–6 หลัก'); return; }
+    lgBtn.disabled=true; lgBtn.textContent='กำลังเข้า…'; showErr('');
+    fetch(AUTH+'/api/verifypin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({for:'portal',empId:emp,pin:pin})})
+      .then(function(r){return r.json();}).then(function(d){
+        lgBtn.disabled=false; lgBtn.textContent='เข้าสู่ระบบ';
+        if(!d||!d.ok){ showErr((d&&d.message)||'เข้าสู่ระบบไม่สำเร็จ'); return; }
+        try{ localStorage.setItem(TK,d.token); }catch(e){}
+        pinIn.value=''; showErr(''); showMenu();
+      }).catch(function(){ lgBtn.disabled=false; lgBtn.textContent='เข้าสู่ระบบ'; showErr('เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง'); });
+  }
+  lgBtn.addEventListener('click',doLogin);
+  pinIn.addEventListener('keydown',function(e){ if(e.key==='Enter')doLogin(); });
+
+  function showLogin(){ appMenu.classList.add('hidden'); loginCard.classList.remove('hidden'); if(!EMPS.length)loadEmps(); }
+  function showMenu(){
+    var p=parseTok(getTok()); if(!p){ showLogin(); return; }
+    lgWho.innerHTML=esc(p.name||'')+(p.dept?'<small>'+esc(p.dept)+'</small>':'');
+    loginCard.classList.add('hidden'); appMenu.classList.remove('hidden');
+  }
+  lgOut.addEventListener('click',function(){ try{ localStorage.removeItem(TK); }catch(e){} showLogin(); });
+
+  /* แนบตั๋วตอนกดเข้าแอปในเมนู (อ่าน href ล่าสุดตอนคลิก — รองรับ links.json ที่อัปเดตทีหลัง) */
+  GATED.forEach(function(sel){
+    document.querySelectorAll('a'+sel).forEach(function(a){
+      a.addEventListener('click',function(e){ e.preventDefault(); window.location.href=withTk(a.getAttribute('href')); });
+    });
+  });
+
+  /* boot: มีตั๋วที่ยังไม่หมดอายุ → เข้าเมนูเลย / ไม่มี → หน้าล็อกอิน */
+  if(parseTok(getTok())) showMenu(); else showLogin();
+})();
 </script>
 
 <script>
