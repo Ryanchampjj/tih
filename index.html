@@ -169,7 +169,7 @@
 
 <script>
 /* ===================== ล็อกอินพอร์ทัล (SSO) =====================
-   - ล็อกอินทีเดียว → เก็บ "ตั๋ว" (token) ไว้ในเครื่อง (localStorage) จำได้ 12 ชม.
+   - ล็อกอินทีเดียว → เก็บ "ตั๋ว" (token) ไว้ในเครื่อง (localStorage) จำจนกว่าจะกด "ออกจากระบบ"
    - เข้าแอปในเมนู = แนบตั๋วไปให้แอปรู้ว่าใคร (?tk=...)
    - สแกนหน้าเข้า/ออกงาน = เปิดได้เสมอ ไม่ผ่านประตูนี้
    - ตัวจริงกันปลอมอยู่ที่เซิร์ฟเวอร์แต่ละแอป (ตรวจตั๋วทุกครั้ง) — หน้านี้แค่ประตูให้สะดวก */
@@ -189,7 +189,8 @@
       lgOut=document.getElementById('lgOut');
 
   function b64urlToStr(s){ s=String(s).replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4)s+='='; var bin=atob(s); var by=Uint8Array.from(bin,function(c){return c.charCodeAt(0);}); return new TextDecoder('utf-8').decode(by); }
-  function parseTok(t){ try{ if(!t)return null; var b=String(t).split('.')[0]; if(!b)return null; var p=JSON.parse(b64urlToStr(b)); if(p.exp&&Math.floor(Date.now()/1000)>p.exp)return null; return p; }catch(e){ return null; } }
+  /* ไม่เช็ค exp ที่ประตูพอร์ทัล → จำ login จนกว่าจะกด "ออกจากระบบ" (พอร์ทัลแค่ประตูสะดวก; เซิร์ฟเวอร์แต่ละแอปตรวจตั๋วจริงเองทุกครั้ง) */
+  function parseTok(t){ try{ if(!t)return null; var b=String(t).split('.')[0]; if(!b)return null; var p=JSON.parse(b64urlToStr(b)); return p; }catch(e){ return null; } }
   function getTok(){ try{ return localStorage.getItem(TK)||''; }catch(e){ return ''; } }
   function showErr(m){ lgErr.textContent=m||''; lgErr.className='err'+(m?' show':''); }
 
@@ -242,7 +243,7 @@
     });
   });
 
-  /* boot: มีตั๋วที่ยังไม่หมดอายุ → เข้าเมนูเลย / ไม่มี → หน้าล็อกอิน */
+  /* boot: มีตั๋วในเครื่อง → เข้าเมนูเลย (จำจนกว่าจะกดออกจากระบบ) / ไม่มี → หน้าล็อกอิน */
   if(parseTok(getTok())) showMenu(); else showLogin();
 })();
 </script>
