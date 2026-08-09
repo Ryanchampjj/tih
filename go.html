@@ -37,7 +37,7 @@
   <a class="btn" id="go" href="./">เปิดระบบ</a>
   <div class="alt" id="alt">ยังไม่เปิด? <a id="alt2" href="./">ลองอีกวิธี</a></div>
   <a class="back" href="./">กลับหน้าเมนู</a>
-  <div class="ver">v16</div>
+  <div class="ver">v17</div>
 </div>
 
 <script>
@@ -83,6 +83,9 @@
   /* ทางสำรอง: ลิงก์ตรง — บน Android ใช้แบบ intent สั่งให้ Chrome เปิด
      (เครื่องที่ไม่มี Chrome จะตกไปใช้ลิงก์ https ปกติเอง) */
   var direct=DIRECT[key]+(t?(DIRECT[key].indexOf('?')<0?'?':'&')+'tk='+encodeURIComponent(t):'');
+  /* เครื่องที่ล็อกอิน Google หลายบัญชี Google จะพาไป /u/1/macros/... ซึ่ง Apps Script
+     ไม่รองรับ แล้วขึ้น "Page Not Found" — ปักบัญชีแรกไว้กันเด้ง */
+  if(direct.indexOf('script.google.com')>-1) direct+=(direct.indexOf('?')<0?'?':'&')+'authuser=0';
   var altUrl=isAndroid
     ? 'intent://'+direct.replace(/^https?:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(direct)+';end'
     : direct;
