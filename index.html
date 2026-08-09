@@ -239,9 +239,17 @@
 
   /* กดการ์ด → ไปหน้ากลาง go.html ก่อน แล้วให้หน้านั้นแนบตั๋วและเด้งต่อ
      (กดลิงก์ script.google.com ตรงๆ บนมือถือ Android จะโยนไปให้แอป Google Drive เปิด แล้วขึ้น Page Not Found) */
+  /* ระบบที่เป็น Apps Script → เปิดในกรอบ (app.html) เพราะเปิดตรงๆ บนมือถือที่ล็อกอิน
+     Google หลายบัญชีจะโดนพาไป /macros/u/1/s/... แล้วขึ้น Page Not Found
+     ที่เหลือ (เว็บของเราเอง) → หน้ากลาง go.html เหมือนเดิม */
+  var INFRAME={hr:1,fix:1,car:1,maid:1};
   Object.keys(GATED).forEach(function(sel){
     document.querySelectorAll('a'+sel).forEach(function(a){
-      a.addEventListener('click',function(e){ e.preventDefault(); window.location.href='go.html?a='+GATED[sel]; });
+      a.addEventListener('click',function(e){
+        e.preventDefault();
+        var k=GATED[sel];
+        window.location.href=(INFRAME[k]?'app.html?a=':'go.html?a=')+k;
+      });
     });
   });
 

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ระบบงาน — TIH</title>
+<meta name="theme-color" content="#2B4CA0">
+<link rel="icon" type="image/png" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--blue:#2B4CA0;--bg:#f1f4f9;--muted:#6B7385;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{font-family:'Sarabun',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);
+       display:flex;flex-direction:column;overflow:hidden;}
+  .bar{flex:0 0 auto;background:var(--blue);color:#fff;display:flex;align-items:center;gap:10px;
+       padding:calc(env(safe-area-inset-top) + 9px) 12px 9px;}
+  .bar button,.bar a{font-family:inherit;font-size:14px;color:#fff;background:rgba(255,255,255,.16);
+       border:none;border-radius:9px;padding:8px 12px;text-decoration:none;cursor:pointer;white-space:nowrap;}
+  .bar .name{flex:1;font-size:15.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .wrapf{flex:1 1 auto;position:relative;}
+  iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff;}
+  .load{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+        gap:14px;background:var(--bg);color:var(--muted);font-size:14px;}
+  .spin{width:34px;height:34px;border:4px solid #dfe4ee;border-top-color:var(--blue);border-radius:50%;
+        animation:sp .8s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .load.hide{display:none;}
+</style>
+</head>
+<body>
+<div class="bar">
+  <button id="back" type="button">‹ เมนู</button>
+  <div class="name" id="name">ระบบงาน</div>
+  <a id="ext" href="./" target="_blank" rel="noopener">เปิดเต็มจอ</a>
+</div>
+<div class="wrapf">
+  <div class="load" id="load"><div class="spin"></div><div>กำลังเปิดระบบ</div></div>
+  <iframe id="fr" title="ระบบงาน" allow="camera; microphone; geolocation; clipboard-write"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+
+<script>
+/* ===== เปิดระบบงานไว้ในกรอบของพอร์ทัล =====
+   ทำไม: มือถือที่ล็อกอิน Google หลายบัญชี ถ้าเปิดลิงก์ Apps Script ตรงๆ กูเกิลจะพาไป
+   /macros/u/1/s/... ซึ่งเป็นรูปแบบที่ใช้ไม่ได้ → ขึ้น "Page Not Found" ของ Drive
+   (กันด้วย authuser หรือ u/0 ก็ไม่ได้ผล เพราะกูเกิลแทรกกลาง path เอง)
+   เปิดผ่านกรอบแบบนี้ไม่ใช่การเปิดหน้ากูเกิลโดยตรง จึงไม่โดนสลับบัญชี
+   ตั๋ว SSO แนบเข้าไปกับลิงก์ในกรอบเหมือนเดิม */
+(function(){
+  var TK='tih_sso';
+  var TARGET={
+    hr:'https://script.google.com/macros/s/AKfycbwshwpfmuG9FDqbxpmn3iwxoT-JiHSXtRf16pJVjnKJy7fpMjh1TXfp4lm09hMnowtT/exec',
+    fix:'https://script.google.com/macros/s/AKfycbw2EGIH626woM3X4BiX7oJPP-otiB0RAXl7H8ZelU2RdVvvuJltmGOOYbv7stqi8mD2/exec?view=request',
+    car:'https://script.google.com/macros/s/AKfycbyeeGoVjCFsqno3gh3TKphiD7X18cSa7OOh7Gu8EIMCCJw54LkpD0_jiZJvK_59I2uN/exec',
+    maid:'https://script.google.com/macros/s/AKfycbxZ0PviqiCfoAoRqKoHaGzsvDnOAG96C2gY6hcUq_sNU8fVNX60eFLGnwvL7MEdJf0R2Q/exec'
+  };
+  var NAME={hr:'ระบบงาน HR',fix:'แจ้งซ่อม',car:'แจ้งขอใช้รถ',maid:'แจ้งขอรับบริการแม่บ้าน'};
+
+  var $=function(id){ return document.getElementById(id); };
+  var key=(location.search.match(/[?&]a=([a-z]+)/)||[])[1]||'';
+  if(!TARGET[key]){ location.replace('./'); return; }
+
+  var t=''; try{ t=localStorage.getItem(TK)||''; }catch(e){}
+  var base=TARGET[key];
+  var url=base+(t?(base.indexOf('?')<0?'?':'&')+'tk='+encodeURIComponent(t):'');
+
+  document.title=NAME[key]+' — TIH';
+  $('name').textContent=NAME[key];
+  $('ext').href=url;
+  $('back').addEventListener('click',function(){ location.href='./'; });
+
+  var fr=$('fr');
+  fr.addEventListener('load',function(){ $('load').classList.add('hide'); });
+  fr.src=url;
+
+  /* ปุ่มย้อนกลับของเครื่อง = กลับเมนู ไม่ใช่ออกจากแอป */
+  history.pushState({inapp:1},'',location.href);
+  window.addEventListener('popstate',function(){ location.href='./'; });
+})();
+</script>
+</body>
+</html>

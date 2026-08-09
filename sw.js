@@ -1,5 +1,5 @@
-var CACHE = 'tih-portal-v17';
-var ASSETS = ['./', './index.html', './go.html', './manifest.json', './icon.png',
+var CACHE = 'tih-portal-v18';
+var ASSETS = ['./', './index.html', './go.html', './app.html', './manifest.json', './icon.png',
   './logo.png', './hr.png', './fix.png', './car.png', './maid.png', './risk.png',
   './cheer.png', './sign.png', './goodday.png'];
 self.addEventListener('install', function(e){
