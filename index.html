@@ -176,7 +176,8 @@
 (function(){
   var AUTH='https://attendance-live-thaiinter.vercel.app';
   var TK='tih_sso';
-  var GATED=['.c-hr','.c-fix','.c-car','.c-maid','.c-risk','.c-cheer','.c-sign'];
+  /* การ์ดที่ต้องล็อกอินก่อน → ชื่อระบบที่ส่งให้หน้ากลาง go.html */
+  var GATED={'.c-hr':'hr','.c-fix':'fix','.c-car':'car','.c-maid':'maid','.c-risk':'risk','.c-cheer':'cheer','.c-sign':'sign'};
 
   var loginCard=document.getElementById('loginCard'),
       appMenu=document.getElementById('appMenu'),
@@ -194,7 +195,7 @@
   function getTok(){ try{ return localStorage.getItem(TK)||''; }catch(e){ return ''; } }
   function showErr(m){ lgErr.textContent=m||''; lgErr.className='err'+(m?' show':''); }
 
-  function withTk(url){ var t=getTok(); if(!t)return url; return url+(url.indexOf('?')<0?'?':'&')+'tk='+encodeURIComponent(t); }
+  /* การแนบตั๋วย้ายไปทำที่ go.html แล้ว (หน้ากลาง) — ดูเหตุผลในไฟล์นั้น */
 
   var EMPS=[], BYDEPT={};
   function loadEmps(){
@@ -236,10 +237,11 @@
   }
   lgOut.addEventListener('click',function(){ try{ localStorage.removeItem(TK); }catch(e){} showLogin(); });
 
-  /* แนบตั๋วตอนกดเข้าแอปในเมนู (อ่าน href ล่าสุดตอนคลิก — รองรับ links.json ที่อัปเดตทีหลัง) */
-  GATED.forEach(function(sel){
+  /* กดการ์ด → ไปหน้ากลาง go.html ก่อน แล้วให้หน้านั้นแนบตั๋วและเด้งต่อ
+     (กดลิงก์ script.google.com ตรงๆ บนมือถือ Android จะโยนไปให้แอป Google Drive เปิด แล้วขึ้น Page Not Found) */
+  Object.keys(GATED).forEach(function(sel){
     document.querySelectorAll('a'+sel).forEach(function(a){
-      a.addEventListener('click',function(e){ e.preventDefault(); window.location.href=withTk(a.getAttribute('href')); });
+      a.addEventListener('click',function(e){ e.preventDefault(); window.location.href='go.html?a='+GATED[sel]; });
     });
   });
 

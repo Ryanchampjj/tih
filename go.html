@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>กำลังเปิดระบบ — TIH</title>
+<meta name="theme-color" content="#2B4CA0">
+<link rel="icon" type="image/png" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--blue:#2B4CA0;--bg:#AACCD6;--card:#FFFFFF;--text:#1F2A44;--muted:#6B7385;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Sarabun',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);
+       min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .card{background:var(--card);border-radius:16px;box-shadow:0 12px 26px rgba(0,0,0,.18);
+        padding:30px 24px;max-width:380px;width:100%;text-align:center;}
+  .spin{width:38px;height:38px;margin:0 auto 18px;border:4px solid #dfe4ee;border-top-color:var(--blue);
+        border-radius:50%;animation:sp .8s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  h1{font-size:19px;font-weight:700;color:var(--blue);margin-bottom:6px;}
+  p{font-size:14px;color:var(--muted);line-height:1.6;}
+  .btn{display:none;margin-top:20px;width:100%;padding:14px;border-radius:12px;background:var(--blue);
+       color:#fff;font-size:15.5px;font-weight:600;text-decoration:none;}
+  .btn.show{display:block;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="spin" id="spin"></div>
+  <h1 id="ttl">กำลังเปิดระบบ</h1>
+  <p id="msg">รอสักครู่</p>
+  <a class="btn" id="go" href="./">เปิดระบบ</a>
+</div>
+
+<script>
+/* ===== หน้ากลางก่อนเข้าแอปในเมนู =====
+   ทำไมต้องมี: บนมือถือ (โดยเฉพาะแอปที่ติดหน้าจอโฮม) ถ้ากดลิงก์ script.google.com ตรงๆ
+   Android จะโยนลิงก์ไปให้แอป Google Drive เปิด แล้วขึ้น "Page Not Found"
+   หน้านี้เป็นลิงก์ในโดเมนเดียวกับพอร์ทัล → กดแล้วไม่ถูกโยนออก จากนั้นค่อยเด้งต่อด้วยสคริปต์
+   (การเด้งต่อแบบนี้ Android ไม่ส่งให้แอปอื่น) พร้อมแนบตั๋ว SSO ให้ปลายทาง */
+(function(){
+  var TK='tih_sso';
+  /* ลิงก์สำรอง ใช้เมื่อโหลด links.json ไม่ทัน/ไม่ได้ — ตัวจริงอยู่ที่ links.json */
+  var FALLBACK={
+    hr:'https://script.google.com/macros/s/AKfycbwshwpfmuG9FDqbxpmn3iwxoT-JiHSXtRf16pJVjnKJy7fpMjh1TXfp4lm09hMnowtT/exec',
+    fix:'https://script.google.com/macros/s/AKfycbw2EGIH626woM3X4BiX7oJPP-otiB0RAXl7H8ZelU2RdVvvuJltmGOOYbv7stqi8mD2/exec?view=request',
+    car:'https://script.google.com/macros/s/AKfycbyeeGoVjCFsqno3gh3TKphiD7X18cSa7OOh7Gu8EIMCCJw54LkpD0_jiZJvK_59I2uN/exec',
+    maid:'https://script.google.com/macros/s/AKfycbxZ0PviqiCfoAoRqKoHaGzsvDnOAG96C2gY6hcUq_sNU8fVNX60eFLGnwvL7MEdJf0R2Q/exec',
+    risk:'https://incident-report-one.vercel.app/',
+    cheer:'https://incident-report-one.vercel.app/compliment.html',
+    sign:'https://incident-report-one.vercel.app/sign.html'
+  };
+  var NAME={hr:'ระบบงาน HR',fix:'แจ้งซ่อม',car:'แจ้งขอใช้รถ',maid:'แจ้งขอรับบริการแม่บ้าน',
+            risk:'แจ้งความเสี่ยง',cheer:'แจ้งชื่นชม',sign:'ส่งเอกสารให้ ผอ. เซ็น'};
+
+  var key=(location.search.match(/[?&]a=([a-z]+)/)||[])[1]||'';
+  /* รับเฉพาะชื่อระบบที่รู้จัก — กันคนยัด URL อื่นมาเปิดผ่านหน้านี้ */
+  if(!FALLBACK[key]){ location.replace('./'); return; }
+  document.getElementById('msg').textContent='กำลังเปิด '+NAME[key];
+
+  function tok(){ try{ return localStorage.getItem(TK)||''; }catch(e){ return ''; } }
+  function withTk(u){ var t=tok(); if(!t)return u; return u+(u.indexOf('?')<0?'?':'&')+'tk='+encodeURIComponent(t); }
+
+  var done=false;
+  function jump(base){
+    if(done)return; done=true;
+    var url=withTk(base);
+    var btn=document.getElementById('go');
+    btn.href=url;
+    /* เผื่อการเด้งอัตโนมัติไม่ทำงาน ให้มีปุ่มกดเองหลัง 2.5 วินาที */
+    setTimeout(function(){
+      document.getElementById('spin').style.display='none';
+      document.getElementById('ttl').textContent='ยังไม่เปิดใช่ไหม';
+      document.getElementById('msg').textContent='กดปุ่มด้านล่างเพื่อเปิด '+NAME[key];
+      btn.classList.add('show');
+    },2500);
+    location.replace(url);
+  }
+
+  /* ดึงลิงก์สดก่อน ถ้าเกิน 1.5 วินาทีไม่ได้ ใช้ลิงก์สำรองไปเลย ไม่ให้ผู้ใช้รอ */
+  var timer=setTimeout(function(){ jump(FALLBACK[key]); },1500);
+  fetch('links.json?t='+Date.now(),{cache:'no-store'})
+    .then(function(r){return r.json();})
+    .then(function(links){ clearTimeout(timer); jump(links[key]||FALLBACK[key]); })
+    .catch(function(){ clearTimeout(timer); jump(FALLBACK[key]); });
+})();
+</script>
+</body>
+</html>
