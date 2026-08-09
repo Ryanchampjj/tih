@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ระบบงาน — TIH</title>
 <meta name="theme-color" content="#2B4CA0">
+<meta name="referrer" content="no-referrer">
 <link rel="icon" type="image/png" href="icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -32,12 +33,18 @@
 <div class="bar">
   <button id="back" type="button">‹ เมนู</button>
   <div class="name" id="name">ระบบงาน</div>
+  <span style="font-size:11px;opacity:.55">v19</span>
   <a id="ext" href="./" target="_blank" rel="noopener">เปิดเต็มจอ</a>
 </div>
 <div class="wrapf">
   <div class="load" id="load"><div class="spin"></div><div>กำลังเปิดระบบ</div></div>
-  <iframe id="fr" title="ระบบงาน" allow="camera; microphone; geolocation; clipboard-write"
-          referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <!-- credentialless = โหลดกรอบแบบ "ไม่ส่งคุกกี้" → กูเกิลมองเป็นคนนิรนาม
+       จึงไม่โดนสลับบัญชีไป /macros/u/1/... (ต้นเหตุ Page Not Found บนเครื่องที่
+       ล็อกอิน Google หลายบัญชี) เว็บแอปเราเปิดแบบ ANYONE_ANONYMOUS อยู่แล้ว
+       เบราว์เซอร์เก่าที่ไม่รู้จักคำสั่งนี้จะโหลดแบบเดิม (คนบัญชีเดียวก็ใช้ได้ปกติ) -->
+  <iframe id="fr" title="ระบบงาน" credentialless
+          allow="camera; microphone; geolocation; clipboard-write"
+          referrerpolicy="no-referrer"></iframe>
 </div>
 
 <script>
