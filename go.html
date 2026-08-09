@@ -13,7 +13,7 @@
   body{font-family:'Sarabun',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);
        min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
   .card{background:var(--card);border-radius:16px;box-shadow:0 12px 26px rgba(0,0,0,.18);
-        padding:30px 24px;max-width:400px;width:100%;text-align:center;}
+        padding:30px 24px;max-width:400px;width:100%;text-align:center;position:relative;}
   .spin{width:38px;height:38px;margin:0 auto 18px;border:4px solid #dfe4ee;border-top-color:var(--blue);
         border-radius:50%;animation:sp .8s linear infinite;}
   @keyframes sp{to{transform:rotate(360deg);}}
@@ -26,6 +26,7 @@
   .alt.show{display:block;}
   .alt a{color:var(--blue);font-weight:600;}
   .back{display:block;margin-top:18px;font-size:13.5px;color:var(--muted);text-decoration:none;}
+  .ver{position:absolute;right:12px;bottom:8px;font-size:11px;color:#c3cad6;}
 </style>
 </head>
 <body>
@@ -34,23 +35,27 @@
   <h1 id="ttl">กำลังเปิดระบบ</h1>
   <p id="msg">รอสักครู่</p>
   <a class="btn" id="go" href="./">เปิดระบบ</a>
-  <div class="alt" id="alt">ถ้ายังไม่ได้ <a id="alt2" href="./">กดเปิดอีกวิธี</a></div>
+  <div class="alt" id="alt">ยังไม่เปิด? <a id="alt2" href="./">ลองอีกวิธี</a></div>
   <a class="back" href="./">กลับหน้าเมนู</a>
+  <div class="ver">v16</div>
 </div>
 
 <script>
 /* ===== หน้ากลางก่อนเข้าแอปในเมนู =====
-   ปัญหาที่แก้: บนแอปที่ติดหน้าจอโฮม (Android) ลิงก์ script.google.com จะถูกระบบ
-   โยนไปให้แอป Google Drive เปิด แล้วขึ้น "Page Not Found" — เกิดกับทุกการ์ด Apps Script
-   (พิสูจน์แล้วว่าไม่เกี่ยวกับความยาวตั๋ว และไม่หายแม้เด้งต่อด้วยสคริปต์)
+   ปัญหาที่แก้: บนมือถือ Android ถ้ากดลิงก์ script.google.com ตรงๆ ระบบจะโยนลิงก์
+   ไปให้แอป Google Drive เปิด แล้วขึ้น "Page Not Found" — เกิดกับทุกการ์ด Apps Script
+   (พิสูจน์แล้วว่าไม่เกี่ยวกับความยาวตั๋ว และไม่หายแม้เด้งต่อด้วยสคริปต์ในหน้านี้)
 
-   วิธีแก้: บน Android เปิดด้วยลิงก์แบบ intent ที่ระบุ "ให้ Chrome เปิด" ไปเลย
-   ระบบจึงไม่เอาไปให้ Drive — เครื่องที่ไม่มี Chrome จะตกไปใช้ลิงก์ https ตามปกติ
-   บนเครื่องอื่น (คอม/iPhone) เด้งต่อแบบธรรมดาเหมือนเดิม */
+   วิธีแก้ที่ใช้ตอนนี้: เด้งไปที่ประตูฝั่งเซิร์ฟเวอร์ tih-hub /api/goto ก่อน
+   แล้วเซิร์ฟเวอร์ตอบ 302 ต่อไปยังระบบปลายทาง — Android ไม่เอา redirect ของ
+   เซิร์ฟเวอร์ไปให้แอปอื่นเปิด ตั๋ว SSO แนบไปกับลิงก์นั้นด้วย
+   ทางสำรอง: บน Android มีลิงก์แบบ intent (สั่งให้ Chrome เปิด) ให้กดเอง */
 (function(){
   var TK='tih_sso';
-  /* ลิงก์สำรอง ใช้เมื่อโหลด links.json ไม่ทัน/ไม่ได้ — ตัวจริงอยู่ที่ links.json */
-  var FALLBACK={
+  var GATE='https://tih-hub.vercel.app/api/goto';   /* ประตูเด้งฝั่งเซิร์ฟเวอร์ */
+
+  /* ลิงก์ตรง ใช้เป็นทางสำรอง (ตัวจริงอยู่ที่ links.json / ฝั่งเซิร์ฟเวอร์) */
+  var DIRECT={
     hr:'https://script.google.com/macros/s/AKfycbwshwpfmuG9FDqbxpmn3iwxoT-JiHSXtRf16pJVjnKJy7fpMjh1TXfp4lm09hMnowtT/exec',
     fix:'https://script.google.com/macros/s/AKfycbw2EGIH626woM3X4BiX7oJPP-otiB0RAXl7H8ZelU2RdVvvuJltmGOOYbv7stqi8mD2/exec?view=request',
     car:'https://script.google.com/macros/s/AKfycbyeeGoVjCFsqno3gh3TKphiD7X18cSa7OOh7Gu8EIMCCJw54LkpD0_jiZJvK_59I2uN/exec',
@@ -67,47 +72,34 @@
 
   var key=(location.search.match(/[?&]a=([a-z]+)/)||[])[1]||'';
   /* รับเฉพาะชื่อระบบที่รู้จัก — กันคนยัด URL อื่นมาเปิดผ่านหน้านี้ */
-  if(!FALLBACK[key]){ location.replace('./'); return; }
+  if(!DIRECT[key]){ location.replace('./'); return; }
   $('msg').textContent='กำลังเปิด '+NAME[key];
 
-  function tok(){ try{ return localStorage.getItem(TK)||''; }catch(e){ return ''; } }
-  function withTk(u){ var t=tok(); if(!t)return u; return u+(u.indexOf('?')<0?'?':'&')+'tk='+encodeURIComponent(t); }
+  var t=''; try{ t=localStorage.getItem(TK)||''; }catch(e){}
 
-  /* ลิงก์แบบ intent: สั่งให้ Chrome เป็นคนเปิด (Android เท่านั้น)
-     ถ้าเครื่องไม่มี Chrome ระบบจะใช้ browser_fallback_url = ลิงก์ https ปกติแทน */
-  function toIntent(u){
-    return 'intent://'+u.replace(/^https?:\/\//,'')+
-           '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+
-           encodeURIComponent(u)+';end';
-  }
+  /* ทางหลัก: ประตูฝั่งเซิร์ฟเวอร์ (เซิร์ฟเวอร์เป็นคนเด้งต่อ) */
+  var gateUrl=GATE+'?a='+encodeURIComponent(key)+(t?'&tk='+encodeURIComponent(t):'');
 
-  var done=false;
-  function jump(base){
-    if(done)return; done=true;
-    var url=withTk(base);
-    var opener=isAndroid?toIntent(url):url;
+  /* ทางสำรอง: ลิงก์ตรง — บน Android ใช้แบบ intent สั่งให้ Chrome เปิด
+     (เครื่องที่ไม่มี Chrome จะตกไปใช้ลิงก์ https ปกติเอง) */
+  var direct=DIRECT[key]+(t?(DIRECT[key].indexOf('?')<0?'?':'&')+'tk='+encodeURIComponent(t):'');
+  var altUrl=isAndroid
+    ? 'intent://'+direct.replace(/^https?:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(direct)+';end'
+    : direct;
 
-    $('go').href=opener;          /* ปุ่มหลัก = วิธีเดียวกับที่ลองอัตโนมัติ */
-    $('alt2').href=url;           /* ทางเลือกสำรอง = ลิงก์ปกติ */
+  $('go').href=gateUrl;
+  $('alt2').href=altUrl;
 
-    /* ถ้าเปิดอัตโนมัติไม่สำเร็จใน 2 วินาที ให้ผู้ใช้กดเอง (การกดเองมักผ่าน) */
-    setTimeout(function(){
-      $('spin').style.display='none';
-      $('ttl').textContent='กดเพื่อเปิด';
-      $('msg').textContent=NAME[key];
-      $('go').classList.add('show');
-      $('alt').classList.add('show');
-    },2000);
+  /* ถ้าเปิดอัตโนมัติไม่สำเร็จใน 2 วินาที ให้ผู้ใช้กดเอง (การกดเองมักผ่าน) */
+  setTimeout(function(){
+    $('spin').style.display='none';
+    $('ttl').textContent='กดเพื่อเปิด';
+    $('msg').textContent=NAME[key];
+    $('go').classList.add('show');
+    $('alt').classList.add('show');
+  },2000);
 
-    location.href=opener;
-  }
-
-  /* ดึงลิงก์สดก่อน ถ้าเกิน 1.5 วินาทีไม่ได้ ใช้ลิงก์สำรองไปเลย ไม่ให้ผู้ใช้รอ */
-  var timer=setTimeout(function(){ jump(FALLBACK[key]); },1500);
-  fetch('links.json?t='+Date.now(),{cache:'no-store'})
-    .then(function(r){return r.json();})
-    .then(function(links){ clearTimeout(timer); jump(links[key]||FALLBACK[key]); })
-    .catch(function(){ clearTimeout(timer); jump(FALLBACK[key]); });
+  location.href=gateUrl;
 })();
 </script>
 </body>
