@@ -7,6 +7,8 @@
 <meta name="theme-color" content="#2B4CA0">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" type="image/png" href="icon.png">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{--blue:#2B4CA0;--bg:#f1f4f9;--muted:#6B7385;}
@@ -33,11 +35,11 @@
 <div class="bar">
   <button id="back" type="button">‹ เมนู</button>
   <div class="name" id="name">ระบบงาน</div>
-  <span style="font-size:11px;opacity:.55">v19</span>
+  <span style="font-size:11px;opacity:.55">v20</span>
   <a id="ext" href="./" target="_blank" rel="noopener">เปิดเต็มจอ</a>
 </div>
 <div class="wrapf">
-  <div class="load" id="load"><div class="spin"></div><div>กำลังเปิดระบบ</div></div>
+  <div class="load" id="load"><div class="spin"></div><div id="loadmsg">กำลังเปิดระบบ</div></div>
   <!-- credentialless = โหลดกรอบแบบ "ไม่ส่งคุกกี้" → กูเกิลมองเป็นคนนิรนาม
        จึงไม่โดนสลับบัญชีไป /macros/u/1/... (ต้นเหตุ Page Not Found บนเครื่องที่
        ล็อกอิน Google หลายบัญชี) เว็บแอปเราเปิดแบบ ANYONE_ANONYMOUS อยู่แล้ว
@@ -78,7 +80,10 @@
   $('back').addEventListener('click',function(){ location.href='./'; });
 
   var fr=$('fr');
-  fr.addEventListener('load',function(){ $('load').classList.add('hide'); });
+  /* Apps Script ต้อง "ปลุกเครื่อง" ถ้าไม่มีคนใช้สักพัก (ครั้งแรกของวันจะนานหน่อย)
+     บอกผู้ใช้ตามจริงจะได้ไม่คิดว่าค้าง */
+  var slow=setTimeout(function(){ $('loadmsg').innerHTML='ระบบกำลังตื่นจากพัก<br>ครั้งแรกจะนานหน่อย รอสักครู่'; },4000);
+  fr.addEventListener('load',function(){ clearTimeout(slow); $('load').classList.add('hide'); });
   fr.src=url;
 
   /* ปุ่มย้อนกลับของเครื่อง = กลับเมนู ไม่ใช่ออกจากแอป */

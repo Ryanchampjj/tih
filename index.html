@@ -13,6 +13,10 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
+<!-- ต่อสายรอไว้ล่วงหน้า ลดเวลารอตอนกดเข้าระบบงาน -->
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="dns-prefetch" href="https://script.google.com">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -243,11 +247,23 @@
      Google หลายบัญชีจะโดนพาไป /macros/u/1/s/... แล้วขึ้น Page Not Found
      ที่เหลือ (เว็บของเราเอง) → หน้ากลาง go.html เหมือนเดิม */
   var INFRAME={hr:1,fix:1,car:1,maid:1};
+  /* ปลุกเครื่องฝั่ง Apps Script ตั้งแต่นิ้วแตะการ์ด (ก่อนเปลี่ยนหน้าจริงราวครึ่งวินาที)
+     ช่วยลดเวลารอ "ปลุกเครื่อง" ที่ Apps Script กินทุกครั้งที่ไม่มีคนใช้สักพัก
+     ยิงแค่ครั้งเดียวต่อระบบต่อการเปิดแอป เพื่อไม่ให้เปลืองโควตาสคริปต์ */
+  var warmed={};
+  function warm(k){
+    if(!INFRAME[k]||warmed[k])return; warmed[k]=1;
+    var a=document.querySelector('a.c-'+k); var u=a&&a.getAttribute('href'); if(!u)return;
+    try{ fetch(u,{mode:'no-cors',credentials:'omit',cache:'no-store',keepalive:true}); }catch(e){}
+  }
+
   Object.keys(GATED).forEach(function(sel){
     document.querySelectorAll('a'+sel).forEach(function(a){
+      var k=GATED[sel];
+      a.addEventListener('touchstart',function(){ warm(k); },{passive:true});
+      a.addEventListener('mouseenter',function(){ warm(k); });
       a.addEventListener('click',function(e){
         e.preventDefault();
-        var k=GATED[sel];
         window.location.href=(INFRAME[k]?'app.html?a=':'go.html?a=')+k;
       });
     });
