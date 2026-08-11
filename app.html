@@ -35,7 +35,7 @@
 <div class="bar">
   <button id="back" type="button">‹ เมนู</button>
   <div class="name" id="name">ระบบงาน</div>
-  <span style="font-size:11px;opacity:.55">v22</span>
+  <span style="font-size:11px;opacity:.55">v23</span>
   <a id="ext" href="./" target="_blank" rel="noopener">เปิดเต็มจอ</a>
 </div>
 <div class="wrapf">
@@ -59,12 +59,11 @@
 (function(){
   var TK='tih_sso';
   var TARGET={
-    hr:'https://script.google.com/macros/s/AKfycbwshwpfmuG9FDqbxpmn3iwxoT-JiHSXtRf16pJVjnKJy7fpMjh1TXfp4lm09hMnowtT/exec',
     car:'https://script.google.com/macros/s/AKfycbyeeGoVjCFsqno3gh3TKphiD7X18cSa7OOh7Gu8EIMCCJw54LkpD0_jiZJvK_59I2uN/exec',
     maid:'https://script.google.com/macros/s/AKfycbxZ0PviqiCfoAoRqKoHaGzsvDnOAG96C2gY6hcUq_sNU8fVNX60eFLGnwvL7MEdJf0R2Q/exec'
   };
   /* แจ้งซ่อมไม่อยู่ในนี้แล้ว — ย้ายไปเว็บของเราเอง เปิดตรงผ่าน go.html */
-  var NAME={hr:'ระบบงาน HR',car:'แจ้งขอใช้รถ',maid:'แจ้งขอรับบริการแม่บ้าน'};
+  var NAME={car:'แจ้งขอใช้รถ',maid:'แจ้งขอรับบริการแม่บ้าน'};
 
   var $=function(id){ return document.getElementById(id); };
   var key=(location.search.match(/[?&]a=([a-z]+)/)||[])[1]||'';
