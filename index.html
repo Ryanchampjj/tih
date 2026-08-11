@@ -194,8 +194,12 @@
       lgOut=document.getElementById('lgOut');
 
   function b64urlToStr(s){ s=String(s).replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4)s+='='; var bin=atob(s); var by=Uint8Array.from(bin,function(c){return c.charCodeAt(0);}); return new TextDecoder('utf-8').decode(by); }
-  /* ไม่เช็ค exp ที่ประตูพอร์ทัล → จำ login จนกว่าจะกด "ออกจากระบบ" (พอร์ทัลแค่ประตูสะดวก; เซิร์ฟเวอร์แต่ละแอปตรวจตั๋วจริงเองทุกครั้ง) */
   function parseTok(t){ try{ if(!t)return null; var b=String(t).split('.')[0]; if(!b)return null; var p=JSON.parse(b64urlToStr(b)); return p; }catch(e){ return null; } }
+  /* ตั๋วที่หมดอายุแล้วถือว่าใช้ไม่ได้ตั้งแต่ประตูพอร์ทัล
+     (เดิมปล่อยผ่านเพื่อไม่ให้เด้ง login บ่อยตอนตั๋วอายุ 12 ชม. แต่กลายเป็นว่า
+      ผู้ใช้เข้าเมนูได้ทั้งที่ทุกแอปปฏิเสธ แล้วกดกลับมาพอร์ทัลก็วนที่ตั๋วใบเดิม)
+     ตอนนี้ตั๋วอายุ 30 วัน จึงเด้งให้ล็อกอินใหม่แค่เดือนละครั้ง */
+  function liveTok(t){ var p=parseTok(t); if(!p)return null; if(p.exp&&Math.floor(Date.now()/1000)>p.exp)return null; return p; }
   function getTok(){ try{ return localStorage.getItem(TK)||''; }catch(e){ return ''; } }
   function showErr(m){ lgErr.textContent=m||''; lgErr.className='err'+(m?' show':''); }
 
@@ -233,9 +237,9 @@
   lgBtn.addEventListener('click',doLogin);
   pinIn.addEventListener('keydown',function(e){ if(e.key==='Enter')doLogin(); });
 
-  function showLogin(){ appMenu.classList.add('hidden'); loginCard.classList.remove('hidden'); if(!EMPS.length)loadEmps(); }
+  function showLogin(msg){ appMenu.classList.add('hidden'); loginCard.classList.remove('hidden'); showErr(msg||''); if(!EMPS.length)loadEmps(); }
   function showMenu(){
-    var p=parseTok(getTok()); if(!p){ showLogin(); return; }
+    var p=liveTok(getTok()); if(!p){ showLogin(); return; }
     lgWho.innerHTML=esc(p.name||'')+(p.dept?'<small>'+esc(p.dept)+'</small>':'');
     loginCard.classList.add('hidden'); appMenu.classList.remove('hidden');
   }
@@ -271,8 +275,19 @@
     });
   });
 
-  /* boot: มีตั๋วในเครื่อง → เข้าเมนูเลย (จำจนกว่าจะกดออกจากระบบ) / ไม่มี → หน้าล็อกอิน */
-  if(parseTok(getTok())) showMenu(); else showLogin();
+  /* boot: มีตั๋วที่ยังไม่หมดอายุ → เข้าเมนูเลย (จำจนกว่าจะกดออกจากระบบ)
+     ตั๋วหมดอายุ → ล้างทิ้งแล้วบอกให้เข้าใหม่ (ไม่งั้นเข้าเมนูได้แต่ทุกแอปปฏิเสธ)
+     มาจากหน้าแอปที่บอกว่าตั๋วใช้ไม่ได้ (?relogin=1) → ล้างตั๋วทิ้งเลย ไม่ให้วนลูป */
+  var wantRelogin=/[?&]relogin=1/.test(location.search);
+  if(wantRelogin){ try{ history.replaceState(null,'',location.pathname); }catch(e){} }
+  var boot=liveTok(getTok());
+  if(wantRelogin || !boot){
+    var had=!!getTok();
+    if(wantRelogin || had){ try{ localStorage.removeItem(TK); }catch(e){} }
+    showLogin(had?'เซสชันหมดอายุแล้ว กรุณาเข้าสู่ระบบใหม่':'');
+  } else {
+    showMenu();
+  }
 })();
 </script>
 
