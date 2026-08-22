@@ -150,9 +150,9 @@
         <img src="sign.png" alt="ส่งเอกสารให้ ผอ. เซ็น">
       </a>
 
-      <div class="tile deco" aria-hidden="true">
-        <img src="goodday.png" alt="">
-      </div>
+      <a class="tile c-docs" href="https://pdf-tools-thaiinter.vercel.app/">
+        <img src="docs.png" alt="เครื่องมือเอกสาร รวมไฟล์ PDF สแกน ลดขนาด">
+      </a>
 
     </nav>
   </div>
@@ -319,7 +319,7 @@
 /* ดึงลิงก์สดจาก links.json ทุกครั้งที่เปิดหน้า — เปลี่ยนลิงก์แค่แก้ links.json ไม่ต้องแตะไฟล์นี้
    (ถ้าดึงไม่ได้ เช่น ออฟไลน์ ใช้ลิงก์ที่ฝังไว้ใน href เดิมเป็น fallback) */
 (function(){
-  var MAP={scan:'.scanbtn',hr:'.c-hr',fix:'.c-fix',car:'.c-car',maid:'.c-maid',risk:'.c-risk',cheer:'.c-cheer',sign:'.c-sign'};
+  var MAP={scan:'.scanbtn',hr:'.c-hr',fix:'.c-fix',car:'.c-car',maid:'.c-maid',risk:'.c-risk',cheer:'.c-cheer',sign:'.c-sign',docs:'.c-docs'};
   fetch('links.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(links){
     Object.keys(MAP).forEach(function(k){
       if(!links[k])return;
