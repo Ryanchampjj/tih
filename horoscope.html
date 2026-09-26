@@ -21,6 +21,10 @@
   .back svg{width:18px;height:18px;}
   h1{font-size:30px;font-weight:700;color:var(--navy);line-height:1.2;}
   .date{font-size:16px;color:var(--muted);font-weight:500;margin-top:2px;}
+  .pay{display:flex;gap:12px;align-items:flex-start;background:#FFF4D6;border:2px solid var(--gold);border-radius:16px;padding:14px 16px;margin:14px 0 4px;box-shadow:0 6px 16px rgba(217,169,58,.25);}
+  .pay svg{flex-shrink:0;width:40px;height:40px;}
+  .pay h2{font-size:19px;color:#7A5200;margin-bottom:3px;}
+  .pay p{font-size:16px;line-height:1.65;color:#4A3A12;}
   .note{background:#FFF7E0;border:1.5px solid #E9C766;color:#6A4B00;border-radius:12px;padding:11px 14px;font-size:14.5px;margin:12px 0;}
   .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:16px 0;}
   .day{border:2px solid transparent;background:#fff;color:var(--navy);border-radius:12px;padding:9px 2px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;text-align:center;line-height:1.25;}
@@ -71,6 +75,7 @@
   <h1>ดวงรายวัน</h1>
   <div class="date" id="dateLine">กำลังโหลด…</div>
   <div class="note" id="note" hidden></div>
+  <div class="pay" id="pay" hidden></div>
 
   <div class="days" id="days"></div>
   <div id="main"></div>
@@ -104,6 +109,31 @@
     ['มนตรี','ผู้ใหญ่อุปถัมภ์ ที่ปรึกษา และคนที่คอยช่วยเหลือ ขอความช่วยเหลือวันนี้มักได้ผลดี'],
     ['กาลกิณี','อุปสรรค ความขัดข้อง และสิ่งที่ควรหลีกเลี่ยง วันนี้ให้ใจเย็น รอบคอบ เลื่อนเรื่องสำคัญได้ก็เลื่อน']
   ];
+
+  /* กิมมิควันรับทรัพย์ (พี่สั่ง 26/09/2569): วันสุดท้ายของเดือน = เงินเดือนออก · วันที่ 10 = ค่าโอทีออก
+     เลือกประโยคตามวันที่ ทุกคนเห็นประโยคเดียวกันทั้งวัน */
+  var PAY_SALARY=[
+    'ดาวทุกดวงพร้อมใจกันเข้าภูมิศรีหนึ่งวัน นักโหราศาสตร์เรียกว่า "วันเงินเดือนออก" เปิดแอปธนาคารดูได้เลย ไม่ต้องรอดูดาว',
+    'วันนี้ดวงการเงินได้ 5 ดาวทุกวันเกิด ส่วนจะอยู่ถึงวันที่ 5 ไหม ขึ้นกับของในตะกร้าแอปช้อปปิ้ง ดวงช่วยไม่ได้',
+    'วันรับทรัพย์ประจำเดือนมาถึงแล้ว ใครคิดจะเลี้ยงข้าวเพื่อน วันนี้ฤกษ์ดีที่สุด (ดีสำหรับเพื่อน)',
+    'โชคลาภเข้าบัญชีแบบไม่ต้องลุ้น ไม่ต้องขูด ไม่ต้องเขย่าเซียมซี แค่ทำงานมาครบเดือนก็พอ',
+    'ทักษาวันนี้ไม่ต้องคำนวณ ทุกคนได้ภูมิศรีเท่ากันหมด เงินเดือนออกแล้ว ขอให้ใช้อย่างมีสติ อย่างน้อยถึงกลางเดือน'
+  ];
+  var PAY_OT=[
+    'ค่าโอทีออกวันนี้ ชั่วโมงที่อดนอนเฝ้าเวรเปลี่ยนเป็นตัวเลขในบัญชีแล้ว ขอให้ตัวเลขใจดีกับทุกคน',
+    'ภูมิอุตสาหะส่งผลวันนี้ เหนื่อยเมื่อเดือนก่อน ได้ชื่นใจวันนี้ ใครขึ้นเวรเยอะ วันนี้ยิ้มกว้างสุดในแผนก',
+    'วันรับทรัพย์รอบสองของเดือน ค่าโอทีมาแล้ว ถือเป็นโชคลาภจากความขยันล้วน ๆ ไม่ต้องพึ่งเลขมงคล',
+    'ดวงวันนี้เข้าข้างคนขยัน ค่าโอทีเข้าแล้ว ส่วนคนที่แลกโอทีเป็นวันหยุดไว้ ก็ได้นอนยาวแทน ไม่เสียเปรียบกัน',
+    'ค่าโอทีออกแล้ว ใครสัญญากับตัวเองไว้ว่าจะซื้อของรางวัลให้ตัวเอง วันนี้ทำตามสัญญาได้ (พอประมาณ)'
+  ];
+  function paydayOf(iso){
+    var d=new Date(iso+'T00:00:00Z'), day=d.getUTCDate();
+    var last=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate();
+    var n=Math.floor(d.getTime()/86400000);
+    if(day===last) return {title:'วันนี้รับทรัพย์ เงินเดือนออก',text:PAY_SALARY[n%PAY_SALARY.length]};
+    if(day===10) return {title:'วันนี้รับทรัพย์ ค่าโอทีออก',text:PAY_OT[n%PAY_OT.length]};
+    return null;
+  }
 
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
@@ -171,6 +201,9 @@
       document.getElementById('dateLine').textContent='ดวงประจำ'+thaiDate(j.date);
       var n=document.getElementById('note');
       if(j.date!==todayBkk()){n.hidden=false;n.textContent='ดวงของวันนี้ยังไม่ขึ้น กำลังแสดงดวงของ'+thaiDate(j.date);}
+      var pd=paydayOf(j.date), pe=document.getElementById('pay');
+      if(pd){pe.hidden=false;pe.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#B8871F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v4c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 10v4c0 1.7 3.1 3 7 3s7-1.3 7-3v-4"/><path d="M5 14v4c0 1.7 3.1 3 7 3s7-1.3 7-3v-4"/></svg><div><h2>'+esc(pd.title)+'</h2><p>'+esc(pd.text)+'</p></div>';}
+      else pe.hidden=true;
       renderMain();
     }).catch(function(){document.getElementById('dateLine').textContent='';renderMain();});
   }
