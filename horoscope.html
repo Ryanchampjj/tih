@@ -44,6 +44,14 @@
   .lucky{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .lucky .wide{grid-column:1/-1;}
   .lk.avoid{background:#FDECEC;}
+  .lk .warn{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:4px;line-height:1.4;}
+  .howto{font-size:15px;color:var(--muted);line-height:1.6;margin:4px 0 8px;}
+  .bhumi{padding:11px 12px;border-top:1px solid var(--line);}
+  .bhumi b{font-size:16px;color:var(--navy);}
+  .bhumi p{font-size:15px;line-height:1.6;color:var(--text);margin-top:2px;}
+  .bhumi.on{background:var(--chip);border-radius:12px;border-top-color:transparent;}
+  .bhumi.on + .bhumi{border-top-color:transparent;}
+  .today{display:inline-block;background:var(--navy);color:#fff;font-size:12px;font-weight:600;border-radius:7px;padding:2px 8px;margin-left:6px;vertical-align:2px;}
   .lk.avoid b{color:#9B1C1C;}
   .lk{background:var(--chip);border-radius:12px;padding:12px 14px;}
   .lk span{display:block;font-size:13.5px;color:var(--muted);font-weight:600;}
@@ -85,6 +93,17 @@
   var SECS=[['work','การงาน'],['money','การเงิน'],['love','ความรัก'],['health','สุขภาพ']];
   /* ความหมาย 8 ภูมิของทักษา (ตรงกับ horoscope/plan.js) */
   var TAKSA={'บริวาร':'คนรอบตัว','อายุ':'สุขภาพและความสบายใจ','เดช':'อำนาจและความมั่นใจ','ศรี':'โชคลาภ','มูละ':'ทรัพย์สินและรากฐาน','อุตสาหะ':'ความขยัน','มนตรี':'ผู้ใหญ่อุปถัมภ์','กาลกิณี':'อุปสรรค ควรระวัง'};
+  /* คำอธิบายเต็มของ 8 ภูมิ เรียงตามวงทักษา (บริวาร → กาลกิณี) */
+  var TAKSA_FULL=[
+    ['บริวาร','คนรอบตัว ครอบครัว คู่ครอง เพื่อนร่วมงาน และลูกน้อง วันที่ดาวเข้าภูมินี้ เรื่องคนและการทำงานเป็นทีมจะเด่น'],
+    ['อายุ','สุขภาพ ความเป็นอยู่ และความสบายกายสบายใจ เป็นวันที่ควรดูแลตัวเองและพักผ่อนให้พอ'],
+    ['เดช','อำนาจ ชื่อเสียง ความน่าเชื่อถือ และความกล้าตัดสินใจ พูดอะไรคนฟัง เหมาะกับการเป็นผู้นำ'],
+    ['ศรี','โชคลาภ เงินทอง เสน่ห์ และสิ่งดี ๆ ที่เข้ามา ถือเป็นภูมิที่ดีที่สุดภูมิหนึ่ง'],
+    ['มูละ','ทรัพย์สิน บ้าน ที่ดิน การเก็บออม และรากฐานของชีวิต เหมาะกับการวางแผนระยะยาว'],
+    ['อุตสาหะ','ความขยัน การงาน และความพยายาม วันนี้ต้องลงแรงมาก แต่ผลที่ได้จะคุ้มค่า'],
+    ['มนตรี','ผู้ใหญ่อุปถัมภ์ ที่ปรึกษา และคนที่คอยช่วยเหลือ ขอความช่วยเหลือวันนี้มักได้ผลดี'],
+    ['กาลกิณี','อุปสรรค ความขัดข้อง และสิ่งที่ควรหลีกเลี่ยง วันนี้ให้ใจเย็น รอบคอบ เลื่อนเรื่องสำคัญได้ก็เลื่อน']
+  ];
 
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
@@ -135,8 +154,13 @@
       (d.powerColor?'<div class="lk"><span>สีเสริมความมั่นใจ</span><b>'+esc(d.powerColor)+'</b></div>':'')+
       (d.supportColor?'<div class="lk"><span>สีเสริมผู้อุปถัมภ์</span><b>'+esc(d.supportColor)+'</b></div>':'')+
       (d.avoidColor?'<div class="lk avoid"><span>สีที่ควรเลี่ยง (กาลกิณี)</span><b>'+esc(d.avoidColor)+'</b></div>':'')+
-      '<div class="lk"><span>เลขมงคล</span><b>'+esc(d.luckyNumber||'')+'</b></div>'+
+      '<div class="lk"><span>เลขมงคล</span><b>'+esc(d.luckyNumber||'')+'</b><em class="warn">เล่นมากเสียมาก เล่นน้อยเสียน้อย</em></div>'+
       (d.tip?'<div class="lk'+(d.powerColor?'':' wide')+'"><span>ข้อแนะนำวันนี้</span><b style="font-size:16px">'+esc(d.tip)+'</b></div>':'')+
+      '</div>';
+    h+='<div class="card"><div class="title" style="font-size:20px">ภูมิทั้ง 8 ในทักษา</div>'+
+      '<p class="howto">เริ่มจากดาวประจำวันเกิดของคุณเป็น "บริวาร" แล้วนับวนตามวงทักษา ดาวของวันนี้ไปตกภูมิไหน เรื่องของภูมินั้นจะเด่นในวันนี้</p>'+
+      TAKSA_FULL.map(function(t){var on=(t[0]===d.taksa);
+        return '<div class="bhumi'+(on?' on':'')+'"><b>'+esc(t[0])+(on?' <span class="today">วันนี้</span>':'')+'</b><p>'+esc(t[1])+'</p></div>';}).join('')+
       '</div>';
     m.innerHTML=h;
   }
