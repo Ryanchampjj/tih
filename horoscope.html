@@ -33,7 +33,8 @@
   .title{font-size:24px;font-weight:700;color:var(--navy);margin:2px 0 6px;}
   .stars{display:flex;gap:3px;margin-bottom:12px;}
   .stars svg{width:22px;height:22px;}
-  .overall{font-size:17px;line-height:1.7;}
+  .overall{font-size:17px;line-height:1.75;}
+  .taksa{display:inline-block;background:var(--chip);color:var(--navy);font-size:14px;font-weight:600;border-radius:9px;padding:6px 11px;margin-bottom:12px;}
   .sec{display:flex;gap:12px;padding:14px 0;border-top:1px solid var(--line);}
   .sec:first-of-type{border-top:0;}
   .ico{flex-shrink:0;width:40px;height:40px;border-radius:11px;background:var(--chip);display:flex;align-items:center;justify-content:center;}
@@ -41,6 +42,9 @@
   .sec h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:2px;}
   .sec p{font-size:16px;line-height:1.65;color:var(--text);}
   .lucky{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .lucky .wide{grid-column:1/-1;}
+  .lk.avoid{background:#FDECEC;}
+  .lk.avoid b{color:#9B1C1C;}
   .lk{background:var(--chip);border-radius:12px;padding:12px 14px;}
   .lk span{display:block;font-size:13.5px;color:var(--muted);font-weight:600;}
   .lk b{font-size:18px;color:var(--navy);}
@@ -63,7 +67,7 @@
   <div class="days" id="days"></div>
   <div id="main"></div>
 
-  <footer>ดวงเพื่อความบันเทิงและกำลังใจ · อัปเดตทุกวันเวลา 00:01 น.</footer>
+  <footer>คำนวณตามหลักทักษาพยากรณ์ (ดาวประจำวันเกิด) · เพื่อความบันเทิงและกำลังใจ · อัปเดตทุกวันเวลา 00:01 น.</footer>
 </div>
 
 <script>
@@ -79,6 +83,8 @@
     health:'<path d="M3 12h4l2-5 4 10 2-5h6"/>'
   };
   var SECS=[['work','การงาน'],['money','การเงิน'],['love','ความรัก'],['health','สุขภาพ']];
+  /* ความหมาย 8 ภูมิของทักษา (ตรงกับ horoscope/plan.js) */
+  var TAKSA={'บริวาร':'คนรอบตัว','อายุ':'สุขภาพและความสบายใจ','เดช':'อำนาจและความมั่นใจ','ศรี':'โชคลาภ','มูละ':'ทรัพย์สินและรากฐาน','อุตสาหะ':'ความขยัน','มนตรี':'ผู้ใหญ่อุปถัมภ์','กาลกิณี':'อุปสรรค ควรระวัง'};
 
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
@@ -118,16 +124,19 @@
       '<div class="who">'+(SEL===MINE?'ดวงของคุณ · ':'')+'คนเกิดวัน'+DAYS[SEL]+'</div>'+
       '<div class="title">'+esc(d.headline||'')+'</div>'+
       '<div class="stars" aria-label="ดวงวันนี้ '+sc+' จาก 5">'+st+'</div>'+
+      (d.taksa?'<div class="taksa">ทักษาวันนี้: ดาว'+esc(DATA.todayPlanet||'')+'เข้าภูมิ'+esc(d.taksa)+' — '+esc(TAKSA[d.taksa]||'')+'</div>':'')+
       '<div class="overall">'+esc(d.overall||'')+'</div></div>';
     h+='<div class="card">'+SECS.map(function(s){
       return '<div class="sec"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+ICONS[s[0]]+'</svg></div>'+
         '<div><h3>'+s[1]+'</h3><p>'+esc(d[s[0]]||'')+'</p></div></div>';
     }).join('')+'</div>';
     h+='<div class="card lucky">'+
-      '<div class="lk"><span>สีมงคล</span><b>'+esc(d.luckyColor||'')+'</b></div>'+
-      '<div class="lk"><span>เลขนำโชค</span><b>'+esc(d.luckyNumber||'')+'</b></div>'+
-      (d.avoidColor?'<div class="lk"><span>สีที่ควรเลี่ยง</span><b>'+esc(d.avoidColor)+'</b></div>':'')+
-      (d.tip?'<div class="lk"><span>ข้อแนะนำวันนี้</span><b style="font-size:16px">'+esc(d.tip)+'</b></div>':'')+
+      '<div class="lk"><span>สีเสริมโชคลาภ</span><b>'+esc(d.luckyColor||'')+'</b></div>'+
+      (d.powerColor?'<div class="lk"><span>สีเสริมความมั่นใจ</span><b>'+esc(d.powerColor)+'</b></div>':'')+
+      (d.supportColor?'<div class="lk"><span>สีเสริมผู้อุปถัมภ์</span><b>'+esc(d.supportColor)+'</b></div>':'')+
+      (d.avoidColor?'<div class="lk avoid"><span>สีที่ควรเลี่ยง (กาลกิณี)</span><b>'+esc(d.avoidColor)+'</b></div>':'')+
+      '<div class="lk"><span>เลขมงคล</span><b>'+esc(d.luckyNumber||'')+'</b></div>'+
+      (d.tip?'<div class="lk'+(d.powerColor?'':' wide')+'"><span>ข้อแนะนำวันนี้</span><b style="font-size:16px">'+esc(d.tip)+'</b></div>':'')+
       '</div>';
     m.innerHTML=h;
   }
