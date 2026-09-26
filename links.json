@@ -6,6 +6,5 @@
   "maid": "https://tih-ward-facilities.vercel.app/clean-request.html",
   "risk": "https://incident-report-one.vercel.app/",
   "cheer": "https://incident-report-one.vercel.app/compliment.html",
-  "sign": "https://incident-report-one.vercel.app/sign.html",
-  "docs": "https://pdf-tools-thaiinter.vercel.app/"
+  "sign": "https://incident-report-one.vercel.app/sign.html"
 }
