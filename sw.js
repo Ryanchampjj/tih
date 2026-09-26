@@ -1,7 +1,7 @@
-var CACHE = 'tih-portal-v29';
+var CACHE = 'tih-portal-v30';
 var ASSETS = ['./', './index.html', './go.html', './app.html', './manifest.json', './icon.png',
   './logo.png', './hr.png', './fix.png', './car.png', './maid.png', './risk.png',
-  './cheer.png', './sign.png', './goodday.png'];
+  './cheer.png', './sign.png', './goodday.png', './horo.png'];
 self.addEventListener('install', function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(ASSETS).catch(function(){}); }));
   self.skipWaiting();
@@ -16,7 +16,8 @@ self.addEventListener('activate', function(e){
 self.addEventListener('fetch', function(e){
   var req = e.request;
   // links.json: network-only เสมอ ห้ามเสิร์ฟจาก cache (ลิงก์ต้องสดตลอด)
-  if (req.url.indexOf('links.json') !== -1) {
+  // ดวงรายวัน (horoscope/*.json) ก็เช่นกัน — เปลี่ยนทุกวันตอน 00:01
+  if (req.url.indexOf('links.json') !== -1 || req.url.indexOf('/horoscope/') !== -1) {
     e.respondWith(fetch(req, {cache: 'no-store'}));
     return;
   }
