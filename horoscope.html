@@ -208,16 +208,27 @@
     }).catch(function(){document.getElementById('dateLine').textContent='';renderMain();});
   }
 
+  /* สถิติการเปิดหน้า (ดูได้ที่หน้าแรกผู้ดูแลระบบในพอร์ทัล tihkpn) — นับครั้งละการเปิด เครื่องเดิมภายใน 10 นาทีนับครั้งเดียว (ฝั่งฐานข้อมูล) */
+  var SB_URL='https://ukyjtyyoksgpnptjhdhg.supabase.co', SB_KEY='sb_publishable_ZCURlrdrW3Iue8IymZOAbw_tfh8EHlh';
+  var HIT_SENT=false;
+  function empOfTicket(t){try{var b=String(t||'').split('.')[0].replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';var bin=atob(b);var p=JSON.parse(new TextDecoder('utf-8').decode(Uint8Array.from(bin,function(c){return c.charCodeAt(0);})));return p&&p.emp!=null?String(p.emp):null;}catch(e){return null;}}
+  function logHit(){
+    if(HIT_SENT)return; HIT_SENT=true;
+    var dev=lsGet('horo_dev'); if(!dev){dev=Math.random().toString(36).slice(2)+Date.now().toString(36);lsSet('horo_dev',dev);}
+    fetch(SB_URL+'/rest/v1/rpc/horo_hit',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},
+      body:JSON.stringify({p_emp:empOfTicket(lsGet('tih_sso')),p_device:dev,p_dow:(MINE===null?null:MINE)})}).catch(function(){});
+  }
+
   /* วันเกิดจากทะเบียนพนักงาน (ล็อกอินพอร์ทัลอยู่) — ได้แค่ "วันในสัปดาห์" ไม่ได้วันเดือนปีเกิด */
   function loadMine(){
-    var t=lsGet('tih_sso'); if(!t)return;
+    var t=lsGet('tih_sso'); if(!t){logHit();return;}
     fetch(AUTH+'/api/verifypin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'bday',token:t})})
       .then(function(r){return r.json();}).then(function(d){
         if(!d||!d.ok||d.dow===null||d.dow===undefined)return;
         MINE=+d.dow; lsSet(KEY_MINE,String(MINE));
         if(SEL===null)SEL=MINE;
         renderDays();renderMain();
-      }).catch(function(){});
+      }).catch(function(){}).then(logHit);
   }
 
   if(SEL===null&&MINE!==null)SEL=MINE;
