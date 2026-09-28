@@ -6,7 +6,7 @@
 <title>ดวงของฉัน — ระบบงาน TIH</title>
 <meta name="theme-color" content="#2E4A7D">
 <link rel="icon" type="image/png" href="icon.png">
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Srisakdi:wght@700&family=Taviraj:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   /* พาเลตจากรูปการ์ด taro: ฟ้าอ่อน · กรมท่า · ทอง · ขาว */
   :root{
@@ -114,12 +114,45 @@
   .dasa .r.next .s{background:var(--good);color:var(--goodt);}
 
   /* แท็บ ดวงของฉัน / กราฟชีวิต */
-  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#fff;border-radius:14px;padding:5px;box-shadow:0 6px 16px rgba(46,74,125,.14);}
+  .tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:#fff;border-radius:14px;padding:5px;box-shadow:0 6px 16px rgba(46,74,125,.14);}
   .tabs button{font-family:inherit;font-size:16px;font-weight:700;border:0;background:transparent;color:var(--navy);border-radius:10px;padding:11px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
   .tabs button svg{width:19px;height:19px;flex-shrink:0;}
   .tabs button.on{background:var(--navy);color:#fff;}
   .tabs + .card{margin-top:14px;}
-  .t-graph #note,.t-graph #pay{display:none!important;}
+  .t-alt #note,.t-alt #pay{display:none!important;}
+
+  /* เซียมซี — กระบอกไม้ติ้ว + ใบเซียมซีกระดาษชมพูหมึกแดงแบบที่วัด */
+  .sscard{text-align:center;}
+  .sscard .title{margin-bottom:4px;}
+  .ssbox{display:flex;justify-content:center;margin:20px 0 16px;}
+  .ssv{width:150px;height:auto;overflow:visible;}
+  .ssbox.shake .ssv{animation:ssShake .3s ease-in-out 4;transform-origin:50% 92%;}
+  @keyframes ssShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-11deg)}75%{transform:rotate(11deg)}}
+  .ssv .ssp{transform:translateY(64px);transition:transform .7s cubic-bezier(.2,.9,.3,1.25);}
+  .ssbox.pop .ssv .ssp{transform:translateY(-6px);}
+  .ssgo{display:block;width:100%;max-width:320px;margin:0 auto;font-size:17px;padding:12px 16px;}
+  .slip{position:relative;max-width:440px;margin:8px auto 18px;padding:9px;border-radius:2px;
+    background:linear-gradient(160deg,#FDEBE8 0%,#FBE0DC 55%,#F8D6D1 100%);color:#3F1A15;
+    box-shadow:0 14px 28px rgba(90,20,20,.22),0 2px 4px rgba(90,20,20,.14);transform:rotate(-.8deg);font-family:'Taviraj','Sarabun',serif;}
+  .slip.show{animation:slipIn .7s ease-out;}
+  @keyframes slipIn{from{opacity:0;transform:translateY(28px) rotate(-5deg);}to{opacity:1;transform:rotate(-.8deg);}}
+  .slip-in{position:relative;border:2px solid #A3191B;box-shadow:inset 0 0 0 4px #FBE3DF,inset 0 0 0 5.5px #A3191B;padding:24px 22px 18px;text-align:center;}
+  .sl-c{position:absolute;width:20px;height:20px;}
+  .sl-c.tl{top:9px;left:9px;}.sl-c.tr{top:9px;right:9px;transform:scaleX(-1);}
+  .sl-c.bl{bottom:9px;left:9px;transform:scaleY(-1);}.sl-c.br{bottom:9px;right:9px;transform:scale(-1);}
+  .sl-top{font-size:14.5px;font-weight:600;letter-spacing:.5px;color:#A3191B;}
+  .sl-no{font-family:'Srisakdi','Taviraj',serif;font-weight:700;font-size:46px;line-height:1.3;color:#A3191B;margin:14px 0 4px;}
+  .sl-stamp{display:inline-block;border:2.5px solid #A3191B;color:#A3191B;font-family:'Sarabun',sans-serif;font-weight:700;font-size:17px;letter-spacing:1px;padding:1px 14px;border-radius:5px;transform:rotate(-4deg);}
+  .sl-orn{display:block;width:180px;max-width:80%;height:12px;margin:14px auto;}
+  .sl-verse{font-size:20px;font-weight:700;line-height:1.7;color:#A3191B;}
+  .sl-text{font-size:16.5px;line-height:1.8;margin:0 0 14px;}
+  .sl-list{text-align:left;border-top:1px solid rgba(163,25,27,.4);padding-top:8px;margin:0;}
+  .sl-list div{display:grid;grid-template-columns:88px 1fr;gap:8px;padding:6px 0;border-bottom:1px dotted rgba(163,25,27,.35);font-size:15.5px;line-height:1.65;}
+  .sl-list div:last-child{border-bottom:0;}
+  .sl-list dt{font-weight:700;color:#A3191B;}
+  .sl-list dd{margin:0;}
+  .sl-foot{margin-top:14px;font-size:13.5px;color:#7A3A33;line-height:1.6;}
+  @media (prefers-reduced-motion:reduce){.slip.show,.ssbox.shake .ssv{animation:none;}.ssv .ssp{transition:none;}}
 
   /* กราฟชีวิต */
   .lg{margin-top:14px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:crosshair;}
@@ -153,7 +186,7 @@
   .yr .yd{font-size:13.5px;color:var(--muted);line-height:1.5;margin-top:5px;}
   .yr .rel{margin:0;white-space:nowrap;justify-self:end;}
   .lv-top{background:#C8921E;}.lv-good{background:#E9C766;}.lv-mid{background:#8FA8CF;}.lv-low{background:#D46A6A;}
-  @media (max-width:420px){h1{font-size:26px;}.row3{grid-template-columns:1fr 1fr;}.row3 select:last-child{grid-column:1/-1;}.dasa .r{grid-template-columns:78px 1fr auto;font-size:14px;}.yr{grid-template-columns:50px 1fr 62px;gap:8px;padding:10px;}}
+  @media (max-width:420px){h1{font-size:26px;}.row3{grid-template-columns:1fr 1fr;}.row3 select:last-child{grid-column:1/-1;}.dasa .r{grid-template-columns:78px 1fr auto;font-size:14px;}.yr{grid-template-columns:50px 1fr 62px;gap:8px;padding:10px;}.tabs{gap:4px;}.tabs button{font-size:15px;padding:10px 3px;gap:5px;}.tabs button svg{width:17px;height:17px;}.slip-in{padding:22px 16px 16px;}.sl-list div{grid-template-columns:80px 1fr;}}
 </style>
 </head>
 <body>
@@ -169,10 +202,11 @@
   <div id="profile"></div>
   <div id="main"></div>
 
-  <footer>คำนวณจากวันเดือนปีเกิด (และเวลาเกิดถ้าใส่ไว้) ด้วยทักษาพยากรณ์ มหาทักษา โหราศาสตร์ไทยแบบนิรายนะ นักษัตรจีน และเลขศาสตร์<br>เพื่อความบันเทิงและกำลังใจ · ดวงรายวันอัปเดตทุกวันเวลา 00:01 น.</footer>
+  <footer>คำนวณจากวันเดือนปีเกิด (และเวลาเกิดถ้าใส่ไว้) ด้วยทักษาพยากรณ์ มหาทักษา โหราศาสตร์ไทยแบบนิรายนะ นักษัตรจีน และเลขศาสตร์ · เซียมซีวันละ 1 ใบ<br>เพื่อความบันเทิงและกำลังใจ · ดวงรายวันอัปเดตทุกวันเวลา 00:01 น.</footer>
 </div>
 
 <script src="horoscope/astro.js"></script>
+<script src="horoscope/siamsi.js"></script>
 <script>
 (function(){
   var AUTH='https://attendance-live-thaiinter.vercel.app';
@@ -562,13 +596,14 @@
 
   /* ================= แท็บ =================
      ผูกกับ #graph — รีเฟรชแล้วอยู่แท็บเดิม · เข้าจากการ์ดพอร์ทัล (ไม่มี hash) ได้แท็บแรกเสมอ */
-  var TAB=location.hash==='#graph'?'graph':'main';
+  var TAB={'#graph':'graph','#siamsi':'siamsi'}[location.hash]||'main';
   var TAB_ICO={
     main:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
-    graph:'<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 6-7"/>'
+    graph:'<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 6-7"/>',
+    siamsi:'<path d="M7 10h10v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1z"/><path d="M9.5 10L8.5 3M12 10V2M14.5 10l1-7"/>'
   };
   function tabsHtml(){
-    return '<div class="tabs" id="tabs" role="tablist">'+[['main','ดวงของฉัน'],['graph','กราฟชีวิต']].map(function(t){
+    return '<div class="tabs" id="tabs" role="tablist">'+[['main','ดวงของฉัน'],['graph','กราฟชีวิต'],['siamsi','เซียมซี']].map(function(t){
       var on=TAB===t[0];
       return '<button type="button" role="tab" aria-selected="'+on+'"'+(on?' class="on"':'')+' data-tab="'+t[0]+'">'+
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+TAB_ICO[t[0]]+'</svg>'+t[1]+'</button>';
@@ -577,7 +612,7 @@
   function setTab(t){
     if(t===TAB)return;
     TAB=t;
-    try{history.replaceState(null,'',t==='graph'?'#graph':location.pathname+location.search);}catch(e){}
+    try{history.replaceState(null,'',t==='main'?location.pathname+location.search:'#'+t);}catch(e){}
     render();
     var tb=$('tabs'); if(tb&&tb.getBoundingClientRect().top<0) tb.scrollIntoView();
   }
@@ -718,19 +753,102 @@
   var RS_T=null;
   window.addEventListener('resize',function(){clearTimeout(RS_T);RS_T=setTimeout(drawLife,150);});
 
+  /* ================= เซียมซีประจำวัน =================
+     วันละ 1 ใบต่อคน · ใบที่ได้คิดจากรหัสพนักงาน (ไม่ล็อกอิน = รหัสเครื่อง) + วันที่ → เปิดกี่ครั้ง เครื่องไหน ก็ได้ใบเดิมทั้งวัน
+     กดเขย่าแล้วจำไว้ในเครื่องว่าวันนี้เขย่าแล้ว (รีเฟรชเห็นใบเดิม) · ข้อความ 28 ใบอยู่ horoscope/siamsi.js */
+  var SS_KEY='horo_ss_'+(EMP||'guest'), SS_BUSY=false, SS_JUST=false;
+  var SS_LV={top:'ดีมาก',good:'ดี',mid:'ปานกลาง',low:'ระวัง'};
+  var SS_TOPICS=[['work','การงาน'],['money','การเงิน'],['love','ความรัก'],['health','สุขภาพ'],['lost','ของหาย'],['travel','เดินทาง']];
+  function thNum(s){return String(s).replace(/\d/g,function(d){return '๐๑๒๓๔๕๖๗๘๙'.charAt(+d);});}
+  function devId(){var d=lsGet('horo_dev');if(!d){d=Math.random().toString(36).slice(2)+Date.now().toString(36);lsSet('horo_dev',d);}return d;}
+  function hash32(s){
+    var h=2166136261;
+    for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}
+    h^=h>>>16;h=Math.imul(h,0x85ebca6b);h^=h>>>13;h=Math.imul(h,0xc2b2ae35);h^=h>>>16;
+    return h>>>0;
+  }
+  function ssToday(){
+    var L=window.SIAMSI||[]; if(!L.length) return null;
+    return L[hash32((EMP?'emp'+EMP:'dev'+devId())+'|'+TODAY)%L.length];
+  }
+  function ssCup(){
+    var st='', sticks=[[44,37,18],[51,47,10],[69,73,12],[76,84,20],[58,55,26]];
+    sticks.forEach(function(s){
+      var dx=s[1]-s[0], dy=s[2]-70, k=7/Math.sqrt(dx*dx+dy*dy);
+      st+='<line x1="'+s[0]+'" y1="70" x2="'+s[1]+'" y2="'+s[2]+'" stroke="#D8B26E" stroke-width="4"/>'+
+        '<line x1="'+(s[1]-dx*k).toFixed(1)+'" y1="'+(s[2]-dy*k).toFixed(1)+'" x2="'+s[1]+'" y2="'+s[2]+'" stroke="#B3261E" stroke-width="4"/>';
+    });
+    return '<svg class="ssv" viewBox="0 0 120 170" aria-hidden="true">'+
+      '<ellipse cx="60" cy="163" rx="34" ry="4.5" fill="rgba(46,74,125,.18)"/>'+
+      '<g stroke-linecap="round">'+st+'</g>'+
+      '<g class="ssp"><line x1="60" y1="92" x2="60" y2="22" stroke="#D8B26E" stroke-width="5" stroke-linecap="round"/>'+
+        '<rect x="44" y="0" width="32" height="25" rx="4" fill="#B3261E"/>'+
+        '<text class="ssnum" x="60" y="18" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="Sarabun,sans-serif"></text></g>'+
+      '<ellipse cx="60" cy="62" rx="30" ry="6" fill="#7E1712"/>'+
+      '<path d="M30 62h60v86a10 10 0 0 1-10 10H40a10 10 0 0 1-10-10z" fill="#B3261E"/>'+
+      '<path d="M30 62a30 6 0 0 0 60 0" fill="none" stroke="#D9A93A" stroke-width="2.5"/>'+
+      '<rect x="30" y="76" width="60" height="5" fill="#D9A93A"/><rect x="30" y="138" width="60" height="5" fill="#D9A93A"/>'+
+      '<circle cx="60" cy="109" r="15" fill="none" stroke="#D9A93A" stroke-width="2.5"/><circle cx="60" cy="109" r="8.5" fill="none" stroke="#D9A93A" stroke-width="1.5"/>'+
+      '<rect x="37" y="85" width="5" height="48" rx="2.5" fill="#fff" opacity=".18"/></svg>';
+  }
+  var SL_CORNER='<svg class="sl-c CLS" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 18V8a6 6 0 0 1 6-6h10" fill="none" stroke="#A3191B" stroke-width="1.6"/><circle cx="8" cy="8" r="2" fill="#A3191B"/></svg>';
+  var SL_ORN='<svg class="sl-orn" viewBox="0 0 200 12" aria-hidden="true"><path d="M0 6h84M116 6h84" stroke="#A3191B" stroke-width="1.2"/><path d="M100 1l7 5-7 5-7-5z" fill="none" stroke="#A3191B" stroke-width="1.4"/><circle cx="88" cy="6" r="1.6" fill="#A3191B"/><circle cx="112" cy="6" r="1.6" fill="#A3191B"/></svg>';
+  function siamsiHtml(){
+    var s=ssToday();
+    if(!s) return '<div class="card"><div class="empty">โหลดเซียมซีไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง</div></div>';
+    if(lsGet(SS_KEY)!==TODAY) return '<div class="card sscard"><div class="who">เซียมซีประจำวัน</div>'+
+      '<div class="title">ตั้งจิตอธิษฐาน นึกถึงเรื่องที่อยากรู้</div>'+
+      '<p class="howto">แล้วกดเขย่า ได้วันละ 1 ใบ เปิดดูกี่ครั้งก็เป็นใบเดิมทั้งวัน</p>'+
+      '<div class="ssbox" id="ssBox">'+ssCup()+'</div>'+
+      '<button type="button" class="btn pri ssgo" id="ssGo">เขย่าเซียมซี</button></div>';
+    var sp=s.image.indexOf(' '), verse=sp>0?esc(s.image.slice(0,sp))+'<br>'+esc(s.image.slice(sp+1)):esc(s.image);
+    var h='<div class="slip'+(SS_JUST?' show':'')+'" role="article" aria-label="เซียมซีใบที่ '+s.n+'"><div class="slip-in">'+
+      ['tl','tr','bl','br'].map(function(c){return SL_CORNER.replace('CLS',c);}).join('')+
+      '<div class="sl-top">เซียมซีประจำวัน</div>'+
+      '<div class="sl-no">ใบที่ '+thNum(s.n)+'</div>'+
+      '<span class="sl-stamp">'+SS_LV[s.level]+'</span>'+SL_ORN+
+      '<div class="sl-verse">'+verse+'</div>'+SL_ORN+
+      '<p class="sl-text">'+esc(s.text)+'</p>'+
+      '<dl class="sl-list">'+SS_TOPICS.map(function(t){return '<div><dt>'+t[1]+'</dt><dd>'+esc(s[t[0]])+'</dd></div>';}).join('')+'</dl>'+
+      '<div class="sl-foot">'+thNum(thaiDate(TODAY))+'<br>พอร์ทัลระบบงาน TIH</div>'+
+      '</div></div>';
+    SS_JUST=false;
+    return h+'<div class="card"><div class="who">เกี่ยวกับเซียมซีชุดนี้</div>'+
+      '<p class="howto" style="margin:4px 0 0">เขย่าใบใหม่ได้พรุ่งนี้หลังเที่ยงคืน · เซียมซีชุดนี้มี 28 ใบ เขียนขึ้นใหม่สำหรับพอร์ทัลในแบบเซียมซีวัด (ภาพเปรียบ คำทำนาย และทำนายรายเรื่อง) ไม่ได้คัดลอกมาจากวัดใด ใบที่ได้สุ่มประจำวันของแต่ละคน เพื่อความบันเทิงและกำลังใจ</p></div>';
+  }
+  function bindSiamsi(){
+    var go=$('ssGo'); if(!go) return;
+    go.onclick=function(){
+      if(SS_BUSY) return;
+      var s=ssToday(), box=$('ssBox'); if(!s||!box) return;
+      SS_BUSY=true; go.disabled=true; go.textContent='กำลังเขย่า…';
+      box.querySelector('.ssnum').textContent=thNum(s.n);
+      function done(){
+        SS_BUSY=false; SS_JUST=true; lsSet(SS_KEY,TODAY); render();
+        var tb=$('tabs'); if(tb&&tb.getBoundingClientRect().top<0) tb.scrollIntoView();
+      }
+      if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){done();return;}
+      box.classList.add('shake');
+      setTimeout(function(){box.classList.remove('shake');box.classList.add('pop');go.textContent='ได้ใบที่ '+thNum(s.n);},1250);
+      setTimeout(done,2600);
+    };
+  }
+
   function render(){
+    if(SS_BUSY) return;   // กำลังเขย่าเซียมซีอยู่ — ข้อมูลที่โหลดเสร็จระหว่างนั้นค่อยวาดตอนเขย่าจบ (done เรียก render เอง)
     var P=(BIRTH&&BIRTH.date)?A.profile(BIRTH.date,BIRTH.time||'',TODAY,BIRTH.place||''):null;
     var fn=firstName(); $('head').textContent=fn?'ดวงของคุณ'+fn:'ดวงของคุณ';
     renderProfile(P);
-    var m=$('main'), graph=TAB==='graph'&&P&&!FORM;
-    document.body.classList.toggle('t-graph',!!graph);
+    var m=$('main'), on=P&&!FORM, graph=on&&TAB==='graph', ss=on&&TAB==='siamsi';
+    document.body.classList.toggle('t-alt',!!(graph||ss));
     LIFE=null;
-    if(!P||FORM){m.innerHTML='';return;}
-    m.innerHTML=tabsHtml()+(graph?lifeHtml(P):'<div class="sech">ดวงวันนี้</div>'+taksaCard(P)+dayCard(P)+luckyCard(P)+
+    if(!on){m.innerHTML='';return;}
+    m.innerHTML=tabsHtml()+(graph?lifeHtml(P):ss?siamsiHtml():'<div class="sech">ดวงวันนี้</div>'+taksaCard(P)+dayCard(P)+luckyCard(P)+
       '<div class="sech">ดวงชะตาของคุณ</div>'+dasaCard(P)+signCard(P)+chineseCard(P)+numCard(P)+bhumiCard(P));
     Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'),function(b){b.onclick=function(){setTab(b.getAttribute('data-tab'));};});
     Array.prototype.forEach.call(document.querySelectorAll('[data-addtime]'),function(b){b.onclick=function(){FORM=true;render();window.scrollTo(0,0);};});
     if(graph){drawLife();showLife();bindLife();}
+    if(ss) bindSiamsi();
     logHit(P);
   }
 
