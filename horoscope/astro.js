@@ -3,7 +3,7 @@
    ไม่มีการเดา — ทุกอย่างในไฟล์นี้เป็น "กติกา" หรือ "การคำนวณตำแหน่งดาว" ส่วนคำทำนายอยู่ที่อื่น
 
    1 ทักษาพยากรณ์   ดาวประจำวันเกิด (แบบไทย วันใหม่เริ่ม 06:00 · พุธกลางคืน = ราหู) → 8 ภูมิ · สี · เลข
-   2 มหาทักษา       ดาวเสวยอายุ + ดาวแทรก (รอบ 108 ปี) จากดาววันเกิดและอายุจริง
+   2 มหาทักษา       ดาวเสวยอายุ + ดาวแทรก (รอบ 108 ปี) จากดาววันเกิดและอายุจริง · กราฟชีวิต 64 ช่วงย่อย + คะแนนรายปี
    3 ราศี            ดวงอาทิตย์ (ราศีเกิด) · ดวงจันทร์ · ลัคนา (ต้องมีเวลาเกิด) แบบนิรายนะ (อายนางศ์ลาหิรี)
                      ตำแหน่งดาวตามสูตรของ Meeus (Astronomical Algorithms) ความคลาดเคลื่อน < 0.3 องศา
                      ลัคนาคิดที่พิกัดจังหวัดที่เกิด (ไม่ได้เลือก = กรุงเทพฯ) เวลาไทย UTC+7
@@ -216,6 +216,41 @@
     return { age: age, periods: periods, current: cur, sub: sub, subs: subs };
   }
 
+  /* ---------- 2.1 กราฟชีวิต (มหาทักษาทั้งรอบ 108 ปี) ----------
+     ดาวเสวย 8 ช่วง × ดาวแทรก 8 ช่วงย่อย = 64 ช่วง กติกาเดียวกับ mahataksa ข้างบน
+     ความสูงของเส้น = ภูมิของดาวในทักษาวันเกิด ให้คะแนนชุดเดียวกับดวงวันนี้ (MEANING.stars)
+     ดาวเสวยนับ 60% ดาวแทรก 40% — ตำราบอกแค่ภูมิไหนดีหรือร้าย น้ำหนักตัวเลขเป็นของระบบนี้ */
+  var LIFE_W = { major: 0.6, minor: 0.4 };
+  function lifeLevel(score) { return score >= 4.5 ? 'top' : score >= 3.8 ? 'good' : score >= 3 ? 'mid' : 'low'; }
+  function lifeGraph(b, bd) {
+    var born = dateOf(b.y, b.m, b.d), s = RING.indexOf(bd.planet), acc = 0, out = [];
+    for (var i = 0; i < 8; i++) {
+      var p = RING[(s + i) % 8], len = DASA[p], a = acc;
+      for (var j = 0; j < 8; j++) {
+        var q = RING[(s + i + j) % 8], l = len * DASA[q] / 108, role = ROLES[(i + j) % 8];
+        var sc = Math.round((LIFE_W.major * MEANING[ROLES[i]].stars + LIFE_W.minor * MEANING[role].stars) * 100) / 100;
+        out.push({ major: p, majorRole: ROLES[i], planet: q, role: role, fromAge: a, toAge: a + l,
+                   from: isoOf(addYears(born, a)), to: isoOf(addYears(born, a + l)), score: sc, level: lifeLevel(sc) });
+        a += l;
+      }
+      acc += len;
+    }
+    return out;
+  }
+  // คะแนนรายปีปฏิทิน (ค.ศ.) = เฉลี่ยตามจำนวนวันที่แต่ละช่วงย่อยอยู่ในปีนั้น
+  function lifeYear(graph, b, year) {
+    var born = dateOf(b.y, b.m, b.d), unit = 86400000 * YEAR;
+    var a0 = (Date.UTC(year, 0, 1) - born) / unit, a1 = (Date.UTC(year + 1, 0, 1) - born) / unit;
+    var sum = 0, w = 0, parts = [];
+    graph.forEach(function (g) {
+      var lo = Math.max(a0, g.fromAge), hi = Math.min(a1, g.toAge);
+      if (hi > lo) { sum += g.score * (hi - lo); w += hi - lo; parts.push(g); }
+    });
+    if (!w) return null;
+    var sc = Math.round(sum / w * 100) / 100;
+    return { year: year, age: year - b.y, score: sc, level: lifeLevel(sc), parts: parts };
+  }
+
   /* ---------- 3 ตำแหน่งดาว + ราศี ---------- */
   function T(j) { return (j - 2451545.0) / 36525; }
   // ดวงอาทิตย์ (Meeus บทที่ 25 แบบความแม่นยำต่ำ ~0.01°) ลองจิจูดปรากฏ แบบสายนะ
@@ -352,7 +387,7 @@
     DAYS: DAYS, RING: RING, NUM: NUM, COLOR: COLOR, ROLES: ROLES, MEANING: MEANING, DASA: DASA,
     SIGNS: SIGNS, ANIMALS: ANIMALS, ELEMENTS: ELEMENTS, YEAR_REL: YEAR_REL, DAY_REL: DAY_REL, PROVINCES: PROVINCES, FOREIGN: FOREIGN, placeOf: placeOf, tzOffset: tzOffset,
     parseBirth: parseBirth, jd: jd, birthDay: birthDay, rolesOf: rolesOf, roleOf: roleOf, taksaDay: taksaDay,
-    mahataksa: mahataksa, sunLong: sunLong, moonLong: moonLong, ayanamsa: ayanamsa, ascendant: ascendant,
+    mahataksa: mahataksa, lifeGraph: lifeGraph, lifeYear: lifeYear, lifeLevel: lifeLevel, LIFE_W: LIFE_W, sunLong: sunLong, moonLong: moonLong, ayanamsa: ayanamsa, ascendant: ascendant,
     zodiac: zodiac, chineseYearOf: chineseYearOf, dayBranch: dayBranch, relation: relation,
     lifePath: lifePath, personalYear: personalYear, personalDay: personalDay, ageParts: ageParts, profile: profile
   };

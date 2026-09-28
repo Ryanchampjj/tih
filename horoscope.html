@@ -112,7 +112,48 @@
   .dasa .r.now{background:var(--chip);}
   .dasa .r.now .s{background:var(--navy);color:#fff;}
   .dasa .r.next .s{background:var(--good);color:var(--goodt);}
-  @media (max-width:420px){h1{font-size:26px;}.row3{grid-template-columns:1fr 1fr;}.row3 select:last-child{grid-column:1/-1;}.dasa .r{grid-template-columns:78px 1fr auto;font-size:14px;}}
+
+  /* แท็บ ดวงของฉัน / กราฟชีวิต */
+  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#fff;border-radius:14px;padding:5px;box-shadow:0 6px 16px rgba(46,74,125,.14);}
+  .tabs button{font-family:inherit;font-size:16px;font-weight:700;border:0;background:transparent;color:var(--navy);border-radius:10px;padding:11px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .tabs button svg{width:19px;height:19px;flex-shrink:0;}
+  .tabs button.on{background:var(--navy);color:#fff;}
+  .tabs + .card{margin-top:14px;}
+  .t-graph #note,.t-graph #pay{display:none!important;}
+
+  /* กราฟชีวิต */
+  .lg{margin-top:14px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:crosshair;}
+  .lg svg{display:block;}
+  .lg text{font-family:'Sarabun',system-ui,sans-serif;fill:var(--muted);}
+  .lg .bl{font-size:11.5px;font-weight:700;fill:var(--navy);}
+  .lg .yl{font-size:12px;font-weight:600;}
+  .lg .xl{font-size:11.5px;font-weight:600;}
+  .lgl{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px;color:var(--muted);font-weight:600;margin-top:8px;}
+  .lgl span{display:inline-flex;align-items:center;gap:6px;}
+  .lgl i{display:inline-block;width:16px;height:12px;border-radius:3px;border:1.5px solid transparent;}
+  .lgl i.ln{height:0;border:0;border-top:2.5px dashed #B8871F;border-radius:0;}
+  .lgi{margin-top:12px;border-top:1px solid var(--line);padding-top:12px;}
+  .lgi .lgh{display:flex;align-items:center;gap:6px;}
+  .lgi .lgh .rel{margin:0;}
+  .lgi .lgh .today{margin-left:0;vertical-align:0;}
+  .lgi .v{font-size:19px;font-weight:700;color:var(--navy);line-height:1.4;margin-top:6px;}
+  .lgi .fine{font-size:14px;color:var(--muted);font-weight:600;}
+  .lgi p{font-size:15.5px;line-height:1.65;margin-top:8px;}
+  .lgi p b{color:var(--navy);}
+  .lgn{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:12px;}
+  .lgn .btn{padding:9px 4px;font-size:14.5px;}
+  .yrs{margin-top:10px;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .yr{display:grid;grid-template-columns:58px 1fr 66px;gap:10px;align-items:center;padding:10px 12px;border-top:1px solid var(--line);}
+  .yr:first-child{border-top:0;}
+  .yr.now{background:var(--chip);}
+  .yr .y b{display:block;font-size:17px;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1.3;}
+  .yr .y small{font-size:13px;color:var(--muted);font-weight:600;}
+  .yr .bar{height:10px;border-radius:6px;background:#E6EEF7;overflow:hidden;}
+  .yr .bar i{display:block;height:100%;border-radius:6px;}
+  .yr .yd{font-size:13.5px;color:var(--muted);line-height:1.5;margin-top:5px;}
+  .yr .rel{margin:0;white-space:nowrap;justify-self:end;}
+  .lv-top{background:#C8921E;}.lv-good{background:#E9C766;}.lv-mid{background:#8FA8CF;}.lv-low{background:#D46A6A;}
+  @media (max-width:420px){h1{font-size:26px;}.row3{grid-template-columns:1fr 1fr;}.row3 select:last-child{grid-column:1/-1;}.dasa .r{grid-template-columns:78px 1fr auto;font-size:14px;}.yr{grid-template-columns:50px 1fr 62px;gap:8px;padding:10px;}}
 </style>
 </head>
 <body>
@@ -263,6 +304,20 @@
     9:'วันที่เหมาะกับการเคลียร์เรื่องค้าง ให้อภัย และปล่อยวาง'
   };
   var GOOD={six:1,three:1,same:1}, BAD={clash:1,harm:1,'break':1};
+
+  /* กราฟชีวิต — ความหมายของภูมิที่ดาวแทรก (ช่วงย่อย) ตกในทักษาวันเกิด */
+  var LIFE_SUB={
+    'บริวาร':'เรื่องคนรอบตัวเด่น ครอบครัว คู่ครอง เพื่อนร่วมงาน ลูกน้อง ใส่ใจคนใกล้ตัวแล้วจะได้แรงหนุนกลับมา',
+    'อายุ':'เรื่องสุขภาพและความเป็นอยู่เด่น ดูแลร่างกาย พักผ่อนให้พอ ชีวิตจะเดินไปอย่างมั่นคง',
+    'เดช':'มีโอกาสได้รับการยอมรับ ได้ตำแหน่งหรือความรับผิดชอบที่ใหญ่ขึ้น กล้าตัดสินใจเรื่องสำคัญได้',
+    'ศรี':'โชคลาภ เงินทอง และสิ่งดี ๆ เข้ามามากกว่าปกติ เป็นจังหวะดีที่จะเริ่มเรื่องที่ตั้งใจไว้',
+    'มูละ':'เหมาะกับการสร้างฐาน เก็บออม เรื่องบ้าน ที่ดิน ทรัพย์สิน ค่อยเป็นค่อยไปแต่มั่นคง',
+    'อุตสาหะ':'ต้องลงแรงมาก งานหนักแต่ทุกอย่างเป็นผลงานของตัวเอง ความขยันจะพาไปได้ไกล',
+    'มนตรี':'มีผู้ใหญ่และคนเก่งคอยช่วย เรื่องที่ติดขัดมีคนช่วยคลี่คลาย ขอคำแนะนำได้เลย',
+    'กาลกิณี':'มีอุปสรรคมากกว่าปกติ ไม่เสี่ยงเกินตัว ไม่ลงทุนเรื่องใหญ่ถ้าไม่จำเป็น ใจเย็นแล้วจะผ่านไปได้'
+  };
+  var LIFE_LV={top:['ดีมาก','good'],good:['ดี','good'],mid:['กลาง ๆ','mid'],low:['ระวัง','bad']};
+  var ABBR={'อาทิตย์':'อา','จันทร์':'จ','อังคาร':'อ','พุธ':'พ','เสาร์':'ส','พฤหัสบดี':'พฤ','ราหู':'ร','ศุกร์':'ศ'};
 
   /* กิมมิควันรับทรัพย์ (พี่สั่ง 26/09/2569): วันสุดท้ายของเดือน = เงินเดือนออก · วันที่ 10 = ค่าโอทีออก */
   var PAY_SALARY=[
@@ -505,15 +560,177 @@
       '</div>';
   }
 
+  /* ================= แท็บ =================
+     ผูกกับ #graph — รีเฟรชแล้วอยู่แท็บเดิม · เข้าจากการ์ดพอร์ทัล (ไม่มี hash) ได้แท็บแรกเสมอ */
+  var TAB=location.hash==='#graph'?'graph':'main';
+  var TAB_ICO={
+    main:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+    graph:'<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 6-7"/>'
+  };
+  function tabsHtml(){
+    return '<div class="tabs" id="tabs" role="tablist">'+[['main','ดวงของฉัน'],['graph','กราฟชีวิต']].map(function(t){
+      var on=TAB===t[0];
+      return '<button type="button" role="tab" aria-selected="'+on+'"'+(on?' class="on"':'')+' data-tab="'+t[0]+'">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+TAB_ICO[t[0]]+'</svg>'+t[1]+'</button>';
+    }).join('')+'</div>';
+  }
+  function setTab(t){
+    if(t===TAB)return;
+    TAB=t;
+    try{history.replaceState(null,'',t==='graph'?'#graph':location.pathname+location.search);}catch(e){}
+    render();
+    var tb=$('tabs'); if(tb&&tb.getBoundingClientRect().top<0) tb.scrollIntoView();
+  }
+
+  /* ================= กราฟชีวิต (มหาทักษา 64 ช่วงย่อย) ================= */
+  var LIFE=null;   /* {G, age, now, sel, geo} */
+  function lifeAt(G,age){for(var i=0;i<G.length;i++)if(age>=G[i].fromAge&&age<G[i].toAge)return G[i];return G[G.length-1];}
+  function ageSpan(g){var a=Math.floor(g.fromAge),b=Math.floor(g.toAge-1e-6);return a===b?'อายุ '+a+' ปี':'อายุ '+a+'–'+b+' ปี';}
+  function lvChip(lv){var x=LIFE_LV[lv];return '<span class="rel '+x[1]+'">'+x[0]+'</span>';}
+  // รวมช่วงย่อยที่ติดกันและเข้าเงื่อนไขเป็นช่วงเดียว
+  function lifeSpans(G,test){
+    var out=[],cur=null;
+    G.forEach(function(g){
+      if(!test(g)){cur=null;return;}
+      if(cur){cur.toAge=g.toAge;cur.to=g.to;cur.items.push(g);}
+      else{cur={fromAge:g.fromAge,toAge:g.toAge,from:g.from,to:g.to,items:[g]};out.push(cur);}
+    });
+    return out;
+  }
+  function spanHtml(sp,age){
+    var majors=[];
+    sp.items.forEach(function(g){var k='ดาว'+g.major+'เสวยภูมิ'+g.majorRole;if(majors.indexOf(k)<0)majors.push(k);});
+    var when=sp.fromAge<=age?'ตอนนี้อยู่ในช่วงนี้ ถึง '+shortDate(sp.to):shortDate(sp.from)+' – '+shortDate(sp.to);
+    return '<div class="v" style="font-size:18px">'+when+'</div><p>'+ageSpan(sp)+' · '+esc(majors.join(' ต่อด้วย'))+'</p>';
+  }
+  function lifeHtml(P){
+    var G=A.lifeGraph(P.birth,P.day), age=P.dasa.age%108, now=lifeAt(G,age), nx=G[G.indexOf(now)+1];
+    LIFE={G:G,age:age,now:now,sel:now,geo:null};
+    var trend=nx?'ช่วงย่อยถัดไปเริ่ม '+shortDate(nx.from)+' '+(nx.score>now.score+0.05?'กราฟขึ้น':nx.score<now.score-0.05?'กราฟลง':'กราฟทรงตัว')+' เป็นระดับ'+LIFE_LV[nx.level][0]:'';
+    var up=lifeSpans(G,function(g){return g.level==='top';}).filter(function(s){return s.toAge>age;})[0];
+    var dn=lifeSpans(G,function(g){return g.level==='low';}).filter(function(s){return s.toAge>age;})[0];
+    var h='<div class="card"><div class="who">กราฟชีวิต · มหาทักษา</div>'+
+      '<div class="title">ตอนนี้กราฟชีวิตอยู่ระดับ'+LIFE_LV[now.level][0]+'</div>'+
+      (trend?'<div class="taksa">'+esc(trend)+'</div>':'')+
+      '<div class="lg" id="lifeChart" role="img" aria-label="กราฟชีวิตตามมหาทักษา ตั้งแต่แรกเกิดถึงอายุ 108 ปี"></div>'+
+      '<div class="lgl"><span><i style="background:#FFEFC2;border-color:#E2B84C"></i>ดาวเสวยภูมิเดช ศรี</span>'+
+        '<span><i style="background:#FBE0E0;border-color:#E5A3A3"></i>ดาวเสวยภูมิกาลกิณี</span><span><i class="ln"></i>ตอนนี้</span></div>'+
+      '<p class="howto" style="margin:6px 0 0">แตะหรือลากนิ้วบนกราฟเพื่อดูแต่ละช่วง ตัวย่อด้านบนคือดาวที่เสวยอายุ ตัวเลขด้านล่างคืออายุ</p>'+
+      '<div class="lgi" id="lifeInfo"></div></div>';
+    if(up||dn) h+='<div class="card"><div class="who">ช่วงสำคัญข้างหน้า</div>'+
+      (up?'<div class="blk"><h3>ช่วงรุ่งถัดไป (ระดับดีมาก)</h3>'+spanHtml(up,age)+'</div>':'')+
+      (dn?'<div class="blk"><h3>ช่วงที่ต้องระวังถัดไป</h3>'+spanHtml(dn,age)+'</div>':'')+'</div>';
+    return h+yearsHtml(P,G)+lifeHowHtml(P);
+  }
+  function yearsHtml(P,G){
+    var ty=+TODAY.slice(0,4), rows=[];
+    for(var y=ty;y<ty+10;y++){var r=A.lifeYear(G,P.birth,y);if(r)rows.push(r);}
+    if(!rows.length) return '';
+    var hi=Math.max.apply(null,rows.map(function(r){return r.score;})), lo=Math.min.apply(null,rows.map(function(r){return r.score;}));
+    function yearsOf(v){return rows.filter(function(r){return r.score===v;}).map(function(r){return r.year+543;}).join(', ');}
+    var body=rows.map(function(r){
+      var majors=[],subs=[];
+      r.parts.forEach(function(g){
+        var mk=g.major+' ('+g.majorRole+')'; if(majors.indexOf(mk)<0)majors.push(mk);
+        subs.push(g.planet+' ('+g.role+')'+(g.from.slice(0,4)===String(r.year)?' '+MON[+g.from.slice(5,7)-1]:''));
+      });
+      return '<div class="yr'+(r.year===ty?' now':'')+'"><div class="y"><b>'+(r.year+543)+'</b><small>อายุ '+r.age+'</small></div>'+
+        '<div><div class="bar"><i class="lv-'+r.level+'" style="width:'+Math.round((r.score-1)/4*100)+'%"></i></div>'+
+        '<div class="yd">เสวย '+esc(majors.join(' → '))+' · แทรก '+esc(subs.join(' → '))+'</div></div>'+lvChip(r.level)+'</div>';
+    }).join('');
+    return '<div class="card"><div class="who">10 ปีข้างหน้า รายปี</div>'+
+      '<div class="title" style="font-size:20px">ปีที่กราฟสูงสุด พ.ศ. '+yearsOf(hi)+'</div>'+
+      (lo<hi?'<p class="howto">ปีที่กราฟต่ำสุดในช่วงนี้ พ.ศ. '+yearsOf(lo)+' · คะแนนแต่ละปีเฉลี่ยตามจำนวนวันที่ดาวแต่ละคู่อยู่ในปีนั้น ชื่อเดือนคือเดือนที่ดาวแทรกเปลี่ยน</p>':'')+
+      '<div class="yrs">'+body+'</div></div>';
+  }
+  function lifeHowHtml(P){
+    return '<div class="card"><div class="who">กราฟนี้คิดยังไง</div>'+
+      '<div class="blk"><p>ใช้หลักมหาทักษาของโหราศาสตร์ไทย ดาว 8 ดวงผลัดกันเสวยอายุ รวม 108 ปี เริ่มจากดาววันเกิดของคุณ (ดาว'+esc(P.day.planet)+') แล้วเวียนตามวงทักษา แต่ละช่วงใหญ่แบ่งเป็น 8 ช่วงย่อยตามดาวแทรก ยาวสั้นตามสัดส่วนปีของดาว ทั้งชีวิตจึงมี 64 ช่วงย่อย</p></div>'+
+      '<div class="blk"><h3>ความสูงของเส้น</h3><p>ดูว่าดาวตกภูมิไหนในทักษาวันเกิดของคุณ ภูมิศรีและเดช 5 คะแนน · บริวาร อายุ มนตรี 4 · มูละ อุตสาหะ 3 · กาลกิณี 2 (ชุดเดียวกับดาวในดวงวันนี้) ดาวเสวยนับ 60% ดาวแทรกนับ 40%</p>'+
+        '<div class="fine">ตำราบอกว่าภูมิไหนดีหรือร้าย แต่ไม่ได้บอกว่าดีกว่ากันเท่าไร ตัวเลขน้ำหนักจึงเป็นของระบบนี้ ใช้ดูว่าช่วงไหนขึ้นช่วงไหนลง ช่วงที่กราฟลงคือช่วงที่ควรระวังและเตรียมตัว ไม่ได้แปลว่าจะมีเรื่องร้ายเกิดขึ้น</div></div></div>';
+  }
+  function drawLife(){
+    var box=$('lifeChart'); if(!box||!LIFE)return;
+    var G=LIFE.G, W=Math.max(260,Math.floor(box.clientWidth)), H=W<480?220:260;
+    var L=40,R=6,T=20,B=22,pw=W-L-R,ph=H-T-B,lo=1.7,hi=5.3;
+    LIFE.geo={L:L,pw:pw,W:W};
+    function x(a){return L+a/108*pw;}
+    function y(v){return T+(hi-v)/(hi-lo)*ph;}
+    function f(n){return n.toFixed(1);}
+    var s='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" aria-hidden="true">';
+    for(var i=0;i<8;i++){   // พื้นหลังช่วงใหญ่ (ดาวเสวย)
+      var g0=G[i*8],x0=x(g0.fromAge),x1=x(G[i*8+7].toAge),r=g0.majorRole;
+      var fill=(r==='ศรี'||r==='เดช')?'#FFEFC2':r==='กาลกิณี'?'#FBE0E0':(i%2?'#EEF4FB':'#F8FBFE');
+      s+='<rect x="'+f(x0)+'" y="'+T+'" width="'+f(x1-x0)+'" height="'+ph+'" fill="'+fill+'"/>'+
+        '<text x="'+f((x0+x1)/2)+'" y="'+(T-6)+'" text-anchor="middle" class="bl">'+ABBR[g0.major]+'</text>';
+      if(i) s+='<line x1="'+f(x0)+'" x2="'+f(x0)+'" y1="'+T+'" y2="'+(T+ph)+'" stroke="#fff" stroke-width="1.5"/>';
+    }
+    [[5,'ดีมาก'],[4,'ดี'],[3,'กลาง'],[2,'ระวัง']].forEach(function(k){
+      var yy=f(y(k[0]));
+      s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+yy+'" y2="'+yy+'" stroke="#B9CBE0" stroke-width="1" stroke-dasharray="3 4"/>'+
+        '<text x="'+(L-6)+'" y="'+yy+'" dy="4" text-anchor="end" class="yl">'+k[1]+'</text>';
+    });
+    for(var a=0;a<=100;a+=10) s+='<text x="'+f(x(a))+'" y="'+(H-6)+'" text-anchor="middle" class="xl">'+a+'</text>';
+    var sg=LIFE.sel;   // ช่วงย่อยที่เลือก
+    s+='<rect x="'+f(x(sg.fromAge))+'" y="'+T+'" width="'+f(Math.max(2,x(sg.toAge)-x(sg.fromAge)))+'" height="'+ph+'" fill="rgba(46,74,125,.16)"/>';
+    var pts=[[x(0),y(G[0].score)]];
+    G.forEach(function(g){pts.push([x((g.fromAge+g.toAge)/2),y(g.score)]);});
+    pts.push([x(108),y(G[G.length-1].score)]);
+    var line=pts.map(function(p,k){return (k?'L':'M')+f(p[0])+' '+f(p[1]);}).join('');
+    s+='<path d="'+line+'L'+f(x(108))+' '+(T+ph)+'L'+L+' '+(T+ph)+'Z" fill="rgba(46,74,125,.10)"/>'+
+      '<path d="'+line+'" fill="none" stroke="#2E4A7D" stroke-width="2.2" stroke-linejoin="round"/>';
+    var nx=x(LIFE.age), ny=pts[pts.length-1][1];   // ตอนนี้ — จุดบนเส้นตรงอายุปัจจุบัน
+    for(var k=1;k<pts.length;k++) if(pts[k][0]>=nx){var p0=pts[k-1],p1=pts[k],t=p1[0]>p0[0]?(nx-p0[0])/(p1[0]-p0[0]):0;ny=p0[1]+(p1[1]-p0[1])*t;break;}
+    s+='<line x1="'+f(nx)+'" x2="'+f(nx)+'" y1="'+T+'" y2="'+(T+ph)+'" stroke="#B8871F" stroke-width="2" stroke-dasharray="4 3"/>';
+    if(sg!==LIFE.now) s+='<circle cx="'+f(x((sg.fromAge+sg.toAge)/2))+'" cy="'+f(y(sg.score))+'" r="5.5" fill="#2E4A7D" stroke="#fff" stroke-width="2"/>';
+    s+='<circle cx="'+f(nx)+'" cy="'+f(ny)+'" r="6" fill="#D9A93A" stroke="#fff" stroke-width="2"/></svg>';
+    box.innerHTML=s;
+  }
+  function showLife(){
+    var el=$('lifeInfo'); if(!el||!LIFE)return;
+    var G=LIFE.G, g=LIFE.sel, i=G.indexOf(g), isNow=g===LIFE.now;
+    el.innerHTML='<div class="lgh">'+lvChip(g.level)+(isNow?'<span class="today">ตอนนี้</span>':'')+'</div>'+
+      '<div class="v">'+shortDate(g.from)+' – '+shortDate(g.to)+'</div><div class="fine">'+ageSpan(g)+'</div>'+
+      '<p><b>ดาว'+esc(g.major)+'เสวยอายุ</b> '+esc(DASA_ROLE[g.majorRole])+'</p>'+
+      '<p><b>ดาว'+esc(g.planet)+'แทรก'+(g.planet===g.major?'ตัวเอง':'')+'</b> ตกภูมิ'+esc(g.role)+'ของคุณ '+esc(LIFE_SUB[g.role])+'</p>'+
+      '<div class="lgn"><button type="button" class="btn" data-lg="-1"'+(i<=0?' disabled':'')+'>ช่วงก่อน</button>'+
+      '<button type="button" class="btn" data-lg="0"'+(isNow?' disabled':'')+'>ตอนนี้</button>'+
+      '<button type="button" class="btn" data-lg="1"'+(i>=G.length-1?' disabled':'')+'>ช่วงถัดไป</button></div>';
+    Array.prototype.forEach.call(el.querySelectorAll('[data-lg]'),function(b){b.onclick=function(){
+      var d=+b.getAttribute('data-lg');
+      LIFE.sel=d===0?LIFE.now:G[Math.max(0,Math.min(G.length-1,i+d))];
+      drawLife(); showLife();
+    };});
+  }
+  function bindLife(){
+    var box=$('lifeChart'); if(!box)return;
+    function pick(e){
+      var g=LIFE&&LIFE.geo; if(!g)return;
+      var a=(e.clientX-box.getBoundingClientRect().left-g.L)/g.pw*108;
+      var sub=lifeAt(LIFE.G,Math.max(0,Math.min(107.999,a)));
+      if(sub!==LIFE.sel){LIFE.sel=sub;drawLife();showLife();}
+    }
+    box.addEventListener('pointerdown',pick);
+    box.addEventListener('pointermove',function(e){if(e.buttons)pick(e);});
+    // ความกว้างกรอบเปลี่ยนเอง (แถบเลื่อนโผล่ ฟอนต์โหลดเสร็จ) โดยไม่มี resize ของหน้าต่าง → วาดใหม่ให้เต็มกรอบ
+    if(window.ResizeObserver) new ResizeObserver(function(){if(LIFE&&LIFE.geo&&$('lifeChart')===box&&Math.floor(box.clientWidth)!==LIFE.geo.W)drawLife();}).observe(box);
+  }
+  var RS_T=null;
+  window.addEventListener('resize',function(){clearTimeout(RS_T);RS_T=setTimeout(drawLife,150);});
+
   function render(){
     var P=(BIRTH&&BIRTH.date)?A.profile(BIRTH.date,BIRTH.time||'',TODAY,BIRTH.place||''):null;
     var fn=firstName(); $('head').textContent=fn?'ดวงของคุณ'+fn:'ดวงของคุณ';
     renderProfile(P);
-    var m=$('main');
+    var m=$('main'), graph=TAB==='graph'&&P&&!FORM;
+    document.body.classList.toggle('t-graph',!!graph);
+    LIFE=null;
     if(!P||FORM){m.innerHTML='';return;}
-    m.innerHTML='<div class="sech">ดวงวันนี้</div>'+taksaCard(P)+dayCard(P)+luckyCard(P)+
-      '<div class="sech">ดวงชะตาของคุณ</div>'+dasaCard(P)+signCard(P)+chineseCard(P)+numCard(P)+bhumiCard(P);
+    m.innerHTML=tabsHtml()+(graph?lifeHtml(P):'<div class="sech">ดวงวันนี้</div>'+taksaCard(P)+dayCard(P)+luckyCard(P)+
+      '<div class="sech">ดวงชะตาของคุณ</div>'+dasaCard(P)+signCard(P)+chineseCard(P)+numCard(P)+bhumiCard(P));
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'),function(b){b.onclick=function(){setTab(b.getAttribute('data-tab'));};});
     Array.prototype.forEach.call(document.querySelectorAll('[data-addtime]'),function(b){b.onclick=function(){FORM=true;render();window.scrollTo(0,0);};});
+    if(graph){drawLife();showLife();bindLife();}
     logHit(P);
   }
 
