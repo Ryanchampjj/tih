@@ -131,6 +131,17 @@
   .ssv .ssp{transform:translateY(64px);transition:transform .7s cubic-bezier(.2,.9,.3,1.25);}
   .ssbox.pop .ssv .ssp{transform:translateY(-6px);}
   .ssgo{display:block;width:100%;max-width:320px;margin:0 auto;font-size:17px;padding:12px 16px;}
+  .ssbox{cursor:pointer;}
+  .ssbox.jig .ssv{animation:ssShake .2s ease-in-out 1;transform-origin:50% 92%;}
+  .sshint{display:flex;flex-direction:column;align-items:center;gap:5px;margin:-2px 0 14px;font-size:15px;font-weight:600;color:var(--navy);}
+  .sshint:empty{display:none;}
+  .sshint svg{width:20px;height:20px;flex-shrink:0;}
+  .sshint .ok,.sshint .btn{display:inline-flex;align-items:center;gap:7px;}
+  .sshint .ok{background:var(--chip);border-radius:10px;padding:7px 14px;}
+  .sshint small{font-size:13px;color:var(--muted);font-weight:500;}
+  .sshint .no{color:var(--badt);max-width:320px;line-height:1.5;}
+  .sssnd{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:14.5px;text-decoration:none;color:var(--muted);}
+  .sssnd svg{width:18px;height:18px;}
   .slip{position:relative;max-width:440px;margin:8px auto 18px;padding:9px;border-radius:2px;
     background:linear-gradient(160deg,#FDEBE8 0%,#FBE0DC 55%,#F8D6D1 100%);color:#3F1A15;
     box-shadow:0 14px 28px rgba(90,20,20,.22),0 2px 4px rgba(90,20,20,.14);transform:rotate(-.8deg);font-family:'Taviraj','Sarabun',serif;}
@@ -803,9 +814,11 @@
     if(!s) return '<div class="card"><div class="empty">โหลดเซียมซีไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง</div></div>';
     if(lsGet(SS_KEY)!==TODAY) return '<div class="card sscard"><div class="who">เซียมซีประจำวัน</div>'+
       '<div class="title">ตั้งจิตอธิษฐาน นึกถึงเรื่องที่อยากรู้</div>'+
-      '<p class="howto">แล้วกดเขย่า ได้วันละ 1 ใบ เปิดดูกี่ครั้งก็เป็นใบเดิมทั้งวัน</p>'+
+      '<p class="howto">'+(SS_PHONE?'แล้วเขย่ามือถือ หรือกดปุ่มด้านล่าง':'แล้วกดปุ่มเขย่า')+' ได้วันละ 1 ใบ เปิดดูกี่ครั้งก็เป็นใบเดิมทั้งวัน</p>'+
       '<div class="ssbox" id="ssBox">'+ssCup()+'</div>'+
-      '<button type="button" class="btn pri ssgo" id="ssGo">เขย่าเซียมซี</button></div>';
+      '<div class="sshint" id="ssHint"></div>'+
+      '<button type="button" class="btn pri ssgo" id="ssGo">เขย่าเซียมซี</button>'+
+      '<button type="button" class="lnk sssnd" id="ssSnd"></button></div>';
     var h='<div class="slip'+(SS_JUST?' show':'')+'" role="article" aria-label="เซียมซีใบที่ '+s.n+'"><div class="slip-in">'+
       ['tl','tr','bl','br'].map(function(c){return SL_CORNER.replace('CLS',c);}).join('')+
       '<div class="sl-cn" lang="zh">第'+cnNum(s.n)+'籤 · '+SS_CN[s.level]+'</div>'+
@@ -821,22 +834,117 @@
     return h+'<div class="card"><div class="who">เกี่ยวกับเซียมซีชุดนี้</div>'+
       '<p class="howto" style="margin:4px 0 0">เขย่าใบใหม่ได้พรุ่งนี้หลังเที่ยงคืน · เซียมซีชุดนี้มี 28 ใบ เขียนขึ้นใหม่สำหรับพอร์ทัลตามแบบเซียมซีศาลเจ้า (กลอนสี่วรรค เรื่องประกอบจากนิทานจีนที่รู้จักกันทั่วไป และคำทำนายรายเรื่อง) ไม่ได้คัดลอกมาจากศาลเจ้าหรือวัดใด ใบที่ได้สุ่มประจำวันของแต่ละคน เพื่อความบันเทิงและกำลังใจ</p></div>';
   }
+  /* ---- เขย่ามือถือจริง + เสียงไม้ติ้ว ----
+     เขย่า: devicemotion นับแรงกระชาก ≥ 9 m/s² (ตัดแรงโน้มถ่วงแล้ว) ห่างกัน ≥ 120 ms ครบ 4 ครั้งใน 1.5 วินาที = เขย่าจริง
+       Android ได้เลย · iPhone ต้องแตะปุ่มอนุญาตก่อน (requestPermission เรียกได้จากการแตะเท่านั้น)
+     เสียง: สังเคราะห์ด้วย Web Audio เอง ไม่มีไฟล์เสียง · เบราว์เซอร์ให้เล่นได้หลังแตะจอแล้วอย่างน้อยครั้งหนึ่ง
+       iPhone ที่เปิดโหมดเงียบอยู่จะไม่มีเสียง · ปิด/เปิดเสียงจำไว้ที่ horo_ss_snd */
+  var SS_DM=typeof DeviceMotionEvent!=='undefined';
+  // ปุ่มขออนุญาตเฉพาะ iPhone/iPad จริง (Chrome บางรุ่นก็มี requestPermission แต่ไม่ต้องขอ — ส่งค่าเซนเซอร์มาเลย)
+  var SS_IOS=SS_DM&&typeof DeviceMotionEvent.requestPermission==='function'&&(/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
+  var SS_PHONE=SS_DM&&(navigator.maxTouchPoints>0||'ontouchstart' in window);
+  var SS_LISTEN=false, SS_LIVE=false, SS_DENIED=false, SS_JOLTS=[];
+  var SS_SND=lsGet('horo_ss_snd')!=='0', AC=null, AC_OUT=null, NOISE=null;
+  var ICO_PHONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="18" rx="2"/><path d="M11 18h2"/><path d="M4.5 8c-1 2.6-1 5.4 0 8M19.5 8c1 2.6 1 5.4 0 8"/></svg>';
+  var ICO_SND='<path d="M4 9h4l5-4v14l-5-4H4z"/>', ICO_SND_ON='<path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/>', ICO_SND_OFF='<path d="M17 9.5l5 5M22 9.5l-5 5"/>';
+
+  function ssListen(){ if(SS_LISTEN||!SS_PHONE) return; SS_LISTEN=true; window.addEventListener('devicemotion',ssMotion); }
+  function ssMotion(e){
+    var a=e.acceleration, m;
+    if(a&&a.x!=null) m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z);
+    else{a=e.accelerationIncludingGravity; if(!a||a.x==null) return; m=Math.abs(Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z)-9.81);}
+    if(!SS_LIVE){SS_LIVE=true;ssHint();}
+    if(m<9||SS_BUSY||!$('ssGo')) return;
+    var now=Date.now();
+    if(SS_JOLTS.length&&now-SS_JOLTS[SS_JOLTS.length-1]<120) return;
+    SS_JOLTS=SS_JOLTS.filter(function(t){return now-t<1500;}); SS_JOLTS.push(now);
+    var box=$('ssBox'); if(box){box.classList.remove('jig');void box.offsetWidth;box.classList.add('jig');}
+    ssClatter(0,1); ssVibe(30);
+    if(SS_JOLTS.length>=4){SS_JOLTS=[];ssDraw();}
+  }
+  function ssHint(){
+    var el=$('ssHint'); if(!el) return;
+    if(!SS_PHONE){el.innerHTML='';return;}
+    if(SS_LIVE){el.innerHTML='<span class="ok">'+ICO_PHONE+'เขย่ามือถือได้เลย</span>';return;}
+    if(!SS_IOS){el.innerHTML='';return;}   // Android รอสัญญาณแรกจากเซนเซอร์ก่อนค่อยบอกว่าเขย่าได้
+    if(SS_DENIED){el.innerHTML='<span class="no">iPhone ยังไม่อนุญาตให้หน้านี้อ่านการเขย่า ใช้ปุ่มเขย่าเซียมซีด้านล่างแทนได้</span>';return;}
+    el.innerHTML='<button type="button" class="btn" id="ssMotion">'+ICO_PHONE+'เปิดให้เขย่ามือถือได้</button><small>iPhone ต้องแตะปุ่มนี้แล้วกดอนุญาตก่อน</small>';
+    $('ssMotion').onclick=function(){
+      ssAudio();
+      DeviceMotionEvent.requestPermission().then(function(r){
+        if(r==='granted'){SS_LIVE=true;ssListen();}else SS_DENIED=true;
+        ssHint();
+      }).catch(function(){SS_DENIED=true;ssHint();});
+    };
+  }
+  function ssSndBtn(){
+    var b=$('ssSnd'); if(!b) return;
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICO_SND+(SS_SND?ICO_SND_ON:ICO_SND_OFF)+'</svg>เสียง: '+(SS_SND?'เปิด':'ปิด');
+    b.setAttribute('aria-pressed',String(SS_SND));
+    b.onclick=function(){SS_SND=!SS_SND;lsSet('horo_ss_snd',SS_SND?'1':'0');if(SS_SND)ssClatter(0,1);ssSndBtn();};
+  }
+  function ssVibe(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
+  function ssAudio(){
+    if(!SS_SND) return null;
+    if(!AC){
+      var C=window.AudioContext||window.webkitAudioContext; if(!C) return null;
+      try{AC=new C();AC_OUT=AC.createGain();AC_OUT.gain.value=0.55;AC_OUT.connect(AC.destination);}catch(e){AC=null;return null;}
+    }
+    if(AC.state==='suspended'&&AC.resume) AC.resume().catch(function(){});
+    return AC;
+  }
+  function ssNoise(){
+    if(NOISE) return NOISE;
+    var n=Math.floor(AC.sampleRate*0.08), d; NOISE=AC.createBuffer(1,n,AC.sampleRate); d=NOISE.getChannelData(0);
+    for(var i=0;i<n;i++) d[i]=Math.random()*2-1;
+    return NOISE;
+  }
+  // ไม้กระทบกัน 1 ครั้ง = เสียงซ่ากรองช่วงความถี่ไม้ + โทนสั้น ๆ ให้มีเนื้อไม้
+  function ssTock(t,f,v,dur){
+    var s=AC.createBufferSource(), bp=AC.createBiquadFilter(), g=AC.createGain();
+    s.buffer=ssNoise(); bp.type='bandpass'; bp.frequency.value=f; bp.Q.value=5;
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(v,t+0.003); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    s.connect(bp); bp.connect(g); g.connect(AC_OUT); s.start(t,Math.random()*0.02); s.stop(t+dur+0.02);
+    var o=AC.createOscillator(), g2=AC.createGain();
+    o.type='triangle'; o.frequency.setValueAtTime(f*0.4,t); o.frequency.exponentialRampToValueAtTime(f*0.3,t+dur);
+    g2.gain.setValueAtTime(0.0001,t); g2.gain.exponentialRampToValueAtTime(v*0.45,t+0.003); g2.gain.exponentialRampToValueAtTime(0.0001,t+dur*0.7);
+    o.connect(g2); g2.connect(AC_OUT); o.start(t); o.stop(t+dur+0.02);
+  }
+  // ไม้ติ้วกระทบกันในกระบอก sets ชุด ห่างกัน gap วินาที (ตรงกับจังหวะกระบอกเอียงซ้าย-ขวา) ชุดละ 4–8 ครั้ง
+  function ssClatter(delay,sets,gap){
+    if(!ssAudio()) return;
+    var t0=AC.currentTime+0.01+(delay||0);
+    for(var k=0;k<sets;k++){
+      var b=t0+k*(gap||0.15), n=4+Math.floor(Math.random()*5);
+      for(var i=0;i<n;i++) ssTock(b+Math.random()*0.08,1600+Math.random()*2400,0.18+Math.random()*0.3,0.025+Math.random()*0.035);
+    }
+  }
+  // ไม้ติ้วหลุดออกจากกระบอก: ก๊อก ก๊อก
+  function ssDropSnd(){ if(!ssAudio()) return; var t=AC.currentTime+0.01; ssTock(t,850,0.9,0.12); ssTock(t+0.13,1050,0.5,0.09); }
+  // เบราว์เซอร์เล่นเสียงได้หลังผู้ใช้แตะจอ — แตะอะไรก็ได้ในแท็บเซียมซี (รวมแตะแท็บเข้ามา) = ปลดล็อกเสียงไว้รอการเขย่า
+  ['click','pointerdown'].forEach(function(ev){document.addEventListener(ev,function(){if(SS_SND&&TAB==='siamsi')ssAudio();});});
+
+  function ssDraw(){
+    var go=$('ssGo'), box=$('ssBox'), s=ssToday();
+    if(SS_BUSY||!go||!box||!s) return;
+    SS_BUSY=true; go.disabled=true; go.textContent='กำลังเขย่า…';
+    var mb=$('ssMotion'); if(mb) mb.disabled=true;
+    box.classList.remove('jig');
+    box.querySelector('.ssnum').textContent=thNum(s.n);
+    function done(){
+      SS_BUSY=false; SS_JUST=true; lsSet(SS_KEY,TODAY); render();
+      var tb=$('tabs'); if(tb&&tb.getBoundingClientRect().top<0) tb.scrollIntoView();
+    }
+    if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){ssDropSnd();done();return;}
+    box.classList.add('shake'); ssClatter(0,8,0.15); ssVibe([40,110,40,110,40,110,40,110,40,110,40,110,40,110,40]);
+    setTimeout(function(){box.classList.remove('shake');box.classList.add('pop');ssDropSnd();ssVibe(90);go.textContent='ได้ใบที่ '+thNum(s.n);},1250);
+    setTimeout(done,2600);
+  }
   function bindSiamsi(){
     var go=$('ssGo'); if(!go) return;
-    go.onclick=function(){
-      if(SS_BUSY) return;
-      var s=ssToday(), box=$('ssBox'); if(!s||!box) return;
-      SS_BUSY=true; go.disabled=true; go.textContent='กำลังเขย่า…';
-      box.querySelector('.ssnum').textContent=thNum(s.n);
-      function done(){
-        SS_BUSY=false; SS_JUST=true; lsSet(SS_KEY,TODAY); render();
-        var tb=$('tabs'); if(tb&&tb.getBoundingClientRect().top<0) tb.scrollIntoView();
-      }
-      if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){done();return;}
-      box.classList.add('shake');
-      setTimeout(function(){box.classList.remove('shake');box.classList.add('pop');go.textContent='ได้ใบที่ '+thNum(s.n);},1250);
-      setTimeout(done,2600);
-    };
+    go.onclick=function(){ssAudio();ssDraw();};
+    $('ssBox').onclick=function(){ssAudio();ssDraw();};   // แตะที่กระบอกก็เขย่าได้
+    ssListen(); ssHint(); ssSndBtn();
   }
 
   function render(){
