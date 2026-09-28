@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ดวงรายวัน — ระบบงาน TIH</title>
+<title>ดวงของฉัน — ระบบงาน TIH</title>
 <meta name="theme-color" content="#2E4A7D">
 <link rel="icon" type="image/png" href="icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,8 +12,10 @@
   :root{
     --bg:#C9E4FA;--bg2:#B5D9F7;--navy:#2E4A7D;--navy2:#23395F;--gold:#D9A93A;--card:#FFFFFF;
     --text:#1F2F4D;--muted:#4A5B78;--line:#DCE8F5;--chip:#EAF4FD;
+    --good:#FFF4D6;--goodt:#7A5200;--bad:#FDECEC;--badt:#9B1C1C;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
+  [hidden]{display:none!important;}   /* .pay ตั้ง display:flex ไว้ ทำให้ hidden ไม่ซ่อน — แถบทองว่างโผล่ทุกวันที่ไม่ใช่วันรับทรัพย์ */
   body{font-family:'Sarabun',system-ui,sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);min-height:100vh;padding:20px 16px 40px;}
   .wrap{max-width:720px;margin:0 auto;}
   .top{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
@@ -21,20 +23,16 @@
   .back svg{width:18px;height:18px;}
   h1{font-size:30px;font-weight:700;color:var(--navy);line-height:1.2;}
   .date{font-size:16px;color:var(--muted);font-weight:500;margin-top:2px;}
-  .pay{display:flex;gap:12px;align-items:flex-start;background:#FFF4D6;border:2px solid var(--gold);border-radius:16px;padding:14px 16px;margin:14px 0 4px;box-shadow:0 6px 16px rgba(217,169,58,.25);}
+  .pay{display:flex;gap:12px;align-items:flex-start;background:var(--good);border:2px solid var(--gold);border-radius:16px;padding:14px 16px;margin:14px 0 4px;box-shadow:0 6px 16px rgba(217,169,58,.25);}
   .pay svg{flex-shrink:0;width:40px;height:40px;}
-  .pay h2{font-size:19px;color:#7A5200;margin-bottom:3px;}
+  .pay h2{font-size:19px;color:var(--goodt);margin-bottom:3px;}
   .pay p{font-size:16px;line-height:1.65;color:#4A3A12;}
   .note{background:#FFF7E0;border:1.5px solid #E9C766;color:#6A4B00;border-radius:12px;padding:11px 14px;font-size:14.5px;margin:12px 0;}
-  .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:16px 0;}
-  .day{border:2px solid transparent;background:#fff;color:var(--navy);border-radius:12px;padding:9px 2px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;text-align:center;line-height:1.25;}
-  .day small{display:block;font-size:11.5px;font-weight:500;color:var(--muted);}
-  .day.on{background:var(--navy);color:#fff;border-color:var(--navy);}
-  .day.on small{color:#D5E2F5;}
-  .day.mine:not(.on){border-color:var(--gold);}
+  .sech{font-size:21px;font-weight:700;color:var(--navy2);margin:24px 2px 10px;display:flex;align-items:center;gap:10px;}
+  .sech::after{content:"";flex:1;height:2px;background:rgba(46,74,125,.18);border-radius:2px;}
   .card{background:var(--card);border-radius:18px;box-shadow:0 10px 24px rgba(46,74,125,.16);padding:20px 18px;margin-bottom:14px;}
   .who{font-size:14px;font-weight:600;color:var(--gold);letter-spacing:.2px;}
-  .title{font-size:24px;font-weight:700;color:var(--navy);margin:2px 0 6px;}
+  .title{font-size:24px;font-weight:700;color:var(--navy);margin:2px 0 6px;line-height:1.35;}
   .stars{display:flex;gap:3px;margin-bottom:12px;}
   .stars svg{width:22px;height:22px;}
   .overall{font-size:17px;line-height:1.75;}
@@ -47,7 +45,11 @@
   .sec p{font-size:16px;line-height:1.65;color:var(--text);}
   .lucky{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .lucky .wide{grid-column:1/-1;}
-  .lk.avoid{background:#FDECEC;}
+  .lk{background:var(--chip);border-radius:12px;padding:12px 14px;}
+  .lk span{display:block;font-size:13.5px;color:var(--muted);font-weight:600;}
+  .lk b{font-size:18px;color:var(--navy);}
+  .lk.avoid{background:var(--bad);}
+  .lk.avoid b{color:var(--badt);}
   .lk .warn{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:4px;line-height:1.4;}
   .howto{font-size:15px;color:var(--muted);line-height:1.6;margin:4px 0 8px;}
   .bhumi{padding:11px 12px;border-top:1px solid var(--line);}
@@ -56,15 +58,61 @@
   .bhumi.on{background:var(--chip);border-radius:12px;border-top-color:transparent;}
   .bhumi.on + .bhumi{border-top-color:transparent;}
   .today{display:inline-block;background:var(--navy);color:#fff;font-size:12px;font-weight:600;border-radius:7px;padding:2px 8px;margin-left:6px;vertical-align:2px;}
-  .lk.avoid b{color:#9B1C1C;}
-  .lk{background:var(--chip);border-radius:12px;padding:12px 14px;}
-  .lk span{display:block;font-size:13.5px;color:var(--muted);font-weight:600;}
-  .lk b{font-size:18px;color:var(--navy);}
-  .ask{text-align:center;}
-  .ask p{font-size:16px;color:var(--muted);margin-top:4px;}
   footer{text-align:center;font-size:13.5px;color:var(--muted);margin-top:18px;line-height:1.6;}
   .empty{text-align:center;font-size:16px;color:var(--muted);padding:26px 8px;}
-  @media (max-width:420px){.day{font-size:13px;}.day small{font-size:10.5px;}h1{font-size:26px;}}
+
+  /* ข้อมูลเกิด */
+  .pf{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;}
+  .pf .txt{flex:1 1 260px;min-width:0;}
+  .pf .big{font-size:18px;font-weight:700;color:var(--navy);line-height:1.5;}
+  .pf .sub{font-size:15px;color:var(--muted);line-height:1.6;margin-top:2px;}
+  .btn{font-family:inherit;font-size:15px;font-weight:700;border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:11px;padding:9px 15px;cursor:pointer;}
+  .btn.pri{background:var(--navy);color:#fff;}
+  .btn:disabled{opacity:.55;cursor:default;}
+  .lnk{font:inherit;font-weight:700;color:var(--navy);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+  .form h2{font-size:20px;color:var(--navy);margin-bottom:4px;}
+  .form .lbl{display:block;font-size:15px;font-weight:700;color:var(--navy);margin:14px 0 6px;}
+  .form .lbl small{font-weight:600;color:var(--muted);font-size:13.5px;}
+  .row3{display:grid;grid-template-columns:1fr 1.6fr 1.3fr;gap:8px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:320px;}
+  select{font-family:inherit;font-size:16px;padding:10px 10px;border:1.5px solid #C4D6EA;border-radius:10px;background:#fff;color:var(--text);width:100%;}
+  .locked{font-size:17px;font-weight:600;color:var(--text);background:var(--chip);border-radius:10px;padding:10px 12px;}
+  .locked small{display:block;font-size:13px;font-weight:500;color:var(--muted);}
+  .hint{background:var(--good);border-left:4px solid var(--gold);border-radius:10px;padding:10px 12px;font-size:14.5px;line-height:1.6;color:#4A3A12;margin-top:10px;}
+  .acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;}
+  .msg{font-size:14.5px;font-weight:600;}
+  .msg.ok{color:#1F6B3A;}.msg.err{color:var(--badt);}
+
+  /* ป้ายความสัมพันธ์ ดี / ระวัง / กลาง */
+  .rel{display:inline-block;font-size:14px;font-weight:700;border-radius:9px;padding:4px 11px;margin:2px 0 8px;}
+  .rel.good{background:var(--good);color:var(--goodt);border:1.5px solid #E9C766;}
+  .rel.bad{background:var(--bad);color:var(--badt);border:1.5px solid #F3C4C4;}
+  .rel.mid{background:var(--chip);color:var(--navy);border:1.5px solid #C4D6EA;}
+  .blk{padding:14px 0;border-top:1px solid var(--line);}
+  .blk:first-child,.who + .blk{border-top:0;padding-top:0;}
+  .who + .blk{margin-top:6px;}
+  .blk:last-child{padding-bottom:0;}
+  .blk h3{font-size:15px;font-weight:700;color:var(--muted);margin-bottom:2px;}
+  .blk .v{font-size:21px;font-weight:700;color:var(--navy);line-height:1.4;}
+  .blk .v small{font-size:15px;font-weight:600;color:var(--muted);}
+  .blk p{font-size:16px;line-height:1.7;margin-top:4px;}
+  .blk .fine{font-size:14px;color:var(--muted);line-height:1.55;margin-top:6px;}
+  .num{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;background:var(--navy);color:#fff;font-size:22px;font-weight:700;margin-right:10px;vertical-align:middle;}
+
+  /* มหาทักษา — ช่วงชีวิต 8 ช่วง */
+  .dasa{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .dasa .r{display:grid;grid-template-columns:96px 1fr auto;gap:8px;align-items:center;padding:9px 12px;border-top:1px solid var(--line);font-size:15px;}
+  .dasa .r:first-child{border-top:0;}
+  .dasa .r .a{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;}
+  .dasa .r .p{font-weight:700;color:var(--navy);}
+  .dasa .r .p small{font-weight:500;color:var(--muted);}
+  .dasa .r .s{font-size:13px;font-weight:700;border-radius:7px;padding:2px 8px;white-space:nowrap;}
+  .dasa .r.past{color:#8A98AE;}
+  .dasa .r.past .p{color:#8A98AE;}
+  .dasa .r.now{background:var(--chip);}
+  .dasa .r.now .s{background:var(--navy);color:#fff;}
+  .dasa .r.next .s{background:var(--good);color:var(--goodt);}
+  @media (max-width:420px){h1{font-size:26px;}.row3{grid-template-columns:1fr 1fr;}.row3 select:last-child{grid-column:1/-1;}.dasa .r{grid-template-columns:78px 1fr auto;font-size:14px;}}
 </style>
 </head>
 <body>
@@ -72,23 +120,22 @@
   <div class="top">
     <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>พอร์ทัล</a>
   </div>
-  <h1>ดวงรายวัน</h1>
+  <h1 id="head">ดวงของคุณ</h1>
   <div class="date" id="dateLine">กำลังโหลด…</div>
   <div class="note" id="note" hidden></div>
   <div class="pay" id="pay" hidden></div>
 
-  <div class="days" id="days"></div>
+  <div id="profile"></div>
   <div id="main"></div>
 
-  <footer>คำนวณตามหลักทักษาพยากรณ์ (ดาวประจำวันเกิด) · เพื่อความบันเทิงและกำลังใจ · อัปเดตทุกวันเวลา 00:01 น.</footer>
+  <footer>คำนวณจากวันเดือนปีเกิด (และเวลาเกิดถ้าใส่ไว้) ด้วยทักษาพยากรณ์ มหาทักษา โหราศาสตร์ไทยแบบนิรายนะ นักษัตรจีน และเลขศาสตร์<br>เพื่อความบันเทิงและกำลังใจ · ดวงรายวันอัปเดตทุกวันเวลา 00:01 น.</footer>
 </div>
 
+<script src="horoscope/astro.js"></script>
 <script>
 (function(){
   var AUTH='https://attendance-live-thaiinter.vercel.app';
-  var DAYS=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
-  var SHORT=['อา','จ','อ','พ','พฤ','ศ','ส'];
-  var KEY_SEL='horo_sel', KEY_MINE='horo_mine';
+  var A=window.ASTRO, DAYS=A.DAYS;
   var ICONS={
     work:'<path d="M3 7h18v12H3z"/><path d="M8 7V5h8v2"/><path d="M3 12h18"/>',
     money:'<circle cx="12" cy="12" r="8"/><path d="M12 7v10"/><path d="M15 9.5c-.6-.9-1.7-1.5-3-1.5-1.7 0-3 .9-3 2s1.3 2 3 2 3 .9 3 2-1.3 2-3 2c-1.3 0-2.4-.6-3-1.5"/>',
@@ -96,9 +143,9 @@
     health:'<path d="M3 12h4l2-5 4 10 2-5h6"/>'
   };
   var SECS=[['work','การงาน'],['money','การเงิน'],['love','ความรัก'],['health','สุขภาพ']];
-  /* ความหมาย 8 ภูมิของทักษา (ตรงกับ horoscope/plan.js) */
+
+  /* ================= คำอธิบายประจำตัว (ไม่เปลี่ยนรายวัน) ================= */
   var TAKSA={'บริวาร':'คนรอบตัว','อายุ':'สุขภาพและความสบายใจ','เดช':'อำนาจและความมั่นใจ','ศรี':'โชคลาภ','มูละ':'ทรัพย์สินและรากฐาน','อุตสาหะ':'ความขยัน','มนตรี':'ผู้ใหญ่อุปถัมภ์','กาลกิณี':'อุปสรรค ควรระวัง'};
-  /* คำอธิบายเต็มของ 8 ภูมิ เรียงตามวงทักษา (บริวาร → กาลกิณี) */
   var TAKSA_FULL=[
     ['บริวาร','คนรอบตัว ครอบครัว คู่ครอง เพื่อนร่วมงาน และลูกน้อง วันที่ดาวเข้าภูมินี้ เรื่องคนและการทำงานเป็นทีมจะเด่น'],
     ['อายุ','สุขภาพ ความเป็นอยู่ และความสบายกายสบายใจ เป็นวันที่ควรดูแลตัวเองและพักผ่อนให้พอ'],
@@ -109,9 +156,115 @@
     ['มนตรี','ผู้ใหญ่อุปถัมภ์ ที่ปรึกษา และคนที่คอยช่วยเหลือ ขอความช่วยเหลือวันนี้มักได้ผลดี'],
     ['กาลกิณี','อุปสรรค ความขัดข้อง และสิ่งที่ควรหลีกเลี่ยง วันนี้ให้ใจเย็น รอบคอบ เลื่อนเรื่องสำคัญได้ก็เลื่อน']
   ];
+  /* ดาวเสวยอายุ — ลักษณะของช่วงชีวิตที่ดาวแต่ละดวงคุม */
+  var DASA_TXT={
+    'อาทิตย์':'ช่วงที่เรื่องชื่อเสียง เกียรติ และความรับผิดชอบเด่น มีโอกาสได้รับการยอมรับและได้เป็นหัวแถว แต่มักเหนื่อยใจและร้อนใจง่าย ต้องรู้จักพักบ้าง',
+    'จันทร์':'ช่วงที่ชีวิตค่อนข้างราบรื่น มีเสน่ห์ มีคนเอ็นดู เรื่องความรัก ครอบครัว และมิตรภาพเด่น จิตใจอ่อนโยนขึ้น แต่ก็อ่อนไหวง่ายขึ้นด้วย',
+    'อังคาร':'ช่วงที่ต้องลงแรงเยอะ ขยัน กล้าได้กล้าเสีย ทำอะไรรวดเร็ว งานเดินหน้าได้ด้วยแรงของตัวเอง ระวังความใจร้อนและความเร่งรีบ',
+    'พุธ':'ช่วงของการเรียนรู้ การพูดคุย การติดต่อประสานงาน และการค้าขาย งานที่ใช้สมองและการสื่อสารไปได้ดี ได้เพื่อนใหม่และความรู้ใหม่',
+    'เสาร์':'ช่วงที่ต้องอดทนและรับผิดชอบมาก งานหนักและต้องใช้เวลา แต่เป็นช่วงสร้างรากฐานให้มั่นคง ผลที่ได้มาช้าแต่อยู่ได้นาน',
+    'พฤหัสบดี':'ช่วงที่มีปัญญาและมีผู้ใหญ่คอยช่วยเหลือ ชีวิตมั่นคงขึ้น เหมาะกับการเรียนต่อ การพัฒนาตัวเอง และการก้าวหน้าในงาน',
+    'ราหู':'ช่วงแห่งความเปลี่ยนแปลง มีเรื่องไม่คาดคิดเข้ามาทั้งโอกาสใหม่และความวุ่นวาย คนที่ใจนิ่งจะได้ประโยชน์มาก อย่าหลงไปกับสิ่งล่อใจ',
+    'ศุกร์':'ช่วงที่เรื่องเงินทอง ความสุขสบาย ความรัก และสิ่งสวยงามเด่น ชีวิตมีสีสัน ได้รับความเมตตาจากคนรอบตัว ระวังการใช้จ่ายเกินตัว'
+  };
+  var DASA_ROLE={
+    'บริวาร':'ตกภูมิบริวารของคุณ ช่วงนี้เรื่องคนรอบตัวและครอบครัวเป็นศูนย์กลางของชีวิต',
+    'อายุ':'ตกภูมิอายุของคุณ ช่วงนี้เรื่องสุขภาพและความเป็นอยู่สำคัญที่สุด ดูแลตัวเองให้ดี',
+    'เดช':'ตกภูมิเดชของคุณ ช่วงนี้มีโอกาสได้รับการยอมรับ ได้ตำแหน่งหรือความรับผิดชอบที่ใหญ่ขึ้น',
+    'ศรี':'ตกภูมิศรีของคุณ ถือเป็นช่วงรุ่งเรือง เรื่องเงินทองและสิ่งดี ๆ เข้ามามากกว่าช่วงอื่น',
+    'มูละ':'ตกภูมิมูละของคุณ ช่วงนี้เหมาะกับการสร้างฐาน เก็บออม มีบ้าน มีทรัพย์สิน',
+    'อุตสาหะ':'ตกภูมิอุตสาหะของคุณ ช่วงนี้ต้องขยันและลงแรงมาก แต่ทุกอย่างที่ทำจะเป็นผลงานของตัวเอง',
+    'มนตรี':'ตกภูมิมนตรีของคุณ ช่วงนี้มีผู้ใหญ่และคนเก่งคอยช่วยเหลือ อย่าอายที่จะขอคำแนะนำ',
+    'กาลกิณี':'ตกภูมิกาลกิณีของคุณ ช่วงนี้มีอุปสรรคมากกว่าปกติ ค่อย ๆ ทำ ไม่เสี่ยงเกินตัว แล้วจะผ่านไปได้ด้วยดี'
+  };
+  /* ราศี — ใช้ชุดเดียว แต่เล่าคนละมุม: ราศีเกิด = นิสัยพื้นฐาน · ราศีจันทร์ = อารมณ์ข้างใน · ลัคนา = ตัวตนที่คนอื่นเห็น */
+  var SIGN_TXT=[
+    'ใจกล้า ตัดสินใจเร็ว ชอบเป็นคนเริ่มก่อน ทำอะไรทำจริง แต่ใจร้อนไปบ้าง',
+    'ใจเย็น หนักแน่น รักความมั่นคง ชอบของดีมีคุณภาพ เก็บเงินเก่ง แต่ดื้อเงียบ',
+    'หัวไว พูดเก่ง ปรับตัวเร็ว สนใจหลายเรื่อง เพื่อนเยอะ แต่เบื่อง่าย',
+    'อ่อนโยน ห่วงใยคนรอบตัว รักบ้านรักครอบครัว ความจำดี แต่คิดมากและเก็บความรู้สึก',
+    'มั่นใจ ใจกว้าง มีภาวะผู้นำ ให้เกียรติคนอื่นและอยากได้รับการยอมรับ ถือศักดิ์ศรี',
+    'ละเอียด รอบคอบ ทำงานเป็นระบบ ช่างสังเกต ชอบช่วยเหลือ แต่ตั้งมาตรฐานกับตัวเองสูง',
+    'ยุติธรรม มีศิลปะ เข้ากับคนง่าย ชอบความพอดีและความสวยงาม แต่ตัดสินใจช้า',
+    'ลึกซึ้ง มุ่งมั่น เก็บความลับเก่ง อ่านคนออก ทุ่มเทเต็มที่กับสิ่งที่รัก แต่ไม่เปิดใจง่าย',
+    'ร่าเริง มองโลกแง่ดี รักอิสระ ชอบเรียนรู้และเดินทาง พูดตรง บางทีตรงเกินไป',
+    'อดทน รับผิดชอบสูง วางแผนระยะยาว ค่อย ๆ ไต่ขึ้นไปอย่างมั่นคง แต่เครียดง่ายเพราะแบกไว้เยอะ',
+    'คิดไม่เหมือนใคร เป็นตัวของตัวเอง มีน้ำใจกับส่วนรวม ชอบของใหม่ แต่บางทีดูห่างเหิน',
+    'ใจดี เห็นอกเห็นใจคน จินตนาการดี สัญชาตญาณแม่น แต่อ่อนไหวง่าย'
+  ];
+  var ANIMAL_TXT=[
+    'ไหวพริบดี ปรับตัวเก่ง เก็บเงินเป็น มองเห็นโอกาสก่อนคนอื่น',
+    'ขยัน อดทน ซื่อตรง ทำงานหนักได้โดยไม่บ่น เป็นคนที่ไว้ใจได้',
+    'กล้าหาญ มั่นใจ ชอบความท้าทาย เป็นผู้นำโดยธรรมชาติ',
+    'สุภาพ อ่อนโยน มีรสนิยม ประนีประนอมเก่ง คนรอบตัวรัก',
+    'มีพลัง ทะเยอทะยาน มีเสน่ห์ ทำเรื่องใหญ่ ๆ ได้สำเร็จ',
+    'ฉลาด ลึกซึ้ง รอบคอบ คิดก่อนทำ มีเสน่ห์แบบเงียบ ๆ',
+    'ร่าเริง คล่องแคล่ว รักอิสระ ทำงานเร็ว เข้ากับคนง่าย',
+    'ใจดี มีศิลปะ อ่อนโยน ชอบความสงบ ดูแลคนอื่นเก่ง',
+    'หัวไว มีอารมณ์ขัน แก้ปัญหาเก่ง เรียนรู้เร็ว ช่างคิด',
+    'ขยัน ตรงต่อเวลา ละเอียด พูดตรง ทำงานเป๊ะ',
+    'ซื่อสัตย์ จริงใจ รักความยุติธรรม เป็นเพื่อนที่พึ่งพาได้',
+    'ใจกว้าง มีน้ำใจ มองโลกแง่ดี รู้จักใช้ชีวิตให้มีความสุข'
+  ];
+  var ELEMENT_TXT={'ไม้':'ธาตุไม้ ชอบเติบโต มีเมตตา','ไฟ':'ธาตุไฟ กระตือรือร้น มีพลัง','ดิน':'ธาตุดิน มั่นคง ไว้ใจได้','ทอง':'ธาตุทอง เด็ดขาด มีระเบียบ','น้ำ':'ธาตุน้ำ ยืดหยุ่น ฉลาด'};
+  var YEAR_TXT={
+    same:'ปีนี้เป็นปีนักษัตรของคุณเอง ตามตำราจีนเรียกว่าชงตัวเอง เรื่องต่าง ๆ มักเปลี่ยนแปลง ทำอะไรให้รอบคอบ ไม่ประมาท แล้วจะผ่านไปได้ดี',
+    clash:'ปีนี้ชงตรงกับปีเกิด อาจมีเรื่องเปลี่ยนแปลงหรือเรื่องให้ตัดสินใจบ่อย ใจเย็น วางแผนก่อนทำเรื่องใหญ่ ไม่ต้องรีบ',
+    harm:'ปีนี้ชงร่วม มีเรื่องจุกจิกกวนใจบ้าง ระวังคำพูดและการเข้าใจผิดกับคนใกล้ตัว คุยกันตรง ๆ แล้วจะคลี่คลาย',
+    'break':'ปีนี้ชงอ้อม แผนบางอย่างอาจสะดุดหรือต้องปรับ เผื่อเวลาและเผื่อเงินไว้เสมอ',
+    six:'ปีนี้เป็นปีส่งอย่างดี นักษัตรของปีเป็นคู่มิตรกับปีเกิด มีคนช่วยเหลือ เรื่องที่ตั้งใจมีโอกาสสำเร็จ',
+    three:'ปีนี้เป็นปีเสริม นักษัตรของปีอยู่กลุ่มเดียวกับปีเกิด งานเดินหน้าได้ดี เหมาะกับการเริ่มสิ่งใหม่',
+    none:'ปีนี้ไม่ชงกับปีเกิด ดวงเดินตามปกติ ตั้งใจทำงานก็ได้ผลตามที่ลงแรง'
+  };
+  /* วันนี้ตามปฏิทินจีน — ใช้เมื่อไฟล์ของวันยังไม่มีข้อความรายนักษัตร */
+  var DAY_TXT={
+    same:'วันนี้เป็นวันนักษัตรเดียวกับปีเกิด พลังของตัวเองเด่น มั่นใจทำเรื่องที่ตั้งใจไว้ได้',
+    clash:'วันนี้เป็นวันชงกับปีเกิด ทำเรื่องสำคัญให้รอบคอบ ใจเย็นกับทุกคน เรื่องใหญ่เลื่อนได้ก็เลื่อน',
+    harm:'วันนี้ชงเล็กน้อย อาจมีเรื่องจุกจิกหรือเข้าใจผิดกันง่าย พูดให้ชัดและฟังให้จบ',
+    'break':'วันนี้ชงเล็กน้อย แผนอาจต้องปรับกะทันหัน เผื่อเวลาไว้สักหน่อย',
+    six:'วันนี้เป็นวันส่งเสริมมาก ติดต่อคน ขอความช่วยเหลือ หรือเริ่มเรื่องใหม่ มักได้ผลดี',
+    three:'วันนี้เป็นวันส่งเสริม งานเดินหน้าได้คล่อง มีคนพร้อมร่วมมือ',
+    none:'วันนี้เป็นวันปกติสำหรับปีเกิดของคุณ ทำงานตามแผนได้เลย'
+  };
+  var LIFE_TXT={
+    1:'ผู้นำ เป็นตัวของตัวเอง ชอบริเริ่ม ตัดสินใจเองได้ เหมาะกับงานที่ต้องบุกเบิก',
+    2:'ประสานงานเก่ง ใจเย็น เข้าใจคน เป็นกาวใจของทีม ทำงานร่วมกับคนอื่นได้ดี',
+    3:'ร่าเริง สื่อสารเก่ง มีความคิดสร้างสรรค์ อยู่ตรงไหนบรรยากาศดีตรงนั้น',
+    4:'มั่นคง เป็นระบบ ขยัน ไว้ใจได้ งานที่ต้องการความถูกต้องแม่นยำเหมาะกับเลขนี้',
+    5:'รักอิสระ ปรับตัวเร็ว ชอบเรียนรู้ของใหม่ ไม่ชอบทำอะไรซ้ำเดิมนาน ๆ',
+    6:'รับผิดชอบ รักครอบครัว ชอบดูแลคนอื่น เป็นที่พึ่งของคนรอบตัว',
+    7:'ช่างคิด ช่างวิเคราะห์ ชอบหาเหตุผลเบื้องหลัง เรียนรู้ลึก ชอบมีเวลาส่วนตัว',
+    8:'มีพลัง ทะเยอทะยาน เก่งเรื่องบริหารจัดการและการเงิน มุ่งผลลัพธ์',
+    9:'ใจกว้าง เห็นอกเห็นใจคน อยากช่วยเหลือสังคม มองภาพใหญ่',
+    11:'เลขพิเศษ สัญชาตญาณดี เป็นแรงบันดาลใจให้คนอื่น อ่อนไหวกว่าคนทั่วไป',
+    22:'เลขพิเศษ นักสร้าง ฝันใหญ่และทำได้จริง วางระบบใหญ่ ๆ ได้',
+    33:'เลขพิเศษ ผู้ให้ ชอบดูแล สอน และช่วยเหลือคนอื่น เหมาะกับงานบริการและงานดูแลคน'
+  };
+  var PYEAR_TXT={
+    1:'ปีแห่งการเริ่มต้น เหมาะกับการเริ่มสิ่งใหม่และตั้งเป้าหมายใหม่',
+    2:'ปีของความร่วมมือ ค่อยเป็นค่อยไป เรื่องความสัมพันธ์เด่น',
+    3:'ปีของการแสดงออก มีสังคม มีความคิดสร้างสรรค์',
+    4:'ปีของการลงแรงสร้างรากฐาน งานหนักแต่คุ้มค่า',
+    5:'ปีของการเปลี่ยนแปลง การเดินทาง และโอกาสใหม่',
+    6:'ปีของครอบครัว ความรับผิดชอบ และการดูแลคนรอบตัว',
+    7:'ปีของการทบทวนตัวเอง เรียนรู้ และพักใจ',
+    8:'ปีของผลงาน เงิน และการได้รับการยอมรับ',
+    9:'ปีของการปิดรอบ เก็บกวาด ปล่อยสิ่งที่ไม่ใช่ เตรียมเริ่มรอบใหม่'
+  };
+  var PDAY_TXT={
+    1:'วันดีสำหรับเริ่มงานใหม่ หรือหยิบเรื่องที่ค้างไว้มาลงมือ',
+    2:'วันที่เหมาะกับการทำงานเป็นทีม ฟังคนอื่นให้มากกว่าพูด',
+    3:'วันที่คุยง่าย บรรยากาศดี เหมาะกับการสื่อสารและประสานงาน',
+    4:'วันที่ต้องละเอียด เก็บงานให้เรียบร้อยทีละเรื่อง',
+    5:'วันที่แผนอาจเปลี่ยนบ่อย ยืดหยุ่นไว้แล้วจะสนุกกับมัน',
+    6:'วันที่คนรอบตัวต้องการเรา ใส่ใจครอบครัวและเพื่อนร่วมงาน',
+    7:'วันที่เหมาะกับการคิดทบทวน ขอเวลาอยู่กับตัวเองสักพัก',
+    8:'วันที่เรื่องงานและเงินเด่น ตัดสินใจเรื่องสำคัญได้',
+    9:'วันที่เหมาะกับการเคลียร์เรื่องค้าง ให้อภัย และปล่อยวาง'
+  };
+  var GOOD={six:1,three:1,same:1}, BAD={clash:1,harm:1,'break':1};
 
-  /* กิมมิควันรับทรัพย์ (พี่สั่ง 26/09/2569): วันสุดท้ายของเดือน = เงินเดือนออก · วันที่ 10 = ค่าโอทีออก
-     เลือกประโยคตามวันที่ ทุกคนเห็นประโยคเดียวกันทั้งวัน */
+  /* กิมมิควันรับทรัพย์ (พี่สั่ง 26/09/2569): วันสุดท้ายของเดือน = เงินเดือนออก · วันที่ 10 = ค่าโอทีออก */
   var PAY_SALARY=[
     'ดาวทุกดวงพร้อมใจกันเข้าภูมิศรีหนึ่งวัน นักโหราศาสตร์เรียกว่า "วันเงินเดือนออก" เปิดแอปธนาคารดูได้เลย ไม่ต้องรอดูดาว',
     'วันนี้ดวงการเงินได้ 5 ดาวทุกวันเกิด ส่วนจะอยู่ถึงวันที่ 5 ไหม ขึ้นกับของในตะกร้าแอปช้อปปิ้ง ดวงช่วยไม่ได้',
@@ -135,104 +288,258 @@
     return null;
   }
 
+  /* ================= เครื่องมือ ================= */
+  function $(id){return document.getElementById(id);}
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
   function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
   function todayBkk(){return new Date(Date.now()+7*3600*1000).toISOString().slice(0,10);}
   var MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  var MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
   function thaiDate(iso){var d=new Date(iso+'T00:00:00Z');return 'วัน'+DAYS[d.getUTCDay()]+'ที่ '+d.getUTCDate()+' '+MONTHS[d.getUTCMonth()]+' '+(d.getUTCFullYear()+543);}
+  function shortDate(iso){var p=iso.split('-');return (+p[2])+' '+MON[+p[1]-1]+' '+(+p[0]+543);}
   function star(on){return '<svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" fill="'+(on?'#D9A93A':'#E3ECF6')+'" stroke="'+(on?'#B8871F':'#C9D7E6')+'" stroke-width="1.2" stroke-linejoin="round"/></svg>';}
+  function relCls(k){return GOOD[k]?'good':BAD[k]?'bad':'mid';}
+  function ticketInfo(t){try{var b=String(t||'').split('.')[0].replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';var bin=atob(b);return JSON.parse(new TextDecoder('utf-8').decode(Uint8Array.from(bin,function(c){return c.charCodeAt(0);})));}catch(e){return null;}}
 
-  var DATA=null, MINE=null, SEL=null;
-  var saved=lsGet(KEY_MINE); if(saved!==null&&saved!==''&&!isNaN(+saved))MINE=+saved;
-  var ss=lsGet(KEY_SEL); if(ss!==null&&ss!==''&&!isNaN(+ss))SEL=+ss;
+  /* ================= ข้อมูลเกิด =================
+     ล็อกอินพอร์ทัลอยู่ = วันเดือนปีเกิดจากทะเบียนพนักงาน (ส่งให้เจ้าของตั๋วคนเดียว) + เวลาเกิดที่เคยบันทึกไว้ในระบบ
+     ไม่ได้ล็อกอิน / ทะเบียนไม่มี = กรอกเอง · จำไว้ในเครื่องแยกตามคน (เครื่องใช้ร่วมกันไม่ปนกัน) */
+  var TK=lsGet('tih_sso'), TI=ticketInfo(TK), EMP=TI&&TI.emp!=null?String(TI.emp):null;
+  var KEY='horo_birth_'+(EMP||'guest');
+  var BIRTH=null;   /* {date:'YYYY-MM-DD', time:'HH:MM'|'' , src:'registry'|'self'} */
+  try{BIRTH=JSON.parse(lsGet(KEY)||'null');}catch(e){BIRTH=null;}
+  var DATA=null, FORM=false, TODAY=todayBkk();
 
-  function renderDays(){
-    document.getElementById('days').innerHTML=DAYS.map(function(n,i){
-      return '<button class="day'+(i===SEL?' on':'')+(i===MINE?' mine':'')+'" data-i="'+i+'">'+SHORT[i]+'<small>'+(i===MINE?'วันเกิด':'&nbsp;')+'</small></button>';
-    }).join('');
-    Array.prototype.forEach.call(document.querySelectorAll('.day'),function(b){
-      b.addEventListener('click',function(){SEL=+b.getAttribute('data-i');lsSet(KEY_SEL,String(SEL));
-        if(MINE===null){MINE=SEL;lsSet(KEY_MINE,String(MINE));}   /* ยังไม่รู้วันเกิด (ไม่ได้ล็อกอิน/ทะเบียนไม่มี) → แตะครั้งแรก = วันเกิดของคุณ */
-        renderDays();renderMain();});
-    });
+  function firstName(){var n=TI&&(TI.fn||TI.name)||'';return String(n).trim().split(/\s+/)[0]||'';}
+
+  /* ================= ส่วนข้อมูลเกิด + ฟอร์ม ================= */
+  function renderProfile(P){
+    var el=$('profile');
+    if(!BIRTH||!BIRTH.date||FORM||!P){el.innerHTML=formHtml();bindForm();return;}
+    var b=P.birth, d=P.day, age=P.age;
+    var line='เกิดวัน'+esc(d.label)+'ที่ '+b.d+' '+MONTHS[b.m-1]+' '+(b.y+543)+(d.timeKnown?' · เวลา '+esc(BIRTH.time)+' น.':'');
+    var sub='อายุ '+age.y+' ปี '+age.m+' เดือน '+age.d+' วัน · '+(age.daysToBirthday===0?'วันนี้วันเกิดของคุณ':'อีก '+age.daysToBirthday+' วันถึงวันเกิด');
+    var extra='';
+    if(d.shifted) extra+='<div class="sub">เกิดก่อน 06:00 น. ตามแบบไทยยังไม่ขึ้นวันใหม่ จึงนับเป็นวัน'+esc(d.label)+' (ในปฏิทินคือวัน'+DAYS[d.calendarDow]+')</div>';
+    if(!d.timeKnown) extra+='<div class="sub">ยังไม่ได้ใส่เวลาเกิด · <button type="button" class="lnk" id="addTime">ใส่เวลาเกิด</button> เพื่อดูลัคนา ราศีจันทร์ และวันเกิดแบบไทยให้ตรงขึ้น</div>';
+    el.innerHTML='<div class="card"><div class="pf"><div class="txt"><div class="who">ข้อมูลเกิด'+(BIRTH.src==='registry'?' · จากทะเบียนพนักงาน':'')+'</div>'+
+      '<div class="big">'+line+'</div><div class="sub">'+sub+'</div>'+extra+'</div>'+
+      '<button type="button" class="btn" id="editBirth">แก้ข้อมูลเกิด</button></div></div>'+
+      (age.daysToBirthday===0?'<div class="pay"><svg viewBox="0 0 24 24" fill="none" stroke="#B8871F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16"/><path d="M5 21v-8h14v8"/><path d="M5 16c2 1 3-1 4.5-1s2.5 2 4 2 2.5-2 4-1"/><path d="M12 13V9"/><path d="M12 6.5c.8-.6 1-1.6 0-2.5-1 .9-.8 1.9 0 2.5z"/></svg><div><h2>สุขสันต์วันเกิด</h2><p>ขอให้ปีนี้สุขภาพแข็งแรง งานราบรื่น มีแต่คนรักและคนหวังดีอยู่รอบตัว</p></div></div>':'');
+    $('editBirth').onclick=function(){FORM=true;render();};
+    if($('addTime'))$('addTime').onclick=function(){FORM=true;render();};
+  }
+  function opt(v,t,sel){return '<option value="'+v+'"'+(String(v)===String(sel)?' selected':'')+'>'+t+'</option>';}
+  function formHtml(){
+    var cur=BIRTH||{}, p=/^(\d{4})-(\d{2})-(\d{2})$/.exec(cur.date||''), tm=/^(\d{2}):(\d{2})$/.exec(cur.time||'');
+    var reg=cur.src==='registry'&&p, h='';
+    h+='<div class="card form"><h2>'+(cur.date?'แก้ข้อมูลเกิด':'ใส่ข้อมูลเกิดของคุณ')+'</h2>'+
+      '<p class="howto">ดวงทั้งหน้าคำนวณจากข้อมูลนี้ ใส่ครั้งเดียว ครั้งต่อไปเปิดมาเห็นดวงของตัวเองเลย</p>';
+    h+='<span class="lbl">วันเดือนปีเกิด</span>';
+    if(reg) h+='<div class="locked">'+(+p[3])+' '+MONTHS[+p[2]-1]+' '+(+p[1]+543)+'<small>จากทะเบียนพนักงาน ถ้าไม่ถูกต้องแจ้งฝ่ายบุคคล</small></div>';
+    else {
+      var yNow=+TODAY.slice(0,4)+543, ys='';
+      for(var y=yNow;y>=yNow-90;y--) ys+=opt(y-543,y,p?+p[1]:'');
+      var ds='',ms='';
+      for(var d=1;d<=31;d++) ds+=opt(d,d,p?+p[3]:'');
+      for(var m=1;m<=12;m++) ms+=opt(m,MONTHS[m-1],p?+p[2]:'');
+      h+='<div class="row3"><select id="fD"><option value="">วันที่</option>'+ds+'</select><select id="fM"><option value="">เดือน</option>'+ms+'</select><select id="fY"><option value="">ปี พ.ศ.</option>'+ys+'</select></div>';
+    }
+    var hs='',mins='';
+    for(var hh=0;hh<24;hh++) hs+=opt(('0'+hh).slice(-2),('0'+hh).slice(-2)+' น.',tm?tm[1]:'');
+    for(var mm=0;mm<60;mm++) mins+=opt(('0'+mm).slice(-2),('0'+mm).slice(-2)+' นาที',tm?tm[2]:'');
+    h+='<span class="lbl">เวลาเกิด <small>(ไม่บังคับ)</small></span>'+
+      '<div class="row2"><select id="fH"><option value="">ไม่ทราบ</option>'+hs+'</select><select id="fN"><option value="">นาที</option>'+mins+'</select></div>'+
+      '<div class="hint">ใส่ครั้งเดียว ระบบบันทึกไว้สำหรับการดูครั้งต่อไป ไม่ต้องใส่ใหม่ · ใช้คำนวณลัคนา ราศีจันทร์ และวันเกิดแบบไทย (เกิดก่อน 6 โมงเช้า นับเป็นวันก่อนหน้า · วันพุธหลัง 6 โมงเย็น เป็นพุธกลางคืน) · ไม่ทราบเวลาเกิดเว้นว่างไว้ได้</div>';
+    h+='<div class="acts"><button type="button" class="btn pri" id="fSave">บันทึก</button>'+
+      (cur.date?'<button type="button" class="btn" id="fCancel">ยกเลิก</button>':'')+'<span class="msg" id="fMsg"></span></div></div>';
+    return h;
+  }
+  function bindForm(){
+    $('fSave').onclick=saveForm;
+    if($('fCancel'))$('fCancel').onclick=function(){FORM=false;render();};
+  }
+  function saveForm(){
+    var cur=BIRTH||{}, date=cur.src==='registry'?cur.date:'', msg=$('fMsg');
+    if(!date){
+      var d=$('fD').value,m=$('fM').value,y=$('fY').value;
+      if(!d||!m||!y){msg.className='msg err';msg.textContent='เลือกวันที่ เดือน และปีเกิดให้ครบ';return;}
+      var dt=new Date(Date.UTC(+y,+m-1,+d));
+      if(dt.getUTCMonth()!==+m-1){msg.className='msg err';msg.textContent='วันที่นี้ไม่มีในเดือน'+MONTHS[+m-1];return;}
+      date=y+'-'+('0'+m).slice(-2)+'-'+('0'+d).slice(-2);
+    }
+    var h=$('fH').value,n=$('fN').value,time='';
+    if(h){time=h+':'+(n||'00');}
+    BIRTH={date:date,time:time,src:cur.src==='registry'?'registry':'self'};
+    lsSet(KEY,JSON.stringify(BIRTH));
+    FORM=false; render();
+    if(TK) pushServer();
+  }
+  /* บันทึกเข้าระบบ (ล็อกอินอยู่) — เปิดจากเครื่องไหนก็ไม่ต้องใส่ใหม่ */
+  function pushServer(){
+    fetch(AUTH+'/api/verifypin',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'horo_save',token:TK,time:BIRTH.time||'',date:BIRTH.src==='registry'?'':BIRTH.date})}).catch(function(){});
   }
 
-  function renderMain(){
-    var m=document.getElementById('main');
-    if(!DATA){m.innerHTML='<div class="card empty">ยังโหลดดวงไม่ได้ ลองรีเฟรชอีกครั้ง</div>';return;}
-    if(SEL===null){
-      m.innerHTML='<div class="card ask"><div class="title">คุณเกิดวันอะไร</div><p>แตะวันเกิดของคุณด้านบน ระบบจะจำไว้ให้ครั้งต่อไป</p></div>';
-      return;
-    }
-    var d=(DATA.days||[])[SEL];
-    if(!d){m.innerHTML='<div class="card empty">ไม่มีดวงของวันนี้</div>';return;}
-    var sc=Math.max(0,Math.min(5,+d.stars||0)), st='';
-    for(var i=1;i<=5;i++)st+=star(i<=sc);
-    var h='<div class="card">'+
-      '<div class="who">'+(SEL===MINE?'ดวงของคุณ · ':'')+'คนเกิดวัน'+DAYS[SEL]+'</div>'+
-      '<div class="title">'+esc(d.headline||'')+'</div>'+
+  /* ================= ดวง ================= */
+  /* ข้อความทักษาของวันนี้ที่ตรงกับดาววันเกิด — ใช้เฉพาะไฟล์ของ "วันนี้" เท่านั้น
+     (ไฟล์ของเมื่อวานเล่าภูมิคนละภูมิ เอามาโชว์ใต้ภูมิของวันนี้จะขัดกันเอง) */
+  function todayEntry(planet){
+    if(!DATA||DATA.date!==TODAY||!DATA.days) return null;
+    for(var i=0;i<DATA.days.length;i++){var x=DATA.days[i];if((x.planet||x.birthDay)===planet)return x;}
+    return null;
+  }
+  function taksaCard(P){
+    var d=todayEntry(P.day.planet);
+    var t=P.taksa, role=t.todayRole, sc=t.stars, st='';
+    for(var k=1;k<=5;k++)st+=star(k<=sc);
+    var full=''; TAKSA_FULL.forEach(function(r){if(r[0]===role)full=r[1];});
+    var h='<div class="card"><div class="who">ทักษาวันนี้ · คนเกิดวัน'+esc(P.day.label)+'</div>'+
+      '<div class="title">'+esc(d&&d.headline?d.headline:'วันนี้ดาว'+t.todayPlanet+'เข้าภูมิ'+role+'ของคุณ')+'</div>'+
       '<div class="stars" aria-label="ดวงวันนี้ '+sc+' จาก 5">'+st+'</div>'+
-      (d.taksa?'<div class="taksa">ทักษาวันนี้: ดาว'+esc(DATA.todayPlanet||'')+'เข้าภูมิ'+esc(d.taksa)+' — '+esc(TAKSA[d.taksa]||'')+'</div>':'')+
-      '<div class="overall">'+esc(d.overall||'')+'</div></div>';
-    h+='<div class="card">'+SECS.map(function(s){
+      '<div class="taksa">ดาว'+esc(t.todayPlanet)+'เข้าภูมิ'+esc(role)+' — '+esc(TAKSA[role]||'')+'</div>'+
+      '<div class="overall">'+esc(d&&d.overall?d.overall:full)+'</div>';
+    if(d&&d.work) h+='<div style="margin-top:8px">'+SECS.map(function(s){
       return '<div class="sec"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+ICONS[s[0]]+'</svg></div>'+
         '<div><h3>'+s[1]+'</h3><p>'+esc(d[s[0]]||'')+'</p></div></div>';
     }).join('')+'</div>';
-    h+='<div class="card lucky">'+
-      '<div class="lk"><span>สีเสริมโชคลาภ</span><b>'+esc(d.luckyColor||'')+'</b></div>'+
-      (d.powerColor?'<div class="lk"><span>สีเสริมความมั่นใจ</span><b>'+esc(d.powerColor)+'</b></div>':'')+
-      (d.supportColor?'<div class="lk"><span>สีเสริมผู้อุปถัมภ์</span><b>'+esc(d.supportColor)+'</b></div>':'')+
-      (d.avoidColor?'<div class="lk avoid"><span>สีที่ควรเลี่ยง (กาลกิณี)</span><b>'+esc(d.avoidColor)+'</b></div>':'')+
-      '<div class="lk"><span>เลขมงคล</span><b>'+esc(d.luckyNumber||'')+'</b><em class="warn">เล่นมากเสียมาก เล่นน้อยเสียน้อย</em></div>'+
-      (d.tip?'<div class="lk'+(d.powerColor?'':' wide')+'"><span>ข้อแนะนำวันนี้</span><b style="font-size:16px">'+esc(d.tip)+'</b></div>':'')+
+    return h+'</div>';
+  }
+  function dayCard(P){
+    var an=A.ANIMALS, mine=P.chinese.branch, rel=P.today.rel, txt=DAY_TXT[rel];
+    if(DATA&&DATA.date===TODAY&&DATA.animals&&DATA.animals[mine]&&DATA.animals[mine].text) txt=DATA.animals[mine].text;
+    var nd=P.num.day, ntx=PDAY_TXT[nd];
+    if(DATA&&DATA.date===TODAY&&DATA.numbers&&DATA.numbers[nd]) ntx=DATA.numbers[nd];
+    return '<div class="card">'+
+      '<div class="blk"><h3>วันนี้ตามปฏิทินจีน</h3><div class="v">วัน'+an[P.today.branch][0]+' <small>('+an[P.today.branch][1]+')</small></div>'+
+        '<span class="rel '+relCls(rel)+'">'+esc(A.DAY_REL[rel])+' ของคนปี'+an[mine][0]+'</span><p>'+esc(txt)+'</p></div>'+
+      '<div class="blk"><h3>เลขประจำวันของคุณ</h3><div class="v"><span class="num">'+nd+'</span></div><p>'+esc(ntx)+'</p>'+
+        '<div class="fine">คิดจากวันและเดือนเกิด รวมกับวันที่วันนี้ ตามหลักเลขศาสตร์</div></div>'+
       '</div>';
-    h+='<div class="card"><div class="title" style="font-size:20px">ภูมิทั้ง 8 ในทักษา</div>'+
-      '<p class="howto">เริ่มจากดาวประจำวันเกิดของคุณเป็น "บริวาร" แล้วนับวนตามวงทักษา ดาวของวันนี้ไปตกภูมิไหน เรื่องของภูมินั้นจะเด่นในวันนี้</p>'+
-      TAKSA_FULL.map(function(t){var on=(t[0]===d.taksa);
-        return '<div class="bhumi'+(on?' on':'')+'"><b>'+esc(t[0])+(on?' <span class="today">วันนี้</span>':'')+'</b><p>'+esc(t[1])+'</p></div>';}).join('')+
+  }
+  function luckyCard(P){
+    var t=P.taksa, e=todayEntry(P.day.planet), tip=e&&e.tip||'';
+    return '<div class="card lucky">'+
+      '<div class="lk"><span>สีเสริมโชคลาภ</span><b>'+esc(t.luckyColor)+'</b></div>'+
+      '<div class="lk"><span>สีเสริมความมั่นใจ</span><b>'+esc(t.powerColor)+'</b></div>'+
+      '<div class="lk"><span>สีเสริมผู้อุปถัมภ์</span><b>'+esc(t.supportColor)+'</b></div>'+
+      '<div class="lk avoid"><span>สีที่ควรเลี่ยง (กาลกิณี)</span><b>'+esc(t.avoidColor)+'</b></div>'+
+      '<div class="lk"><span>เลขมงคล</span><b>'+esc(t.luckyNumber)+'</b><em class="warn">เล่นมากเสียมาก เล่นน้อยเสียน้อย</em></div>'+
+      (tip?'<div class="lk"><span>ข้อแนะนำวันนี้</span><b style="font-size:16px">'+esc(tip)+'</b></div>':'<div class="lk"><span>สีประจำวันเกิด</span><b>'+esc(A.COLOR[P.day.planet])+'</b></div>')+
       '</div>';
-    m.innerHTML=h;
+  }
+  function dasaCard(P){
+    var ds=P.dasa, c=ds.current, s=ds.sub, idx=ds.periods.indexOf(c);
+    var rows=ds.periods.map(function(p,i){
+      var cls=i<idx?'past':i===idx?'now':i===idx+1?'next':'';
+      var tag=i===idx?'ตอนนี้':i===idx+1?'ถัดไป':'';
+      return '<div class="r '+cls+'"><span class="a">อายุ '+Math.round(p.fromAge)+'–'+Math.round(p.toAge)+'</span>'+
+        '<span class="p">'+esc(p.planet)+' <small>ภูมิ'+esc(p.role)+'</small></span>'+(tag?'<span class="s">'+tag+'</span>':'<span></span>')+'</div>';
+    }).join('');
+    return '<div class="card"><div class="who">มหาทักษา · ดาวเสวยอายุ</div>'+
+      '<div class="title">ตอนนี้ดาว'+esc(c.planet)+'เสวยอายุ</div>'+
+      '<div class="taksa">ตั้งแต่ '+shortDate(c.from)+' ถึง '+shortDate(c.to)+' (อายุ '+Math.round(c.fromAge)+'–'+Math.round(c.toAge)+' ปี)</div>'+
+      '<div class="overall">'+esc(DASA_TXT[c.planet])+'</div>'+
+      '<p class="howto" style="margin-top:8px">ดาว'+esc(c.planet)+esc(DASA_ROLE[c.role])+'</p>'+
+      (s?'<div class="blk" style="border-top:1px solid var(--line);padding-top:12px;margin-top:10px"><h3>ดาวแทรกช่วงนี้</h3><div class="v">'+esc(s.planet)+' <small>ถึง '+shortDate(s.to)+' · ภูมิ'+esc(s.role)+'ของคุณ</small></div>'+
+        '<p>'+(s.planet===c.planet
+          ?'เป็นช่วงย่อยแรกของดาว'+esc(c.planet)+' ดาวเสวยแทรกตัวเอง เรื่องของภูมิ'+esc(s.role)+' ('+esc(TAKSA[s.role]||'')+') จึงเด่นเต็มที่'
+          :'ภายในช่วงใหญ่ของดาว'+esc(c.planet)+' ช่วงย่อยนี้ดาว'+esc(s.planet)+'เข้ามาแทรก เรื่องของภูมิ'+esc(s.role)+' ('+esc(TAKSA[s.role]||'')+') จะเด่นเป็นพิเศษ')+'</p></div>':'')+
+      '<div class="dasa">'+rows+'</div>'+
+      '<p class="howto" style="margin-top:10px">ดาว 8 ดวงผลัดกันคุมช่วงชีวิต รวม 108 ปี เริ่มจากดาววันเกิด แล้วเวียนตามวงทักษา ช่วงที่ตกภูมิศรีและเดชถือเป็นช่วงรุ่งเรือง</p></div>';
+  }
+  function signCard(P){
+    var z=P.zodiac, S=A.SIGNS, rows='';
+    rows+='<div class="blk"><h3>ราศีเกิด (ตำแหน่งดวงอาทิตย์) · นิสัยพื้นฐาน</h3><div class="v">ราศี'+S[z.sun]+'</div><p>'+esc(SIGN_TXT[z.sun])+'</p></div>';
+    if(z.moon!=null) rows+='<div class="blk"><h3>ราศีจันทร์ · อารมณ์และความรู้สึกข้างใน</h3><div class="v">ราศี'+S[z.moon]+'</div><p>'+esc(SIGN_TXT[z.moon])+'</p></div>';
+    else rows+='<div class="blk"><h3>ราศีจันทร์ · อารมณ์และความรู้สึกข้างใน</h3><div class="v">ราศี'+S[z.moonRange[0]]+' <small>หรือ</small> ราศี'+S[z.moonRange[1]]+'</div>'+
+      '<p>วันที่คุณเกิด ดวงจันทร์ย้ายราศีระหว่างวัน ต้องใช้เวลาเกิดถึงจะบอกได้ว่าอยู่ราศีไหน</p></div>';
+    if(z.lagna!=null) rows+='<div class="blk"><h3>ลัคนา · ตัวตนที่คนอื่นเห็น</h3><div class="v">ลัคนาราศี'+S[z.lagna]+'</div><p>'+esc(SIGN_TXT[z.lagna])+'</p></div>';
+    else rows+='<div class="blk"><h3>ลัคนา · ตัวตนที่คนอื่นเห็น</h3><p>ลัคนาต้องใช้เวลาเกิด <button type="button" class="lnk" data-addtime="1">ใส่เวลาเกิด</button> แล้วจะขึ้นตรงนี้</p></div>';
+    return '<div class="card"><div class="who">ราศี · โหราศาสตร์ไทย</div>'+rows+
+      '<div class="fine" style="font-size:13.5px;color:var(--muted);margin-top:12px;line-height:1.55">คิดแบบนิรายนะตามโหราศาสตร์ไทย ตำแหน่งดาวคำนวณจริงจากวันเวลาเกิด ลัคนาคิดตามเวลาประเทศไทย พิกัดกรุงเทพฯ</div></div>';
+  }
+  function chineseCard(P){
+    var an=A.ANIMALS, c=P.chinese, y=P.thisYear, b=P.birth;
+    var early=(b.m<4||(b.m===4&&b.d<=15));
+    return '<div class="card"><div class="who">นักษัตรจีน</div>'+
+      '<div class="blk"><h3>ปีเกิดของคุณ</h3><div class="v">ปี'+an[c.branch][0]+' <small>('+an[c.branch][1]+') '+esc(ELEMENT_TXT[c.element])+'</small></div>'+
+        '<p>'+esc(ANIMAL_TXT[c.branch])+'</p>'+
+        (early?'<div class="fine">ปีนักษัตรแบบจีนเปลี่ยนที่วันลิบชุน (ราว 4 กุมภาพันธ์) ส่วนแบบไทยบางตำรานับถึงสงกรานต์ คนที่เกิดต้นปีจึงอาจได้ปีนักษัตรต่างจากที่เคยรู้</div>':'')+'</div>'+
+      '<div class="blk"><h3>ปีนี้ ('+(y.info.year+543)+' ปี'+an[y.info.branch][0]+' ธาตุ'+y.info.element+') กับปีเกิดของคุณ</h3>'+
+        '<span class="rel '+relCls(y.rel)+'">'+esc(A.YEAR_REL[y.rel])+'</span><p>'+esc(YEAR_TXT[y.rel])+'</p></div></div>';
+  }
+  function numCard(P){
+    var n=P.num, ty=+TODAY.slice(0,4);
+    return '<div class="card"><div class="who">เลขศาสตร์</div>'+
+      '<div class="blk"><h3>เลขชีวิต (จากวันเดือนปีเกิด)</h3><div class="v"><span class="num">'+n.life+'</span></div><p>'+esc(LIFE_TXT[n.life])+'</p></div>'+
+      '<div class="blk"><h3>เลขปี '+(ty+543)+' ของคุณ</h3><div class="v"><span class="num">'+n.year+'</span></div><p>'+esc(PYEAR_TXT[n.year])+'</p></div></div>';
+  }
+  function bhumiCard(P){
+    var role=P.taksa.todayRole;
+    return '<div class="card"><div class="title" style="font-size:20px">ภูมิทั้ง 8 ในทักษา</div>'+
+      '<p class="howto">เริ่มจากดาวประจำวันเกิดของคุณ (ดาว'+esc(P.day.planet)+') เป็น "บริวาร" แล้วนับวนตามวงทักษา ดาวของวันนี้ไปตกภูมิไหน เรื่องของภูมินั้นจะเด่นในวันนี้</p>'+
+      TAKSA_FULL.map(function(t){var on=(t[0]===role);var r=A.rolesOf(P.day.planet)[t[0]];
+        return '<div class="bhumi'+(on?' on':'')+'"><b>'+esc(t[0])+' <small style="font-weight:600;color:var(--muted)">ดาว'+esc(r)+'</small>'+(on?' <span class="today">วันนี้</span>':'')+'</b><p>'+esc(t[1])+'</p></div>';}).join('')+
+      '</div>';
+  }
+
+  function render(){
+    var P=(BIRTH&&BIRTH.date)?A.profile(BIRTH.date,BIRTH.time||'',TODAY):null;
+    var fn=firstName(); $('head').textContent=fn?'ดวงของคุณ'+fn:'ดวงของคุณ';
+    renderProfile(P);
+    var m=$('main');
+    if(!P||FORM){m.innerHTML='';return;}
+    m.innerHTML='<div class="sech">ดวงวันนี้</div>'+taksaCard(P)+dayCard(P)+luckyCard(P)+
+      '<div class="sech">ดวงชะตาของคุณ</div>'+dasaCard(P)+signCard(P)+chineseCard(P)+numCard(P)+bhumiCard(P);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-addtime]'),function(b){b.onclick=function(){FORM=true;render();window.scrollTo(0,0);};});
+    logHit(P);
   }
 
   function loadData(){
     fetch('horoscope/today.json?t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
       DATA=j;
-      document.getElementById('dateLine').textContent='ดวงประจำ'+thaiDate(j.date);
-      var n=document.getElementById('note');
-      if(j.date!==todayBkk()){n.hidden=false;n.textContent='ดวงของวันนี้ยังไม่ขึ้น กำลังแสดงดวงของ'+thaiDate(j.date);}
-      var pd=paydayOf(j.date), pe=document.getElementById('pay');
+      $('dateLine').textContent='ดวงประจำ'+thaiDate(TODAY);
+      var n=$('note');
+      if(j.date!==TODAY){n.hidden=false;n.textContent='คำทำนายรายวันของวันนี้กำลังจะขึ้น (อัปเดตหลังเที่ยงคืน) ตอนนี้แสดงส่วนที่คำนวณจากวันเกิดของวันนี้ไปก่อน';}
+      var pd=paydayOf(TODAY), pe=$('pay');
       if(pd){pe.hidden=false;pe.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#B8871F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v4c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 10v4c0 1.7 3.1 3 7 3s7-1.3 7-3v-4"/><path d="M5 14v4c0 1.7 3.1 3 7 3s7-1.3 7-3v-4"/></svg><div><h2>'+esc(pd.title)+'</h2><p>'+esc(pd.text)+'</p></div>';}
       else pe.hidden=true;
-      renderMain();
-    }).catch(function(){document.getElementById('dateLine').textContent='';renderMain();});
+      render();
+    }).catch(function(){$('dateLine').textContent='ดวงประจำ'+thaiDate(TODAY);render();});
   }
 
   /* สถิติการเปิดหน้า (ดูได้ที่หน้าแรกผู้ดูแลระบบในพอร์ทัล tihkpn) — นับครั้งละการเปิด เครื่องเดิมภายใน 10 นาทีนับครั้งเดียว (ฝั่งฐานข้อมูล) */
   var SB_URL='https://ukyjtyyoksgpnptjhdhg.supabase.co', SB_KEY='sb_publishable_ZCURlrdrW3Iue8IymZOAbw_tfh8EHlh';
   var HIT_SENT=false;
-  function empOfTicket(t){try{var b=String(t||'').split('.')[0].replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';var bin=atob(b);var p=JSON.parse(new TextDecoder('utf-8').decode(Uint8Array.from(bin,function(c){return c.charCodeAt(0);})));return p&&p.emp!=null?String(p.emp):null;}catch(e){return null;}}
-  function logHit(){
+  function logHit(P){
     if(HIT_SENT)return; HIT_SENT=true;
     var dev=lsGet('horo_dev'); if(!dev){dev=Math.random().toString(36).slice(2)+Date.now().toString(36);lsSet('horo_dev',dev);}
     fetch(SB_URL+'/rest/v1/rpc/horo_hit',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},
-      body:JSON.stringify({p_emp:empOfTicket(lsGet('tih_sso')),p_device:dev,p_dow:(MINE===null?null:MINE)})}).catch(function(){});
+      body:JSON.stringify({p_emp:EMP,p_device:dev,p_dow:P?P.day.dow:null})}).catch(function(){});
   }
 
-  /* วันเกิดจากทะเบียนพนักงาน (ล็อกอินพอร์ทัลอยู่) — ได้แค่ "วันในสัปดาห์" ไม่ได้วันเดือนปีเกิด */
+  /* วันเดือนปีเกิดจากทะเบียน + เวลาเกิดที่บันทึกไว้ในระบบ (เฉพาะของเจ้าของตั๋ว) */
   function loadMine(){
-    var t=lsGet('tih_sso'); if(!t){logHit();return;}
-    fetch(AUTH+'/api/verifypin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'bday',token:t})})
+    if(!TK){if(!(BIRTH&&BIRTH.date))logHit(null);return;}
+    fetch(AUTH+'/api/verifypin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'bday',token:TK})})
       .then(function(r){return r.json();}).then(function(d){
-        if(!d||!d.ok||d.dow===null||d.dow===undefined)return;
-        MINE=+d.dow; lsSet(KEY_MINE,String(MINE));
-        if(SEL===null)SEL=MINE;
-        renderDays();renderMain();
-      }).catch(function(){}).then(logHit);
+        if(!d||!d.ok||!d.date){if(!(BIRTH&&BIRTH.date))logHit(null);return;}
+        var local=BIRTH||{}, time=d.time||'';
+        // เวลาเกิดที่เคยใส่ในเครื่องนี้แต่ยังไม่ขึ้นระบบ → ส่งขึ้นให้
+        var syncUp=!d.time&&local.time&&local.date===d.date;
+        if(syncUp) time=local.time;
+        var next={date:d.date,time:time,src:d.src==='registry'?'registry':'self'};
+        var changed=JSON.stringify(next)!==JSON.stringify({date:local.date,time:local.time||'',src:local.src});
+        BIRTH=next; lsSet(KEY,JSON.stringify(BIRTH));
+        if(syncUp) pushServer();
+        if(changed&&!FORM) render();
+      }).catch(function(){});
   }
 
-  if(SEL===null&&MINE!==null)SEL=MINE;
-  renderDays(); loadData(); loadMine();
+  $('dateLine').textContent='ดวงประจำ'+thaiDate(TODAY);
+  render(); loadData(); loadMine();
 })();
 </script>
 </body>
