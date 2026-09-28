@@ -7,6 +7,7 @@
    3 ราศี            ดวงอาทิตย์ (ราศีเกิด) · ดวงจันทร์ · ลัคนา (ต้องมีเวลาเกิด) แบบนิรายนะ (อายนางศ์ลาหิรี)
                      ตำแหน่งดาวตามสูตรของ Meeus (Astronomical Algorithms) ความคลาดเคลื่อน < 0.3 องศา
                      ลัคนาคิดที่พิกัดจังหวัดที่เกิด (ไม่ได้เลือก = กรุงเทพฯ) เวลาไทย UTC+7
+                     เกิดต่างประเทศ: พิกัดเมือง + เขตเวลาของที่นั่นตามปีเกิด (รวมเวลาออมแสง)
    4 นักษัตรจีน      ปีเกิดเปลี่ยนที่วันลิบชุน (ดวงอาทิตย์ 315 องศา ราว 4 ก.พ.) · ธาตุจากราก (ต้นปี)
                      ความสัมพันธ์ ชง / ชงร่วม / ชงอ้อม / ส่ง / เสริม · นักษัตรของแต่ละวัน (วันชง)
    5 เลขศาสตร์       เลขชีวิต (เก็บเลขพิเศษ 11 22 33) · เลขปี · เลขประจำวันส่วนตัว */
@@ -62,9 +63,66 @@
     ['อำนาจเจริญ', 15.86, 104.63], ['อุดรธานี', 17.41, 102.79], ['อุตรดิตถ์', 17.62, 100.10], ['อุทัยธานี', 15.38, 100.03],
     ['อุบลราชธานี', 15.24, 104.85]
   ];
+  // เกิดต่างประเทศ → [ชื่อ, lat, lon, เขตเวลา IANA] · ประเทศใหญ่ที่มีหลายเขตเวลาแยกเป็นเมือง
+  // เวลาเกิดที่ใส่ = เวลาตามนาฬิกาที่นั่น แปลงเป็นเวลาสากลด้วยฐานข้อมูลเขตเวลาของเบราว์เซอร์ (รวมเวลาออมแสงตามปีเกิด)
+  var FOREIGN = [
+    ['เมียนมา (ย่างกุ้ง)', 16.87, 96.20, 'Asia/Yangon'], ['ลาว (เวียงจันทน์)', 17.97, 102.63, 'Asia/Vientiane'],
+    ['กัมพูชา (พนมเปญ)', 11.56, 104.92, 'Asia/Phnom_Penh'], ['เวียดนาม (ฮานอย)', 21.03, 105.85, 'Asia/Ho_Chi_Minh'],
+    ['เวียดนาม (โฮจิมินห์)', 10.82, 106.63, 'Asia/Ho_Chi_Minh'], ['มาเลเซีย (กัวลาลัมเปอร์)', 3.14, 101.69, 'Asia/Kuala_Lumpur'],
+    ['สิงคโปร์', 1.35, 103.82, 'Asia/Singapore'], ['อินโดนีเซีย (จาการ์ตา)', -6.21, 106.85, 'Asia/Jakarta'],
+    ['ฟิลิปปินส์ (มะนิลา)', 14.60, 120.98, 'Asia/Manila'], ['จีน (ปักกิ่ง)', 39.90, 116.40, 'Asia/Shanghai'],
+    ['จีน (เซี่ยงไฮ้)', 31.23, 121.47, 'Asia/Shanghai'], ['จีน (กวางโจว)', 23.13, 113.26, 'Asia/Shanghai'],
+    ['จีน (คุนหมิง)', 25.04, 102.71, 'Asia/Shanghai'], ['ฮ่องกง', 22.32, 114.17, 'Asia/Hong_Kong'],
+    ['ไต้หวัน (ไทเป)', 25.03, 121.57, 'Asia/Taipei'], ['ญี่ปุ่น (โตเกียว)', 35.68, 139.69, 'Asia/Tokyo'],
+    ['เกาหลีใต้ (โซล)', 37.57, 126.98, 'Asia/Seoul'], ['อินเดีย (นิวเดลี)', 28.61, 77.21, 'Asia/Kolkata'],
+    ['อินเดีย (มุมไบ)', 19.08, 72.88, 'Asia/Kolkata'], ['บังกลาเทศ (ธากา)', 23.81, 90.41, 'Asia/Dhaka'],
+    ['เนปาล (กาฐมาณฑุ)', 27.72, 85.32, 'Asia/Kathmandu'], ['ศรีลังกา (โคลัมโบ)', 6.93, 79.86, 'Asia/Colombo'],
+    ['ปากีสถาน (การาจี)', 24.86, 67.01, 'Asia/Karachi'], ['สหรัฐอาหรับเอมิเรตส์ (ดูไบ)', 25.20, 55.27, 'Asia/Dubai'],
+    ['อิสราเอล (เทลอาวีฟ)', 32.09, 34.78, 'Asia/Jerusalem'], ['ตุรกี (อิสตันบูล)', 41.01, 28.98, 'Europe/Istanbul'],
+    ['คาซัคสถาน (อัลมาตี)', 43.24, 76.89, 'Asia/Almaty'],
+    ['สหราชอาณาจักร (ลอนดอน)', 51.51, -0.13, 'Europe/London'], ['ไอร์แลนด์ (ดับลิน)', 53.35, -6.26, 'Europe/Dublin'],
+    ['ฝรั่งเศส (ปารีส)', 48.86, 2.35, 'Europe/Paris'], ['เยอรมนี (เบอร์ลิน)', 52.52, 13.40, 'Europe/Berlin'],
+    ['เยอรมนี (มิวนิก)', 48.14, 11.58, 'Europe/Berlin'], ['เนเธอร์แลนด์ (อัมสเตอร์ดัม)', 52.37, 4.90, 'Europe/Amsterdam'],
+    ['เบลเยียม (บรัสเซลส์)', 50.85, 4.35, 'Europe/Brussels'], ['สวิตเซอร์แลนด์ (ซูริก)', 47.38, 8.54, 'Europe/Zurich'],
+    ['ออสเตรีย (เวียนนา)', 48.21, 16.37, 'Europe/Vienna'], ['อิตาลี (โรม)', 41.90, 12.50, 'Europe/Rome'],
+    ['สเปน (มาดริด)', 40.42, -3.70, 'Europe/Madrid'], ['โปรตุเกส (ลิสบอน)', 38.72, -9.14, 'Europe/Lisbon'],
+    ['สวีเดน (สตอกโฮล์ม)', 59.33, 18.07, 'Europe/Stockholm'], ['นอร์เวย์ (ออสโล)', 59.91, 10.75, 'Europe/Oslo'],
+    ['เดนมาร์ก (โคเปนเฮเกน)', 55.68, 12.57, 'Europe/Copenhagen'], ['ฟินแลนด์ (เฮลซิงกิ)', 60.17, 24.94, 'Europe/Helsinki'],
+    ['โปแลนด์ (วอร์ซอ)', 52.23, 21.01, 'Europe/Warsaw'], ['เช็ก (ปราก)', 50.08, 14.44, 'Europe/Prague'],
+    ['ฮังการี (บูดาเปสต์)', 47.50, 19.04, 'Europe/Budapest'], ['กรีซ (เอเธนส์)', 37.98, 23.73, 'Europe/Athens'],
+    ['ยูเครน (เคียฟ)', 50.45, 30.52, 'Europe/Kiev'], ['รัสเซีย (มอสโก)', 55.76, 37.62, 'Europe/Moscow'],
+    ['รัสเซีย (เซนต์ปีเตอร์สเบิร์ก)', 59.93, 30.34, 'Europe/Moscow'], ['รัสเซีย (เยคาเตรินบุร์ก)', 56.84, 60.61, 'Asia/Yekaterinburg'],
+    ['รัสเซีย (โนโวซีบีสค์)', 55.01, 82.93, 'Asia/Novosibirsk'], ['รัสเซีย (วลาดีวอสตอค)', 43.12, 131.89, 'Asia/Vladivostok'],
+    ['สหรัฐอเมริกา (นิวยอร์ก)', 40.71, -74.01, 'America/New_York'], ['สหรัฐอเมริกา (ชิคาโก)', 41.88, -87.63, 'America/Chicago'],
+    ['สหรัฐอเมริกา (เดนเวอร์)', 39.74, -104.99, 'America/Denver'], ['สหรัฐอเมริกา (ลอสแอนเจลิส)', 34.05, -118.24, 'America/Los_Angeles'],
+    ['สหรัฐอเมริกา (ฮาวาย)', 21.31, -157.86, 'Pacific/Honolulu'], ['แคนาดา (โทรอนโต)', 43.65, -79.38, 'America/Toronto'],
+    ['แคนาดา (แวนคูเวอร์)', 49.28, -123.12, 'America/Vancouver'], ['เม็กซิโก (เม็กซิโกซิตี)', 19.43, -99.13, 'America/Mexico_City'],
+    ['บราซิล (เซาเปาลู)', -23.55, -46.63, 'America/Sao_Paulo'], ['อาร์เจนตินา (บัวโนสไอเรส)', -34.60, -58.38, 'America/Argentina/Buenos_Aires'],
+    ['ออสเตรเลีย (ซิดนีย์)', -33.87, 151.21, 'Australia/Sydney'], ['ออสเตรเลีย (เมลเบิร์น)', -37.81, 144.96, 'Australia/Melbourne'],
+    ['ออสเตรเลีย (บริสเบน)', -27.47, 153.03, 'Australia/Brisbane'], ['ออสเตรเลีย (เพิร์ท)', -31.95, 115.86, 'Australia/Perth'],
+    ['นิวซีแลนด์ (โอ๊คแลนด์)', -36.85, 174.76, 'Pacific/Auckland'], ['แอฟริกาใต้ (โจฮันเนสเบิร์ก)', -26.20, 28.05, 'Africa/Johannesburg'],
+    ['อียิปต์ (ไคโร)', 30.04, 31.24, 'Africa/Cairo']
+  ];
   function placeOf(name) {
-    for (var i = 0; i < PROVINCES.length; i++) if (PROVINCES[i][0] === name) return { name: name, lat: PROVINCES[i][1], lon: PROVINCES[i][2], known: true };
-    return { name: 'กรุงเทพมหานคร', lat: BKK.lat, lon: BKK.lon, known: false };
+    var i;
+    for (i = 0; i < PROVINCES.length; i++) if (PROVINCES[i][0] === name) return { name: name, lat: PROVINCES[i][1], lon: PROVINCES[i][2], tz: null, known: true, foreign: false };
+    for (i = 0; i < FOREIGN.length; i++) if (FOREIGN[i][0] === name) return { name: name, lat: FOREIGN[i][1], lon: FOREIGN[i][2], tz: FOREIGN[i][3], known: true, foreign: true };
+    return { name: 'กรุงเทพมหานคร', lat: BKK.lat, lon: BKK.lon, tz: null, known: false, foreign: false };
+  }
+  // เวลาตามนาฬิกาของเขตเวลา tz ณ วันเวลานั้น ห่างจากเวลาสากลกี่นาที (ไทย = +420 เสมอ)
+  // ใช้ Intl ของเบราว์เซอร์ = ฐานข้อมูลเขตเวลา IANA ย้อนหลังครบ รวมเวลาออมแสงและการเปลี่ยนเขตเวลาในอดีต
+  function tzOffset(pl, y, m, d, hh, mm) {
+    if (!pl || !pl.tz) return 420;
+    try {
+      var fmt = new Intl.DateTimeFormat('en-US', { timeZone: pl.tz, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+      var wall = Date.UTC(y, m - 1, d, hh == null ? 12 : hh, mm == null ? 0 : mm), off = 0;
+      for (var k = 0; k < 3; k++) {
+        var t = wall - off * 60000, p = {};
+        fmt.formatToParts(new Date(t)).forEach(function (x) { p[x.type] = x.value; });
+        off = (Date.UTC(+p.year, +p.month - 1, +p.day, (+p.hour) % 24, +p.minute) - t) / 60000;
+      }
+      return off;
+    } catch (e) { return Math.round(pl.lon / 15) * 60; }   // เครื่องไม่มีข้อมูลเขตเวลา → ประมาณจากลองจิจูด
   }
 
   var R = Math.PI / 180;
@@ -87,9 +145,9 @@
     var A = Math.floor(y / 100), B = 2 - A + Math.floor(A / 4);
     return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5 + (hourUT || 0) / 24;
   }
-  // เวลาไทย (UTC+7) → JD · ไม่มีเวลา = เที่ยงวัน
+  // เวลาท้องถิ่นที่เกิด → JD · b.off = ห่างจากเวลาสากลกี่นาที (ไทย 420) · ไม่มีเวลา = เที่ยงวัน
   function jdLocal(b, hh, mm) {
-    var h = (hh == null ? 12 : hh) + (mm == null ? 0 : mm) / 60 - 7;
+    var h = (hh == null ? 12 : hh) + (mm == null ? 0 : mm) / 60 - (b.off == null ? 420 : b.off) / 60;
     return jd(b.y, b.m, b.d, h);
   }
   function weekday(y, m, d) { return new Date(Date.UTC(y, m - 1, d)).getUTCDay(); }
@@ -214,10 +272,10 @@
 
   /* ---------- 4 นักษัตรจีน ---------- */
   // ปีนักษัตรแบบจีนเปลี่ยนที่ลิบชุน (ดวงอาทิตย์สายนะ 315°) — เกิด ม.ค. ถึงต้น ก.พ. ก่อนลิบชุน = ปีก่อนหน้า
-  function chineseYearOf(y, m, d, hh, mm) {
+  function chineseYearOf(y, m, d, hh, mm, off) {
     var yy = y;
     if (m <= 2) {
-      var j = jd(y, m, d, (hh == null ? 12 : hh) + (mm == null ? 0 : mm) / 60 - 7), s = sunLong(j);
+      var j = jd(y, m, d, (hh == null ? 12 : hh) + (mm == null ? 0 : mm) / 60 - (off == null ? 420 : off) / 60), s = sunLong(j);
       if (s >= 270 && s < 315) yy = y - 1;
     }
     var stem = mod(yy - 4, 10);
@@ -272,7 +330,8 @@
     var b = parseBirth(date, time);
     if (!b) return null;
     var bd = birthDay(b), ty = +todayIso.slice(0, 4);
-    var cy = chineseYearOf(b.y, b.m, b.d, b.hh, b.mm);
+    b.off = tzOffset(placeOf(place), b.y, b.m, b.d, b.hh, b.mm);
+    var cy = chineseYearOf(b.y, b.m, b.d, b.hh, b.mm, b.off);
     var tp = /^(\d{4})-(\d{2})-(\d{2})/.exec(todayIso);
     var nowYear = chineseYearOf(+tp[1], +tp[2], +tp[3], 12, 0);
     var db = dayBranch(todayIso);
@@ -291,7 +350,7 @@
 
   var API = {
     DAYS: DAYS, RING: RING, NUM: NUM, COLOR: COLOR, ROLES: ROLES, MEANING: MEANING, DASA: DASA,
-    SIGNS: SIGNS, ANIMALS: ANIMALS, ELEMENTS: ELEMENTS, YEAR_REL: YEAR_REL, DAY_REL: DAY_REL, PROVINCES: PROVINCES, placeOf: placeOf,
+    SIGNS: SIGNS, ANIMALS: ANIMALS, ELEMENTS: ELEMENTS, YEAR_REL: YEAR_REL, DAY_REL: DAY_REL, PROVINCES: PROVINCES, FOREIGN: FOREIGN, placeOf: placeOf, tzOffset: tzOffset,
     parseBirth: parseBirth, jd: jd, birthDay: birthDay, rolesOf: rolesOf, roleOf: roleOf, taksaDay: taksaDay,
     mahataksa: mahataksa, sunLong: sunLong, moonLong: moonLong, ayanamsa: ayanamsa, ascendant: ascendant,
     zodiac: zodiac, chineseYearOf: chineseYearOf, dayBranch: dayBranch, relation: relation,

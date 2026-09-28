@@ -299,6 +299,7 @@
   function thaiDate(iso){var d=new Date(iso+'T00:00:00Z');return 'วัน'+DAYS[d.getUTCDay()]+'ที่ '+d.getUTCDate()+' '+MONTHS[d.getUTCMonth()]+' '+(d.getUTCFullYear()+543);}
   function shortDate(iso){var p=iso.split('-');return (+p[2])+' '+MON[+p[1]-1]+' '+(+p[0]+543);}
   function star(on){return '<svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" fill="'+(on?'#D9A93A':'#E3ECF6')+'" stroke="'+(on?'#B8871F':'#C9D7E6')+'" stroke-width="1.2" stroke-linejoin="round"/></svg>';}
+  function utcTxt(off){var a=Math.abs(off),h=Math.floor(a/60),m=a%60;return (off<0?'−':'+')+h+(m?':'+('0'+m).slice(-2):'');}
   function relCls(k){return GOOD[k]?'good':BAD[k]?'bad':'mid';}
   function ticketInfo(t){try{var b=String(t||'').split('.')[0].replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';var bin=atob(b);return JSON.parse(new TextDecoder('utf-8').decode(Uint8Array.from(bin,function(c){return c.charCodeAt(0);})));}catch(e){return null;}}
 
@@ -319,12 +320,12 @@
     if(!BIRTH||!BIRTH.date||FORM||!P){el.innerHTML=formHtml();bindForm();return;}
     var b=P.birth, d=P.day, age=P.age;
     var line='เกิดวัน'+esc(d.label)+'ที่ '+b.d+' '+MONTHS[b.m-1]+' '+(b.y+543)+(d.timeKnown?' · เวลา '+esc(BIRTH.time)+' น.':'')+
-      (P.zodiac.place.known?' · จังหวัด'+esc(P.zodiac.place.name.replace(/^กรุงเทพมหานคร$/,'กรุงเทพฯ')):'');
+      (P.zodiac.place.known?(P.zodiac.place.foreign?' · เกิดที่'+esc(P.zodiac.place.name):' · จังหวัด'+esc(P.zodiac.place.name.replace(/^กรุงเทพมหานคร$/,'กรุงเทพฯ'))):'');
     var sub='อายุ '+age.y+' ปี '+age.m+' เดือน '+age.d+' วัน · '+(age.daysToBirthday===0?'วันนี้วันเกิดของคุณ':'อีก '+age.daysToBirthday+' วันถึงวันเกิด');
     var extra='';
     if(d.shifted) extra+='<div class="sub">เกิดก่อน 06:00 น. ตามแบบไทยยังไม่ขึ้นวันใหม่ จึงนับเป็นวัน'+esc(d.label)+' (ในปฏิทินคือวัน'+DAYS[d.calendarDow]+')</div>';
     if(!d.timeKnown) extra+='<div class="sub">ยังไม่ได้ใส่เวลาเกิด · <button type="button" class="lnk" id="addTime">ใส่เวลาเกิด</button> เพื่อดูลัคนา ราศีจันทร์ และวันเกิดแบบไทยให้ตรงขึ้น</div>';
-    else if(!P.zodiac.place.known) extra+='<div class="sub">ยังไม่ได้เลือกจังหวัดที่เกิด (ตอนนี้คิดลัคนาที่กรุงเทพฯ) · <button type="button" class="lnk" id="addTime">เลือกจังหวัด</button></div>';
+    else if(!P.zodiac.place.known) extra+='<div class="sub">ยังไม่ได้เลือกที่เกิด (ตอนนี้คิดลัคนาที่กรุงเทพฯ) · <button type="button" class="lnk" id="addTime">เลือกจังหวัด หรือเกิดต่างประเทศ</button></div>';
     el.innerHTML='<div class="card"><div class="pf"><div class="txt"><div class="who">ข้อมูลเกิด'+(BIRTH.src==='registry'?' · จากทะเบียนพนักงาน':'')+'</div>'+
       '<div class="big">'+line+'</div><div class="sub">'+sub+'</div>'+extra+'</div>'+
       '<button type="button" class="btn" id="editBirth">แก้ข้อมูลเกิด</button></div></div>'+
@@ -351,18 +352,25 @@
     var hs='',mins='';
     for(var hh=0;hh<24;hh++) hs+=opt(('0'+hh).slice(-2),('0'+hh).slice(-2)+' น.',tm?tm[1]:'');
     for(var mm=0;mm<60;mm++) mins+=opt(('0'+mm).slice(-2),('0'+mm).slice(-2)+' นาที',tm?tm[2]:'');
+    var abroad=A.placeOf(cur.place||'').foreign;
     var ps=A.PROVINCES.map(function(p){return opt(p[0],p[0],cur.place||'');}).join('');
+    var fs=A.FOREIGN.map(function(p){return opt(p[0],p[0],cur.place||'');}).join('');
     h+='<span class="lbl">เวลาเกิด <small>(ไม่บังคับ)</small></span>'+
       '<div class="row2"><select id="fH"><option value="">ไม่ทราบ</option>'+hs+'</select><select id="fN"><option value="">นาที</option>'+mins+'</select></div>'+
-      '<span class="lbl">จังหวัดที่เกิด <small>(ไม่บังคับ)</small></span>'+
-      '<select id="fP" style="max-width:320px"><option value="">ไม่ทราบ</option>'+ps+'</select>'+
-      '<div class="hint">ใส่ครั้งเดียว ระบบบันทึกไว้สำหรับการดูครั้งต่อไป ไม่ต้องใส่ใหม่ · เวลาเกิดใช้คำนวณลัคนา ราศีจันทร์ และวันเกิดแบบไทย (เกิดก่อน 6 โมงเช้า นับเป็นวันก่อนหน้า · วันพุธหลัง 6 โมงเย็น เป็นพุธกลางคืน) · จังหวัดที่เกิดทำให้ลัคนาตรงกับพิกัดที่เกิดจริง (ไม่เลือก = คิดที่กรุงเทพฯ) · ไม่ทราบเว้นว่างไว้ได้</div>';
+      '<span class="lbl">ที่เกิด <small>(ไม่บังคับ)</small></span>'+
+      '<select id="fP" style="max-width:320px"><option value="">ไม่ทราบ</option>'+opt('__abroad','เกิดต่างประเทศ',abroad?'__abroad':'')+
+        '<optgroup label="จังหวัดในประเทศไทย">'+ps+'</optgroup></select>'+
+      '<div id="fAbroad"'+(abroad?'':' hidden')+'><span class="lbl">ประเทศ / เมืองที่เกิด</span>'+
+        '<select id="fC" style="max-width:320px"><option value="">เลือกประเทศ / เมือง</option>'+fs+'</select>'+
+        '<div class="howto" style="margin-top:6px">ไม่มีเมืองที่เกิดในรายการ เลือกเมืองที่อยู่ใกล้และใช้เวลาเดียวกัน · ใส่เวลาเกิดตามนาฬิกาที่นั่น ระบบแปลงเขตเวลาและเวลาออมแสงของปีที่เกิดให้เอง</div></div>'+
+      '<div class="hint">ใส่ครั้งเดียว ระบบบันทึกไว้สำหรับการดูครั้งต่อไป ไม่ต้องใส่ใหม่ · เวลาเกิดใช้คำนวณลัคนา ราศีจันทร์ และวันเกิดแบบไทย (เกิดก่อน 6 โมงเช้า นับเป็นวันก่อนหน้า · วันพุธหลัง 6 โมงเย็น เป็นพุธกลางคืน) · ที่เกิดทำให้ลัคนาตรงกับพิกัดและเวลาท้องถิ่นที่เกิดจริง (ไม่เลือก = คิดที่กรุงเทพฯ) · ไม่ทราบเว้นว่างไว้ได้</div>';
     h+='<div class="acts"><button type="button" class="btn pri" id="fSave">บันทึก</button>'+
       (cur.date?'<button type="button" class="btn" id="fCancel">ยกเลิก</button>':'')+'<span class="msg" id="fMsg"></span></div></div>';
     return h;
   }
   function bindForm(){
     $('fSave').onclick=saveForm;
+    $('fP').onchange=function(){$('fAbroad').hidden=$('fP').value!=='__abroad';};
     if($('fCancel'))$('fCancel').onclick=function(){FORM=false;render();};
   }
   function saveForm(){
@@ -376,7 +384,12 @@
     }
     var h=$('fH').value,n=$('fN').value,time='';
     if(h){time=h+':'+(n||'00');}
-    BIRTH={date:date,time:time,place:$('fP').value,src:cur.src==='registry'?'registry':'self'};
+    var place=$('fP').value;
+    if(place==='__abroad'){
+      place=$('fC').value;
+      if(!place){msg.className='msg err';msg.textContent='เลือกประเทศ / เมืองที่เกิดก่อน';return;}
+    }
+    BIRTH={date:date,time:time,place:place,src:cur.src==='registry'?'registry':'self'};
     lsSet(KEY,JSON.stringify(BIRTH));
     FORM=false; render();
     if(TK) pushServer();
@@ -463,8 +476,9 @@
     if(z.lagna!=null) rows+='<div class="blk"><h3>ลัคนา · ตัวตนที่คนอื่นเห็น</h3><div class="v">ลัคนาราศี'+S[z.lagna]+'</div><p>'+esc(SIGN_TXT[z.lagna])+'</p></div>';
     else rows+='<div class="blk"><h3>ลัคนา · ตัวตนที่คนอื่นเห็น</h3><p>ลัคนาต้องใช้เวลาเกิด <button type="button" class="lnk" data-addtime="1">ใส่เวลาเกิด</button> แล้วจะขึ้นตรงนี้</p></div>';
     return '<div class="card"><div class="who">ราศี · โหราศาสตร์ไทย</div>'+rows+
-      '<div class="fine" style="font-size:13.5px;color:var(--muted);margin-top:12px;line-height:1.55">คิดแบบนิรายนะตามโหราศาสตร์ไทย ตำแหน่งดาวคำนวณจริงจากวันเวลาเกิด ลัคนาคิดตามเวลาประเทศไทย ที่พิกัด'+
-        (z.place.known?'จังหวัด'+esc(z.place.name):'กรุงเทพฯ (ยังไม่ได้เลือกจังหวัดที่เกิด)')+'</div></div>';
+      '<div class="fine" style="font-size:13.5px;color:var(--muted);margin-top:12px;line-height:1.55">คิดแบบนิรายนะตามโหราศาสตร์ไทย ตำแหน่งดาวคำนวณจริงจากวันเวลาเกิด '+
+        (z.place.foreign?'ลัคนาคิดตามเวลาท้องถิ่นของ'+esc(z.place.name)+' (UTC'+utcTxt(P.birth.off)+' ในปีที่เกิด) ที่พิกัดเมืองนั้น'
+          :'ลัคนาคิดตามเวลาประเทศไทย ที่พิกัด'+(z.place.known?'จังหวัด'+esc(z.place.name):'กรุงเทพฯ (ยังไม่ได้เลือกที่เกิด)'))+'</div></div>';
   }
   function chineseCard(P){
     var an=A.ANIMALS, c=P.chinese, y=P.thisYear, b=P.birth;
