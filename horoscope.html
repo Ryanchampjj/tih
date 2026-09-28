@@ -318,11 +318,13 @@
     var el=$('profile');
     if(!BIRTH||!BIRTH.date||FORM||!P){el.innerHTML=formHtml();bindForm();return;}
     var b=P.birth, d=P.day, age=P.age;
-    var line='เกิดวัน'+esc(d.label)+'ที่ '+b.d+' '+MONTHS[b.m-1]+' '+(b.y+543)+(d.timeKnown?' · เวลา '+esc(BIRTH.time)+' น.':'');
+    var line='เกิดวัน'+esc(d.label)+'ที่ '+b.d+' '+MONTHS[b.m-1]+' '+(b.y+543)+(d.timeKnown?' · เวลา '+esc(BIRTH.time)+' น.':'')+
+      (P.zodiac.place.known?' · จังหวัด'+esc(P.zodiac.place.name.replace(/^กรุงเทพมหานคร$/,'กรุงเทพฯ')):'');
     var sub='อายุ '+age.y+' ปี '+age.m+' เดือน '+age.d+' วัน · '+(age.daysToBirthday===0?'วันนี้วันเกิดของคุณ':'อีก '+age.daysToBirthday+' วันถึงวันเกิด');
     var extra='';
     if(d.shifted) extra+='<div class="sub">เกิดก่อน 06:00 น. ตามแบบไทยยังไม่ขึ้นวันใหม่ จึงนับเป็นวัน'+esc(d.label)+' (ในปฏิทินคือวัน'+DAYS[d.calendarDow]+')</div>';
     if(!d.timeKnown) extra+='<div class="sub">ยังไม่ได้ใส่เวลาเกิด · <button type="button" class="lnk" id="addTime">ใส่เวลาเกิด</button> เพื่อดูลัคนา ราศีจันทร์ และวันเกิดแบบไทยให้ตรงขึ้น</div>';
+    else if(!P.zodiac.place.known) extra+='<div class="sub">ยังไม่ได้เลือกจังหวัดที่เกิด (ตอนนี้คิดลัคนาที่กรุงเทพฯ) · <button type="button" class="lnk" id="addTime">เลือกจังหวัด</button></div>';
     el.innerHTML='<div class="card"><div class="pf"><div class="txt"><div class="who">ข้อมูลเกิด'+(BIRTH.src==='registry'?' · จากทะเบียนพนักงาน':'')+'</div>'+
       '<div class="big">'+line+'</div><div class="sub">'+sub+'</div>'+extra+'</div>'+
       '<button type="button" class="btn" id="editBirth">แก้ข้อมูลเกิด</button></div></div>'+
@@ -349,9 +351,12 @@
     var hs='',mins='';
     for(var hh=0;hh<24;hh++) hs+=opt(('0'+hh).slice(-2),('0'+hh).slice(-2)+' น.',tm?tm[1]:'');
     for(var mm=0;mm<60;mm++) mins+=opt(('0'+mm).slice(-2),('0'+mm).slice(-2)+' นาที',tm?tm[2]:'');
+    var ps=A.PROVINCES.map(function(p){return opt(p[0],p[0],cur.place||'');}).join('');
     h+='<span class="lbl">เวลาเกิด <small>(ไม่บังคับ)</small></span>'+
       '<div class="row2"><select id="fH"><option value="">ไม่ทราบ</option>'+hs+'</select><select id="fN"><option value="">นาที</option>'+mins+'</select></div>'+
-      '<div class="hint">ใส่ครั้งเดียว ระบบบันทึกไว้สำหรับการดูครั้งต่อไป ไม่ต้องใส่ใหม่ · ใช้คำนวณลัคนา ราศีจันทร์ และวันเกิดแบบไทย (เกิดก่อน 6 โมงเช้า นับเป็นวันก่อนหน้า · วันพุธหลัง 6 โมงเย็น เป็นพุธกลางคืน) · ไม่ทราบเวลาเกิดเว้นว่างไว้ได้</div>';
+      '<span class="lbl">จังหวัดที่เกิด <small>(ไม่บังคับ)</small></span>'+
+      '<select id="fP" style="max-width:320px"><option value="">ไม่ทราบ</option>'+ps+'</select>'+
+      '<div class="hint">ใส่ครั้งเดียว ระบบบันทึกไว้สำหรับการดูครั้งต่อไป ไม่ต้องใส่ใหม่ · เวลาเกิดใช้คำนวณลัคนา ราศีจันทร์ และวันเกิดแบบไทย (เกิดก่อน 6 โมงเช้า นับเป็นวันก่อนหน้า · วันพุธหลัง 6 โมงเย็น เป็นพุธกลางคืน) · จังหวัดที่เกิดทำให้ลัคนาตรงกับพิกัดที่เกิดจริง (ไม่เลือก = คิดที่กรุงเทพฯ) · ไม่ทราบเว้นว่างไว้ได้</div>';
     h+='<div class="acts"><button type="button" class="btn pri" id="fSave">บันทึก</button>'+
       (cur.date?'<button type="button" class="btn" id="fCancel">ยกเลิก</button>':'')+'<span class="msg" id="fMsg"></span></div></div>';
     return h;
@@ -371,7 +376,7 @@
     }
     var h=$('fH').value,n=$('fN').value,time='';
     if(h){time=h+':'+(n||'00');}
-    BIRTH={date:date,time:time,src:cur.src==='registry'?'registry':'self'};
+    BIRTH={date:date,time:time,place:$('fP').value,src:cur.src==='registry'?'registry':'self'};
     lsSet(KEY,JSON.stringify(BIRTH));
     FORM=false; render();
     if(TK) pushServer();
@@ -379,7 +384,7 @@
   /* บันทึกเข้าระบบ (ล็อกอินอยู่) — เปิดจากเครื่องไหนก็ไม่ต้องใส่ใหม่ */
   function pushServer(){
     fetch(AUTH+'/api/verifypin',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'horo_save',token:TK,time:BIRTH.time||'',date:BIRTH.src==='registry'?'':BIRTH.date})}).catch(function(){});
+      body:JSON.stringify({action:'horo_save',token:TK,time:BIRTH.time||'',place:BIRTH.place||'',date:BIRTH.src==='registry'?'':BIRTH.date})}).catch(function(){});
   }
 
   /* ================= ดวง ================= */
@@ -458,7 +463,8 @@
     if(z.lagna!=null) rows+='<div class="blk"><h3>ลัคนา · ตัวตนที่คนอื่นเห็น</h3><div class="v">ลัคนาราศี'+S[z.lagna]+'</div><p>'+esc(SIGN_TXT[z.lagna])+'</p></div>';
     else rows+='<div class="blk"><h3>ลัคนา · ตัวตนที่คนอื่นเห็น</h3><p>ลัคนาต้องใช้เวลาเกิด <button type="button" class="lnk" data-addtime="1">ใส่เวลาเกิด</button> แล้วจะขึ้นตรงนี้</p></div>';
     return '<div class="card"><div class="who">ราศี · โหราศาสตร์ไทย</div>'+rows+
-      '<div class="fine" style="font-size:13.5px;color:var(--muted);margin-top:12px;line-height:1.55">คิดแบบนิรายนะตามโหราศาสตร์ไทย ตำแหน่งดาวคำนวณจริงจากวันเวลาเกิด ลัคนาคิดตามเวลาประเทศไทย พิกัดกรุงเทพฯ</div></div>';
+      '<div class="fine" style="font-size:13.5px;color:var(--muted);margin-top:12px;line-height:1.55">คิดแบบนิรายนะตามโหราศาสตร์ไทย ตำแหน่งดาวคำนวณจริงจากวันเวลาเกิด ลัคนาคิดตามเวลาประเทศไทย ที่พิกัด'+
+        (z.place.known?'จังหวัด'+esc(z.place.name):'กรุงเทพฯ (ยังไม่ได้เลือกจังหวัดที่เกิด)')+'</div></div>';
   }
   function chineseCard(P){
     var an=A.ANIMALS, c=P.chinese, y=P.thisYear, b=P.birth;
@@ -486,7 +492,7 @@
   }
 
   function render(){
-    var P=(BIRTH&&BIRTH.date)?A.profile(BIRTH.date,BIRTH.time||'',TODAY):null;
+    var P=(BIRTH&&BIRTH.date)?A.profile(BIRTH.date,BIRTH.time||'',TODAY,BIRTH.place||''):null;
     var fn=firstName(); $('head').textContent=fn?'ดวงของคุณ'+fn:'ดวงของคุณ';
     renderProfile(P);
     var m=$('main');
@@ -526,12 +532,12 @@
     fetch(AUTH+'/api/verifypin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'bday',token:TK})})
       .then(function(r){return r.json();}).then(function(d){
         if(!d||!d.ok||!d.date){if(!(BIRTH&&BIRTH.date))logHit(null);return;}
-        var local=BIRTH||{}, time=d.time||'';
-        // เวลาเกิดที่เคยใส่ในเครื่องนี้แต่ยังไม่ขึ้นระบบ → ส่งขึ้นให้
-        var syncUp=!d.time&&local.time&&local.date===d.date;
-        if(syncUp) time=local.time;
-        var next={date:d.date,time:time,src:d.src==='registry'?'registry':'self'};
-        var changed=JSON.stringify(next)!==JSON.stringify({date:local.date,time:local.time||'',src:local.src});
+        var local=BIRTH||{}, same=local.date===d.date;
+        // เวลา/จังหวัดที่เคยใส่ในเครื่องนี้แต่ยังไม่ขึ้นระบบ → ใช้ของเครื่อง แล้วส่งขึ้นให้
+        var time=d.time||(same&&local.time)||'', place=d.place||(same&&local.place)||'';
+        var syncUp=(!d.time&&time)||(!d.place&&place);
+        var next={date:d.date,time:time,place:place,src:d.src==='registry'?'registry':'self'};
+        var changed=JSON.stringify(next)!==JSON.stringify({date:local.date,time:local.time||'',place:local.place||'',src:local.src});
         BIRTH=next; lsSet(KEY,JSON.stringify(BIRTH));
         if(syncUp) pushServer();
         if(changed&&!FORM) render();

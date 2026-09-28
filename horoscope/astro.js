@@ -6,7 +6,7 @@
    2 มหาทักษา       ดาวเสวยอายุ + ดาวแทรก (รอบ 108 ปี) จากดาววันเกิดและอายุจริง
    3 ราศี            ดวงอาทิตย์ (ราศีเกิด) · ดวงจันทร์ · ลัคนา (ต้องมีเวลาเกิด) แบบนิรายนะ (อายนางศ์ลาหิรี)
                      ตำแหน่งดาวตามสูตรของ Meeus (Astronomical Algorithms) ความคลาดเคลื่อน < 0.3 องศา
-                     ลัคนาคิดที่พิกัดกรุงเทพฯ เวลาไทย UTC+7
+                     ลัคนาคิดที่พิกัดจังหวัดที่เกิด (ไม่ได้เลือก = กรุงเทพฯ) เวลาไทย UTC+7
    4 นักษัตรจีน      ปีเกิดเปลี่ยนที่วันลิบชุน (ดวงอาทิตย์ 315 องศา ราว 4 ก.พ.) · ธาตุจากราก (ต้นปี)
                      ความสัมพันธ์ ชง / ชงร่วม / ชงอ้อม / ส่ง / เสริม · นักษัตรของแต่ละวัน (วันชง)
    5 เลขศาสตร์       เลขชีวิต (เก็บเลขพิเศษ 11 22 33) · เลขปี · เลขประจำวันส่วนตัว */
@@ -39,6 +39,33 @@
                  ['มะเมีย', 'ม้า'], ['มะแม', 'แพะ'], ['วอก', 'ลิง'], ['ระกา', 'ไก่'], ['จอ', 'หมา'], ['กุน', 'หมู']];
   var ELEMENTS = ['ไม้', 'ไม้', 'ไฟ', 'ไฟ', 'ดิน', 'ดิน', 'ทอง', 'ทอง', 'น้ำ', 'น้ำ'];
   var BKK = { lat: 13.7563, lon: 100.5018 };
+  // จังหวัดที่เกิด → พิกัดตัวเมือง (ใช้คิดลัคนา) · ลองจิจูดต่างกัน 1° = เวลาต่างกัน 4 นาที ละติจูดมีผลกับการขึ้นของราศี
+  var PROVINCES = [
+    ['กรุงเทพมหานคร', 13.75, 100.50], ['กระบี่', 8.09, 98.91], ['กาญจนบุรี', 14.02, 99.53], ['กาฬสินธุ์', 16.43, 103.51],
+    ['กำแพงเพชร', 16.48, 99.52], ['ขอนแก่น', 16.44, 102.83], ['จันทบุรี', 12.61, 102.10], ['ฉะเชิงเทรา', 13.69, 101.07],
+    ['ชลบุรี', 13.36, 100.98], ['ชัยนาท', 15.19, 100.13], ['ชัยภูมิ', 15.81, 102.03], ['ชุมพร', 10.49, 99.18],
+    ['เชียงราย', 19.91, 99.83], ['เชียงใหม่', 18.79, 98.98], ['ตรัง', 7.56, 99.61], ['ตราด', 12.24, 102.52],
+    ['ตาก', 16.88, 99.13], ['นครนายก', 14.21, 101.21], ['นครปฐม', 13.82, 100.06], ['นครพนม', 17.41, 104.78],
+    ['นครราชสีมา', 14.97, 102.10], ['นครศรีธรรมราช', 8.43, 99.96], ['นครสวรรค์', 15.70, 100.14], ['นนทบุรี', 13.86, 100.51],
+    ['นราธิวาส', 6.43, 101.82], ['น่าน', 18.78, 100.77], ['บึงกาฬ', 18.36, 103.65], ['บุรีรัมย์', 14.99, 103.10],
+    ['ปทุมธานี', 14.02, 100.53], ['ประจวบคีรีขันธ์', 11.81, 99.80], ['ปราจีนบุรี', 14.05, 101.37], ['ปัตตานี', 6.87, 101.25],
+    ['พระนครศรีอยุธยา', 14.35, 100.57], ['พะเยา', 19.17, 99.90], ['พังงา', 8.45, 98.53], ['พัทลุง', 7.62, 100.08],
+    ['พิจิตร', 16.44, 100.35], ['พิษณุโลก', 16.82, 100.26], ['เพชรบุรี', 13.11, 99.94], ['เพชรบูรณ์', 16.42, 101.16],
+    ['แพร่', 18.14, 100.14], ['ภูเก็ต', 7.88, 98.39], ['มหาสารคาม', 16.18, 103.30], ['มุกดาหาร', 16.54, 104.72],
+    ['แม่ฮ่องสอน', 19.30, 97.97], ['ยโสธร', 15.79, 104.15], ['ยะลา', 6.54, 101.28], ['ร้อยเอ็ด', 16.05, 103.65],
+    ['ระนอง', 9.96, 98.64], ['ระยอง', 12.68, 101.28], ['ราชบุรี', 13.54, 99.82], ['ลพบุรี', 14.80, 100.65],
+    ['ลำปาง', 18.29, 99.49], ['ลำพูน', 18.58, 99.01], ['เลย', 17.49, 101.72], ['ศรีสะเกษ', 15.12, 104.32],
+    ['สกลนคร', 17.16, 104.15], ['สงขลา', 7.19, 100.60], ['สตูล', 6.62, 100.07], ['สมุทรปราการ', 13.60, 100.60],
+    ['สมุทรสงคราม', 13.41, 100.00], ['สมุทรสาคร', 13.55, 100.27], ['สระแก้ว', 13.82, 102.07], ['สระบุรี', 14.53, 100.91],
+    ['สิงห์บุรี', 14.89, 100.40], ['สุโขทัย', 17.01, 99.82], ['สุพรรณบุรี', 14.47, 100.12], ['สุราษฎร์ธานี', 9.14, 99.33],
+    ['สุรินทร์', 14.88, 103.49], ['หนองคาย', 17.88, 102.74], ['หนองบัวลำภู', 17.20, 102.44], ['อ่างทอง', 14.59, 100.45],
+    ['อำนาจเจริญ', 15.86, 104.63], ['อุดรธานี', 17.41, 102.79], ['อุตรดิตถ์', 17.62, 100.10], ['อุทัยธานี', 15.38, 100.03],
+    ['อุบลราชธานี', 15.24, 104.85]
+  ];
+  function placeOf(name) {
+    for (var i = 0; i < PROVINCES.length; i++) if (PROVINCES[i][0] === name) return { name: name, lat: PROVINCES[i][1], lon: PROVINCES[i][2], known: true };
+    return { name: 'กรุงเทพมหานคร', lat: BKK.lat, lon: BKK.lon, known: false };
+  }
 
   var R = Math.PI / 180;
   function mod(a, n) { return ((a % n) + n) % n; }
@@ -170,12 +197,12 @@
     return mod(Math.atan2(cos(lst), -(sin(lst) * cos(eps) + Math.tan(lat * R) * sin(eps))) / R, 360);
   }
   function signOf(tropical, j) { return Math.floor(mod(tropical - ayanamsa(j), 360) / 30); }
-  function zodiac(b) {
-    var jb = jdLocal(b, b.hh, b.mm);
-    var out = { sun: signOf(sunLong(jb), jb), moon: null, moonRange: null, lagna: null };
+  function zodiac(b, place) {
+    var jb = jdLocal(b, b.hh, b.mm), pl = placeOf(place);
+    var out = { sun: signOf(sunLong(jb), jb), moon: null, moonRange: null, lagna: null, place: pl };
     if (b.hh != null) {
       out.moon = signOf(moonLong(jb), jb);
-      out.lagna = signOf(ascendant(jb, BKK.lat, BKK.lon), jb);
+      out.lagna = signOf(ascendant(jb, pl.lat, pl.lon), jb);
     } else {
       // ไม่มีเวลาเกิด: ดวงจันทร์เดินวันละ ~13° ดูว่าทั้งวันอยู่ราศีเดียวไหม
       var j0 = jdLocal(b, 0, 0), j1 = jdLocal(b, 23, 59);
@@ -241,7 +268,7 @@
   }
 
   /* ---------- รวมทั้งหมดของคนหนึ่งคน ณ วันหนึ่ง ---------- */
-  function profile(date, time, todayIso) {
+  function profile(date, time, todayIso, place) {
     var b = parseBirth(date, time);
     if (!b) return null;
     var bd = birthDay(b), ty = +todayIso.slice(0, 4);
@@ -254,7 +281,7 @@
       birth: b, day: bd, age: ageParts(b, todayIso),
       taksa: Object.assign({ todayPlanet: todayPlanet }, taksaDay(bd.planet, todayPlanet)),
       dasa: mahataksa(b, bd, todayIso),
-      zodiac: zodiac(b),
+      zodiac: zodiac(b, place),
       chinese: cy,
       thisYear: { info: nowYear, rel: relation(cy.branch, nowYear.branch) },
       today: { branch: db.branch, rel: relation(cy.branch, db.branch) },
@@ -264,7 +291,7 @@
 
   var API = {
     DAYS: DAYS, RING: RING, NUM: NUM, COLOR: COLOR, ROLES: ROLES, MEANING: MEANING, DASA: DASA,
-    SIGNS: SIGNS, ANIMALS: ANIMALS, ELEMENTS: ELEMENTS, YEAR_REL: YEAR_REL, DAY_REL: DAY_REL,
+    SIGNS: SIGNS, ANIMALS: ANIMALS, ELEMENTS: ELEMENTS, YEAR_REL: YEAR_REL, DAY_REL: DAY_REL, PROVINCES: PROVINCES, placeOf: placeOf,
     parseBirth: parseBirth, jd: jd, birthDay: birthDay, rolesOf: rolesOf, roleOf: roleOf, taksaDay: taksaDay,
     mahataksa: mahataksa, sunLong: sunLong, moonLong: moonLong, ayanamsa: ayanamsa, ascendant: ascendant,
     zodiac: zodiac, chineseYearOf: chineseYearOf, dayBranch: dayBranch, relation: relation,
