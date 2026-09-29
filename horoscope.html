@@ -222,7 +222,7 @@
   .tf .bk{background:var(--tback) center/100% 100% no-repeat;box-shadow:0 4px 10px rgba(35,57,95,.25);opacity:0;transition:opacity .2s;}
   .tslot.has .tf .bk{opacity:1;}
   .tf .fr{transform:rotateY(180deg);background:#fff;box-shadow:0 4px 10px rgba(35,57,95,.25);}
-  .tf .fr img,.tres img,.tzoom img{display:block;width:100%;height:100%;object-fit:cover;}
+  .tf .fr img,.tres img,.tthumb img,.tzoom img{display:block;width:100%;height:100%;object-fit:cover;}
   img.rv{transform:rotate(180deg);}
   .tstatus{text-align:center;font-size:16px;font-weight:700;color:var(--gold);margin:12px 0 10px;min-height:24px;}
   .tgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;max-width:460px;margin:0 auto;transition:opacity .4s;}
@@ -247,6 +247,16 @@
   .tzcap{color:#fff;margin:12px 0;line-height:1.5;}
   .tzcap b{display:block;font-size:18px;}
   .tzcap span{font-size:14.5px;opacity:.85;}
+  .tchips{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;}
+  .tchip{font-family:inherit;font-size:15px;font-weight:700;color:var(--navy);background:#fff;border:1.5px solid #C4D6EA;border-radius:999px;padding:7px 14px;cursor:pointer;}
+  .tchip.on{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .trh{display:flex;gap:14px;align-items:center;margin:8px 0 12px;}
+  .trh .v{font-size:21px;font-weight:700;color:var(--navy);line-height:1.35;}
+  .trh .ten{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:6px;}
+  .trh .rel{margin:0;}
+  .tthumb{flex-shrink:0;width:74px;border-radius:7px;cursor:zoom-in;}
+  .tread .overall{font-size:16.5px;}
+  .tsecs{margin-top:8px;}
   @media (prefers-reduced-motion:reduce){.tstack.shuf i,.tpick,.tjust .tres figure{animation:none;}.tf .in{transition:none;}}
   @media (max-width:420px){h1{font-size:26px;}.row3{grid-template-columns:1fr 1fr;}.row3 select:last-child{grid-column:1/-1;}.dasa .r{grid-template-columns:78px 1fr auto;font-size:14px;}.yr{grid-template-columns:50px 1fr 62px;gap:8px;padding:10px;}.tabs{gap:3px;padding:4px;}.tabs button{flex-direction:column;font-size:13.5px;padding:8px 2px 7px;gap:3px;line-height:1.2;}.tabs button svg{width:20px;height:20px;}.slip-in{padding:22px 16px 16px;}.sl-list div{grid-template-columns:80px 1fr;}}
 </style>
@@ -1045,13 +1055,40 @@
           '<figcaption><b>'+T_POS[i][0]+'</b><span>'+esc(c.th)+'</span>'+(c.rev?'<small>กลับหัว</small>':'')+'</figcaption></figure>';
       }).join('')+'</div><p class="howto" style="text-align:center;margin:10px 0 0">แตะที่ไพ่เพื่อดูภาพใหญ่</p></div>';
     T_JUST=false;
-    h+='<div class="card"><div class="who">คำทำนาย</div>'+cs.map(function(c,i){
-      return '<div class="blk"><h3>'+T_POS[i][0]+' · '+T_POS[i][1]+'</h3>'+
-        '<div class="v">'+esc(c.th)+' <small>'+esc(c.en)+'</small></div>'+
-        '<span class="rel '+(c.rev?'mid':'good')+'">'+(c.rev?'ไพ่กลับหัว':'ไพ่ตั้งตรง')+'</span><p>'+esc(c.rev?c.rtxt:c.up)+'</p></div>';
-    }).join('')+'</div>';
-    h+='<div class="card"><div class="who">ภาพรวม</div><p class="overall" style="font-size:16px">'+esc(tSummary(cs))+'</p></div>';
-    return h+'<div class="card"><div class="who">เกี่ยวกับไพ่ชุดนี้</div><p class="howto" style="margin:4px 0 0">เปิดไพ่ใหม่ได้พรุ่งนี้หลังเที่ยงคืน · ภาพไพ่คือสำรับ Rider-Waite ต้นฉบับปี 1909 เป็นสมบัติสาธารณะ (จาก Wikimedia Commons) · ความหมายเรียบเรียงใหม่จากความหมายไพ่ทาโรต์สากล ทั้งไพ่ตั้งตรงและกลับหัว เพื่อความบันเทิงและกำลังใจ</p></div>';
+    h+='<div class="card"><div class="who">ภาพรวมของ 3 ใบ</div><p class="overall" style="font-size:16px">'+esc(tSummary(cs))+'</p></div>';
+    h+='<div class="card tpick-topic"><div class="who">อยากรู้เรื่องไหน</div><div class="tchips" role="group" aria-label="เลือกเรื่องที่อยากอ่าน">'+
+      T_TOPICS.map(function(t){return '<button type="button" class="tchip'+(tTopic()===t[0]?' on':'')+'" data-topic="'+t[0]+'" aria-pressed="'+(tTopic()===t[0])+'">'+t[1]+'</button>';}).join('')+
+      '</div></div><div id="tRead">'+tReadHtml(cs)+'</div>';
+    return h+'<div class="card"><div class="who">เกี่ยวกับไพ่ชุดนี้</div><p class="howto" style="margin:4px 0 0">เปิดไพ่ใหม่ได้พรุ่งนี้หลังเที่ยงคืน · ภาพไพ่คือสำรับ Rider-Waite ต้นฉบับปี 1909 เป็นสมบัติสาธารณะ (จาก Wikimedia Commons) · ความหมายเรียบเรียงใหม่จากความหมายไพ่ทาโรต์สากล ทั้งไพ่ตั้งตรงและกลับหัว แยกเรื่องความรัก การงาน การเงิน และสุขภาพ เพื่อความบันเทิงและกำลังใจ</p></div>';
+  }
+  /* คำทำนายยาวรายใบ (tarot/text.js ~300 KB โหลดเฉพาะตอนเปิดดูผล · อยู่นอก /horoscope/ เพื่อให้ SW เก็บแคชไว้ เปลี่ยนเนื้อหาต้องเปลี่ยน ?v=)
+     ยังโหลดไม่เสร็จ/โหลดไม่ได้ = ใช้ความหมายสั้นใน tarot.js ไปก่อน · เรื่องที่เลือกจำไว้ที่ horo_tarot_topic */
+  var T_TEXT_V=1, T_TEXT_LOADING=false;
+  var T_TOPICS=[['all','ทุกเรื่อง'],['love','ความรัก'],['work','การงาน'],['money','การเงิน'],['health','สุขภาพ']];
+  var T_SECS=[['love','ความรักและความสัมพันธ์',ICONS.love],['work','การงานและการเรียน',ICONS.work],['money','การเงินและโชคลาภ',ICONS.money],
+    ['health','สุขภาพกายและใจ',ICONS.health],['adv','คำแนะนำ','<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>']];
+  function tTopic(){var v=lsGet('horo_tarot_topic');return T_TOPICS.some(function(t){return t[0]===v;})?v:'all';}
+  function tReadHtml(cs){
+    var TX=window.TAROT_TEXT, tp=tTopic();
+    if(!TX&&!T_TEXT_LOADING){
+      T_TEXT_LOADING=true;
+      var sc=document.createElement('script'); sc.src='tarot/text.js?v='+T_TEXT_V;
+      sc.onload=function(){var el=$('tRead'),sv=tSaved();if(el&&sv)el.innerHTML=tReadHtml(sv.cards.map(function(c){return Object.assign({},T_BY[c.id],{rev:!!c.rev});}));};
+      document.head.appendChild(sc);
+    }
+    return cs.map(function(c,i){
+      var t=TX&&TX[c.id]&&TX[c.id][c.rev?'rv':'up'];
+      var h='<div class="card tread"><div class="who">'+T_POS[i][0]+' · '+T_POS[i][1]+'</div>'+
+        '<div class="trh"><button type="button" class="timg tthumb" data-i="'+i+'" aria-label="ดูภาพใหญ่ '+esc(c.en)+'">'+tImg(c)+'</button>'+
+        '<div><div class="v">'+esc(c.th)+'</div><div class="ten">'+esc(c.en)+'</div>'+
+        '<span class="rel '+(c.rev?'mid':'good')+'">'+(c.rev?'ไพ่กลับหัว':'ไพ่ตั้งตรง')+'</span></div></div>'+
+        '<p class="overall">'+esc(t?t.g:(c.rev?c.rtxt:c.up))+'</p>';
+      if(!t) return h+(TX?'':'<p class="howto" style="margin-top:8px">กำลังโหลดคำทำนายแยกเรื่อง…</p>')+'</div>';
+      return h+'<div class="tsecs">'+T_SECS.filter(function(s){return tp==='all'||s[0]===tp||s[0]==='adv';}).map(function(s){
+        return '<div class="sec"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+s[2]+'</svg></div>'+
+          '<div><h3>'+s[1]+'</h3><p>'+esc(t[s[0]])+'</p></div></div>';
+      }).join('')+'</div></div>';
+    }).join('');
   }
   // ภาพรวมตามหลักการอ่านไพ่ทั่วไป: จำนวนไพ่ชุดใหญ่ · ชุดที่เด่น · จำนวนใบกลับหัว
   function tSummary(cs){
@@ -1097,7 +1134,15 @@
     }
     var grid=$('tGrid');
     if(grid) Array.prototype.forEach.call(grid.querySelectorAll('.tpick'),function(b){b.onclick=function(){tPick(+b.getAttribute('data-k'),b);};});
-    Array.prototype.forEach.call(document.querySelectorAll('.timg'),function(b){b.onclick=function(){tZoom(+b.getAttribute('data-i'));};});
+    // ปุ่มดูภาพใหญ่อยู่ทั้งแถวภาพบนสุดและในคำทำนายรายใบ (ซึ่งวาดใหม่เมื่อเปลี่ยนเรื่อง) → ผูกที่ main ครั้งเดียวแบบ delegate
+    var main=$('main');
+    if(!main._tBound){main._tBound=true;main.addEventListener('click',function(e){
+      var z=e.target.closest&&e.target.closest('.timg'); if(z){tZoom(+z.getAttribute('data-i'));return;}
+      var ch=e.target.closest&&e.target.closest('.tchip'); if(!ch) return;
+      lsSet('horo_tarot_topic',ch.getAttribute('data-topic'));
+      Array.prototype.forEach.call(document.querySelectorAll('.tchip'),function(b){var on=b===ch;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+      var sv=tSaved(), el=$('tRead'); if(sv&&el) el.innerHTML=tReadHtml(sv.cards.map(function(c){return Object.assign({},T_BY[c.id],{rev:!!c.rev});}));
+    });}
   }
   function tPick(k,btn){
     var st=T_STATE; if(!st||T_BUSY||st.picked.length>=3||st.picked.indexOf(k)>=0) return;
