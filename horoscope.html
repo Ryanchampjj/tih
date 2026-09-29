@@ -114,8 +114,8 @@
   .dasa .r.next .s{background:var(--good);color:var(--goodt);}
 
   /* แท็บ ดวงของฉัน / กราฟชีวิต */
-  .tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:#fff;border-radius:14px;padding:5px;box-shadow:0 6px 16px rgba(46,74,125,.14);}
-  .tabs button{font-family:inherit;font-size:16px;font-weight:700;border:0;background:transparent;color:var(--navy);border-radius:10px;padding:11px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#fff;border-radius:14px;padding:5px;box-shadow:0 6px 16px rgba(46,74,125,.14);}
+  .tabs button{font-family:inherit;font-size:15.5px;font-weight:700;border:0;background:transparent;color:var(--navy);border-radius:10px;padding:11px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
   .tabs button svg{width:19px;height:19px;flex-shrink:0;}
   .tabs button.on{background:var(--navy);color:#fff;}
   .tabs + .card{margin-top:14px;}
@@ -200,7 +200,55 @@
   .yr .yd{font-size:13.5px;color:var(--muted);line-height:1.5;margin-top:5px;}
   .yr .rel{margin:0;white-space:nowrap;justify-self:end;}
   .lv-top{background:#C8921E;}.lv-good{background:#E9C766;}.lv-mid{background:#8FA8CF;}.lv-low{background:#D46A6A;}
-  @media (max-width:420px){h1{font-size:26px;}.row3{grid-template-columns:1fr 1fr;}.row3 select:last-child{grid-column:1/-1;}.dasa .r{grid-template-columns:78px 1fr auto;font-size:14px;}.yr{grid-template-columns:50px 1fr 62px;gap:8px;padding:10px;}.tabs{gap:4px;}.tabs button{font-size:15px;padding:10px 3px;gap:5px;}.tabs button svg{width:17px;height:17px;}.slip-in{padding:22px 16px 16px;}.sl-list div{grid-template-columns:80px 1fr;}}
+  /* ไพ่ยิปซี */
+  .tstack{position:relative;width:110px;height:186px;margin:22px auto 20px;}
+  .tstack i{position:absolute;inset:0;border-radius:9px;background:var(--tback) center/100% 100% no-repeat;box-shadow:0 4px 10px rgba(35,57,95,.3);}
+  .tstack i:nth-child(1){transform:translate(-6px,6px) rotate(-5deg);}
+  .tstack i:nth-child(2){transform:translate(-3px,3px) rotate(-2.5deg);}
+  .tstack i:nth-child(4){transform:translate(3px,-2px) rotate(2.5deg);}
+  .tstack i:nth-child(5){transform:translate(6px,-4px) rotate(5deg);}
+  .tstack.shuf i:nth-child(odd){animation:tShufL .6s ease-in-out 2;}
+  .tstack.shuf i:nth-child(even){animation:tShufR .6s ease-in-out 2;}
+  @keyframes tShufL{0%,100%{transform:translate(0,0) rotate(0);}40%{transform:translate(-62px,-6px) rotate(-14deg);}}
+  @keyframes tShufR{0%,100%{transform:translate(0,0) rotate(0);}40%{transform:translate(62px,-6px) rotate(14deg);}}
+  .tslots{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:420px;margin:14px auto 6px;}
+  .tslot{text-align:center;}
+  .tslot span{display:block;font-size:14.5px;font-weight:700;color:var(--navy);margin-top:6px;}
+  .tf{position:relative;width:100%;aspect-ratio:360/610;perspective:900px;border-radius:9px;border:2px dashed #C4D6EA;}
+  .tslot.has .tf{border-color:transparent;}
+  .tf .in{position:absolute;inset:0;transition:transform .65s ease;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;}
+  .tf.flip .in{transform:rotateY(180deg);}
+  .tf .bk,.tf .fr{position:absolute;inset:0;border-radius:8px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+  .tf .bk{background:var(--tback) center/100% 100% no-repeat;box-shadow:0 4px 10px rgba(35,57,95,.25);opacity:0;transition:opacity .2s;}
+  .tslot.has .tf .bk{opacity:1;}
+  .tf .fr{transform:rotateY(180deg);background:#fff;box-shadow:0 4px 10px rgba(35,57,95,.25);}
+  .tf .fr img,.tres img,.tzoom img{display:block;width:100%;height:100%;object-fit:cover;}
+  img.rv{transform:rotate(180deg);}
+  .tstatus{text-align:center;font-size:16px;font-weight:700;color:var(--gold);margin:12px 0 10px;min-height:24px;}
+  .tgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;max-width:460px;margin:0 auto;transition:opacity .4s;}
+  .tgrid.done{opacity:.25;pointer-events:none;}
+  .tpick{aspect-ratio:360/610;border:0;padding:0;border-radius:6px;background:var(--tback) center/100% 100% no-repeat;cursor:pointer;
+    box-shadow:0 2px 6px rgba(35,57,95,.28);transition:transform .15s;animation:tDeal .35s ease-out backwards;}
+  .tpick:hover{transform:translateY(-5px);}
+  .tpick.gone{visibility:hidden;}
+  @keyframes tDeal{from{opacity:0;transform:translateY(-24px) scale(.9);}}
+  .tres{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:440px;margin:12px auto 0;}
+  .tres figure{margin:0;text-align:center;}
+  .timg{display:block;width:100%;aspect-ratio:360/610;padding:0;border:0;border-radius:8px;overflow:hidden;cursor:zoom-in;background:#fff;box-shadow:0 6px 14px rgba(35,57,95,.25);}
+  .tjust .tres figure{animation:slipIn .6s ease-out backwards;}
+  .tjust .tres figure:nth-child(2){animation-delay:.12s;}.tjust .tres figure:nth-child(3){animation-delay:.24s;}
+  .tres figcaption{margin-top:7px;line-height:1.35;}
+  .tres figcaption b{display:block;font-size:14px;color:var(--gold);}
+  .tres figcaption span{display:block;font-size:14.5px;font-weight:700;color:var(--navy);}
+  .tres figcaption small{display:inline-block;font-size:12px;font-weight:700;color:var(--navy);background:var(--chip);border-radius:6px;padding:1px 7px;margin-top:3px;}
+  .tzoom{position:fixed;inset:0;z-index:50;background:rgba(20,32,55,.82);display:flex;align-items:center;justify-content:center;padding:16px;}
+  .tzin{width:min(360px,100%);text-align:center;}
+  .tzin img{height:auto;border-radius:12px;box-shadow:0 14px 30px rgba(0,0,0,.4);max-height:72vh;object-fit:contain;}
+  .tzcap{color:#fff;margin:12px 0;line-height:1.5;}
+  .tzcap b{display:block;font-size:18px;}
+  .tzcap span{font-size:14.5px;opacity:.85;}
+  @media (prefers-reduced-motion:reduce){.tstack.shuf i,.tpick,.tjust .tres figure{animation:none;}.tf .in{transition:none;}}
+  @media (max-width:420px){h1{font-size:26px;}.row3{grid-template-columns:1fr 1fr;}.row3 select:last-child{grid-column:1/-1;}.dasa .r{grid-template-columns:78px 1fr auto;font-size:14px;}.yr{grid-template-columns:50px 1fr 62px;gap:8px;padding:10px;}.tabs{gap:3px;padding:4px;}.tabs button{flex-direction:column;font-size:13.5px;padding:8px 2px 7px;gap:3px;line-height:1.2;}.tabs button svg{width:20px;height:20px;}.slip-in{padding:22px 16px 16px;}.sl-list div{grid-template-columns:80px 1fr;}}
 </style>
 </head>
 <body>
@@ -221,6 +269,7 @@
 
 <script src="horoscope/astro.js"></script>
 <script src="horoscope/siamsi.js"></script>
+<script src="horoscope/tarot.js"></script>
 <script>
 (function(){
   var AUTH='https://attendance-live-thaiinter.vercel.app';
@@ -610,14 +659,15 @@
 
   /* ================= แท็บ =================
      ผูกกับ #graph — รีเฟรชแล้วอยู่แท็บเดิม · เข้าจากการ์ดพอร์ทัล (ไม่มี hash) ได้แท็บแรกเสมอ */
-  var TAB={'#graph':'graph','#siamsi':'siamsi'}[location.hash]||'main';
+  var TAB={'#graph':'graph','#siamsi':'siamsi','#tarot':'tarot'}[location.hash]||'main';
   var TAB_ICO={
     main:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
     graph:'<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 6-7"/>',
-    siamsi:'<path d="M7 10h10v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1z"/><path d="M9.5 10L8.5 3M12 10V2M14.5 10l1-7"/>'
+    siamsi:'<path d="M7 10h10v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1z"/><path d="M9.5 10L8.5 3M12 10V2M14.5 10l1-7"/>',
+    tarot:'<rect x="9" y="3" width="11" height="17" rx="2"/><path d="M6.5 6.2l-2.2.8a1.5 1.5 0 0 0-.9 1.9l3.9 11.2a1.5 1.5 0 0 0 1.9.9l2.4-.8"/><path d="M14.5 8.2l1 2.1 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2-1.6-1.5 2.2-.3z"/>'
   };
   function tabsHtml(){
-    return '<div class="tabs" id="tabs" role="tablist">'+[['main','ดวงของฉัน'],['graph','กราฟชีวิต'],['siamsi','เซียมซี']].map(function(t){
+    return '<div class="tabs" id="tabs" role="tablist">'+[['main','ดวงของฉัน'],['graph','กราฟชีวิต'],['siamsi','เซียมซี'],['tarot','ไพ่ยิปซี']].map(function(t){
       var on=TAB===t[0];
       return '<button type="button" role="tab" aria-selected="'+on+'"'+(on?' class="on"':'')+' data-tab="'+t[0]+'">'+
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+TAB_ICO[t[0]]+'</svg>'+t[1]+'</button>';
@@ -877,11 +927,11 @@
       }).catch(function(){SS_DENIED=true;ssHint();});
     };
   }
-  function ssSndBtn(){
-    var b=$('ssSnd'); if(!b) return;
+  function ssSndBtn(id){
+    id=id||'ssSnd'; var b=$(id); if(!b) return;
     b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICO_SND+(SS_SND?ICO_SND_ON:ICO_SND_OFF)+'</svg>เสียง: '+(SS_SND?'เปิด':'ปิด');
     b.setAttribute('aria-pressed',String(SS_SND));
-    b.onclick=function(){SS_SND=!SS_SND;lsSet('horo_ss_snd',SS_SND?'1':'0');if(SS_SND)ssClatter(0,1);ssSndBtn();};
+    b.onclick=function(){SS_SND=!SS_SND;lsSet('horo_ss_snd',SS_SND?'1':'0');if(SS_SND)ssClatter(0,1);ssSndBtn(id);};
   }
   function ssVibe(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
   function ssAudio(){
@@ -904,7 +954,7 @@
     var s=AC.createBufferSource(), bp=AC.createBiquadFilter(), g=AC.createGain();
     s.buffer=ssNoise(); bp.type='bandpass'; bp.frequency.value=f; bp.Q.value=5;
     g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(v,t+0.003); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-    s.connect(bp); bp.connect(g); g.connect(AC_OUT); s.start(t,Math.random()*0.02); s.stop(t+dur+0.02);
+    s.loop=true; s.connect(bp); bp.connect(g); g.connect(AC_OUT); s.start(t,Math.random()*0.02); s.stop(t+dur+0.02);
     var o=AC.createOscillator(), g2=AC.createGain();
     o.type='triangle'; o.frequency.setValueAtTime(f*0.4,t); o.frequency.exponentialRampToValueAtTime(f*0.3,t+dur);
     g2.gain.setValueAtTime(0.0001,t); g2.gain.exponentialRampToValueAtTime(v*0.45,t+0.003); g2.gain.exponentialRampToValueAtTime(0.0001,t+dur*0.7);
@@ -922,7 +972,7 @@
   // ไม้ติ้วหลุดออกจากกระบอก: ก๊อก ก๊อก
   function ssDropSnd(){ if(!ssAudio()) return; var t=AC.currentTime+0.01; ssTock(t,850,0.9,0.12); ssTock(t+0.13,1050,0.5,0.09); }
   // เบราว์เซอร์เล่นเสียงได้หลังผู้ใช้แตะจอ — แตะอะไรก็ได้ในแท็บเซียมซี (รวมแตะแท็บเข้ามา) = ปลดล็อกเสียงไว้รอการเขย่า
-  ['click','pointerdown'].forEach(function(ev){document.addEventListener(ev,function(){if(SS_SND&&TAB==='siamsi')ssAudio();});});
+  ['click','pointerdown'].forEach(function(ev){document.addEventListener(ev,function(){if(SS_SND&&(TAB==='siamsi'||TAB==='tarot'))ssAudio();});});
 
   function ssDraw(){
     var go=$('ssGo'), box=$('ssBox'), s=ssToday();
@@ -947,21 +997,151 @@
     ssListen(); ssHint(); ssSndBtn();
   }
 
+  /* ================= ไพ่ยิปซี — เปิด 3 ใบ อดีต ปัจจุบัน อนาคต วันละครั้ง =================
+     ไพ่ Rider-Waite 78 ใบ (ภาพ tarot/<id>.webp · ความหมาย horoscope/tarot.js)
+     สับด้วย crypto.getRandomValues · กลับหัว 30% · วางให้เลือก 24 ใบคว่ำ ผู้ใช้แตะเลือกเอง 3 ใบ
+     ผลของวันเก็บ horo_tarot_<emp|guest> = {date, cards:[{id,rev}]} รีเฟรชเห็นผลเดิม · รีเฟรชกลางทางเลือก = เริ่มสับใหม่ */
+  var T_KEY='horo_tarot_'+(EMP||'guest'), T_STATE=null, T_BUSY=false, T_JUST=false, T_BY={};
+  var T_POS=[['อดีต','สิ่งที่ผ่านมาและส่งผลถึงตอนนี้'],['ปัจจุบัน','สิ่งที่เป็นอยู่ตอนนี้'],['อนาคต','แนวโน้มข้างหน้า ถ้ายังเดินทางนี้']];
+  var T_SUIT={w:['ไม้เท้า','การงาน ความมุ่งมั่น และแรงลงมือ'],c:['ถ้วย','ความรัก ความรู้สึก และความสัมพันธ์'],s:['ดาบ','ความคิด การตัดสินใจ และเรื่องที่ต้องใช้เหตุผล'],p:['เหรียญ','เงิน งาน และความมั่นคง']};
+  if(window.TAROT) TAROT.CARDS.forEach(function(c){T_BY[c.id]=c;});
+  (function(){   // หลังไพ่: กรมท่าขอบทอง ใช้เป็นพื้นหลังผ่าน --tback
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 100"><rect width="60" height="100" rx="5" fill="#23395F"/>'+
+      '<rect x="3.5" y="3.5" width="53" height="93" rx="3" fill="none" stroke="#D9A93A" stroke-width="1.2"/>'+
+      '<rect x="6.5" y="6.5" width="47" height="87" rx="2" fill="none" stroke="#D9A93A" stroke-width=".5" opacity=".7"/>'+
+      '<circle cx="30" cy="50" r="12" fill="none" stroke="#D9A93A" stroke-width="1.1"/><circle cx="30" cy="50" r="7" fill="none" stroke="#D9A93A" stroke-width=".7"/>'+
+      '<path d="M30 33v34M13 50h34M18 38l24 24M42 38L18 62" stroke="#D9A93A" stroke-width=".5" opacity=".75"/><circle cx="30" cy="50" r="3" fill="#D9A93A"/>'+
+      '<path d="M30 12l2.5 4.5-2.5 4.5-2.5-4.5zM30 79l2.5 4.5-2.5 4.5-2.5-4.5z" fill="#D9A93A"/></svg>';
+    document.documentElement.style.setProperty('--tback','url("data:image/svg+xml,'+encodeURIComponent(svg)+'")');
+  })();
+  function tRand(n){try{var a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n;}catch(e){return Math.floor(Math.random()*n);}}
+  function tSaved(){try{var v=JSON.parse(lsGet(T_KEY)||'null');return v&&v.date===TODAY&&v.cards&&v.cards.length===3&&v.cards.every(function(c){return T_BY[c.id];})?v:null;}catch(e){return null;}}
+  function tImg(c,cls){return '<img src="tarot/'+c.id+'.webp" alt="'+esc(c.en)+'"'+(c.rev?' class="rv'+(cls?' '+cls:'')+'"':(cls?' class="'+cls+'"':''))+' decoding="async">';}
+  function tarotHtml(){
+    if(!window.TAROT) return '<div class="card"><div class="empty">โหลดไพ่ไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง</div></div>';
+    var sv=tSaved(); if(sv) return tResultHtml(sv.cards);
+    if(!T_STATE) return '<div class="card sscard"><div class="who">ไพ่ยิปซีประจำวัน · เปิด 3 ใบ</div>'+
+      '<div class="title">ตั้งคำถามในใจ แล้วสับไพ่</div>'+
+      '<p class="howto">เลือกไพ่เองจากกอง 3 ใบ ใบแรกคืออดีต ใบที่สองคือปัจจุบัน ใบที่สามคืออนาคต ดูได้วันละครั้ง</p>'+
+      '<div class="tstack" id="tStack"><i></i><i></i><i></i><i></i><i></i></div>'+
+      '<button type="button" class="btn pri ssgo" id="tGo">สับไพ่</button>'+
+      '<button type="button" class="lnk sssnd" id="tSnd"></button></div>';
+    var st=T_STATE, n=st.picked.length;
+    return '<div class="card"><div class="who">ไพ่ยิปซีประจำวัน · เลือกไพ่ 3 ใบ</div>'+
+      '<div class="tslots">'+T_POS.map(function(p,i){
+        var c=st.picked[i]!=null?st.deck[st.picked[i]]:null;
+        return '<div class="tslot'+(c?' has':'')+'" id="tSlot'+i+'"><div class="tf"><div class="in"><div class="bk"></div><div class="fr">'+(c?tImg(Object.assign({},T_BY[c.id],c)):'')+'</div></div></div><span>'+p[0]+'</span></div>';
+      }).join('')+'</div>'+
+      '<div class="tstatus" id="tStatus">'+(n<3?'แตะเลือกใบที่ '+(n+1)+' · '+T_POS[n][0]:'กำลังเปิดไพ่…')+'</div>'+
+      '<div class="tgrid" id="tGrid">'+st.deck.map(function(c,k){
+        return '<button type="button" class="tpick'+(st.picked.indexOf(k)>=0?' gone':'')+'" data-k="'+k+'" style="animation-delay:'+(k*0.025).toFixed(3)+'s" aria-label="ไพ่คว่ำใบที่ '+(k+1)+'"></button>';
+      }).join('')+'</div></div>';
+  }
+  function tResultHtml(cards){
+    var cs=cards.map(function(c){return Object.assign({},T_BY[c.id],{rev:!!c.rev});});
+    var h='<div class="card'+(T_JUST?' tjust':'')+'"><div class="who">ไพ่ยิปซีประจำ'+esc(thaiDate(TODAY))+'</div>'+
+      '<div class="tres">'+cs.map(function(c,i){
+        return '<figure><button type="button" class="timg" data-i="'+i+'" aria-label="ดูภาพใหญ่ '+esc(c.en)+'">'+tImg(c)+'</button>'+
+          '<figcaption><b>'+T_POS[i][0]+'</b><span>'+esc(c.th)+'</span>'+(c.rev?'<small>กลับหัว</small>':'')+'</figcaption></figure>';
+      }).join('')+'</div><p class="howto" style="text-align:center;margin:10px 0 0">แตะที่ไพ่เพื่อดูภาพใหญ่</p></div>';
+    T_JUST=false;
+    h+='<div class="card"><div class="who">คำทำนาย</div>'+cs.map(function(c,i){
+      return '<div class="blk"><h3>'+T_POS[i][0]+' · '+T_POS[i][1]+'</h3>'+
+        '<div class="v">'+esc(c.th)+' <small>'+esc(c.en)+'</small></div>'+
+        '<span class="rel '+(c.rev?'mid':'good')+'">'+(c.rev?'ไพ่กลับหัว':'ไพ่ตั้งตรง')+'</span><p>'+esc(c.rev?c.rtxt:c.up)+'</p></div>';
+    }).join('')+'</div>';
+    h+='<div class="card"><div class="who">ภาพรวม</div><p class="overall" style="font-size:16px">'+esc(tSummary(cs))+'</p></div>';
+    return h+'<div class="card"><div class="who">เกี่ยวกับไพ่ชุดนี้</div><p class="howto" style="margin:4px 0 0">เปิดไพ่ใหม่ได้พรุ่งนี้หลังเที่ยงคืน · ภาพไพ่คือสำรับ Rider-Waite ต้นฉบับปี 1909 เป็นสมบัติสาธารณะ (จาก Wikimedia Commons) · ความหมายเรียบเรียงใหม่จากความหมายไพ่ทาโรต์สากล ทั้งไพ่ตั้งตรงและกลับหัว เพื่อความบันเทิงและกำลังใจ</p></div>';
+  }
+  // ภาพรวมตามหลักการอ่านไพ่ทั่วไป: จำนวนไพ่ชุดใหญ่ · ชุดที่เด่น · จำนวนใบกลับหัว
+  function tSummary(cs){
+    var maj=cs.filter(function(c){return c.major;}), rv=cs.filter(function(c){return c.rev;}).length, cnt={}, out=[];
+    cs.forEach(function(c){if(!c.major)cnt[c.suit]=(cnt[c.suit]||0)+1;});
+    if(maj.length===3) out.push('ได้ไพ่ชุดใหญ่ครบทั้ง 3 ใบ ช่วงนี้เป็นจุดเปลี่ยนสำคัญของชีวิต สิ่งที่เกิดขึ้นมีความหมายมากกว่าเรื่องทั่วไป');
+    else if(maj.length===2) out.push('ได้ไพ่ชุดใหญ่ 2 ใบ เรื่องที่ถามมีน้ำหนักในชีวิตมากกว่าเรื่องประจำวัน ควรใส่ใจเป็นพิเศษ');
+    else if(maj.length===1) out.push('ไพ่ชุดใหญ่ '+maj[0].th+' ('+maj[0].en+') คือหัวใจของเรื่องนี้ อ่านใบนี้ให้ดีเป็นพิเศษ');
+    else out.push('ไม่มีไพ่ชุดใหญ่ เรื่องที่ถามเป็นเรื่องในชีวิตประจำวัน คุณเปลี่ยนผลได้ด้วยการกระทำของตัวเอง');
+    Object.keys(cnt).forEach(function(k){if(cnt[k]>=2)out.push('ไพ่ชุด'+T_SUIT[k][0]+'ขึ้น '+cnt[k]+' ใบ เรื่องที่เด่นคือ'+T_SUIT[k][1]);});
+    if(rv===0) out.push('ไพ่ตั้งตรงทั้งหมด พลังของเรื่องนี้ไหลลื่น ทำตามที่ตั้งใจได้เลย');
+    else if(rv>=2) out.push('ไพ่กลับหัว '+rv+' ใบ มีบางอย่างติดขัดหรือต้องทบทวนก่อนเดินหน้า ค่อย ๆ แก้ทีละเรื่อง');
+    return out.join(' · ');
+  }
+  // เสียง: สับไพ่ = ไพ่ปัดกันรัว ๆ · หยิบ/เปิดไพ่ = เสียงปัดสั้น (ใช้ระบบเสียงเดียวกับเซียมซี ปุ่มเปิด/ปิดร่วมกัน)
+  function tSwish(t,f0,f1,v,dur){
+    var s=AC.createBufferSource(), bp=AC.createBiquadFilter(), g=AC.createGain();
+    s.buffer=ssNoise(); s.loop=true; bp.type='bandpass'; bp.Q.value=1.2;
+    bp.frequency.setValueAtTime(f0,t); bp.frequency.exponentialRampToValueAtTime(f1,t+dur);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(v,t+dur*0.3); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    s.connect(bp); bp.connect(g); g.connect(AC_OUT); s.start(t); s.stop(t+dur+0.02);
+  }
+  function tRiffleSnd(){
+    if(!ssAudio()) return; var t0=AC.currentTime+0.02;
+    [0,0.62].forEach(function(b){for(var i=0;i<14;i++)ssTock(t0+b+i*0.036+Math.random()*0.01,3200+Math.random()*2600,0.12+Math.random()*0.12,0.018);tSwish(t0+b+0.5,1500,3000,0.3,0.1);});
+  }
+  function tPickSnd(){if(ssAudio())tSwish(AC.currentTime+0.01,2000,4200,0.28,0.09);}
+  function tFlipSnd(){if(!ssAudio())return;var t=AC.currentTime+0.01;tSwish(t,900,3200,0.5,0.16);ssTock(t+0.15,2600,0.22,0.03);}
+  function bindTarot(){
+    var go=$('tGo');
+    if(go){
+      ssSndBtn('tSnd');
+      go.onclick=function(){
+        if(T_BUSY) return; ssAudio();
+        var all=TAROT.CARDS.map(function(c){return c.id;});
+        for(var i=all.length-1;i>0;i--){var j=tRand(i+1),x=all[i];all[i]=all[j];all[j]=x;}
+        var deck=all.slice(0,24).map(function(id){return {id:id,rev:tRand(10)<3};});
+        T_BUSY=true; go.disabled=true; go.textContent='กำลังสับไพ่…';
+        var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+        $('tStack').classList.add('shuf'); tRiffleSnd();
+        setTimeout(function(){T_BUSY=false;T_STATE={deck:deck,picked:[]};render();},reduce?0:1250);
+      };
+    }
+    var grid=$('tGrid');
+    if(grid) Array.prototype.forEach.call(grid.querySelectorAll('.tpick'),function(b){b.onclick=function(){tPick(+b.getAttribute('data-k'),b);};});
+    Array.prototype.forEach.call(document.querySelectorAll('.timg'),function(b){b.onclick=function(){tZoom(+b.getAttribute('data-i'));};});
+  }
+  function tPick(k,btn){
+    var st=T_STATE; if(!st||T_BUSY||st.picked.length>=3||st.picked.indexOf(k)>=0) return;
+    ssAudio(); st.picked.push(k); btn.classList.add('gone'); tPickSnd();
+    var i=st.picked.length-1, c=Object.assign({},T_BY[st.deck[k].id],st.deck[k]), slot=$('tSlot'+i);
+    slot.classList.add('has'); slot.querySelector('.fr').innerHTML=tImg(c);
+    (new Image()).src='tarot/'+c.id+'.webp';
+    var n=st.picked.length;
+    $('tStatus').textContent=n<3?'แตะเลือกใบที่ '+(n+1)+' · '+T_POS[n][0]:'กำลังเปิดไพ่…';
+    if(n<3) return;
+    T_BUSY=true; $('tGrid').classList.add('done');
+    [0,1,2].forEach(function(j){setTimeout(function(){var s=$('tSlot'+j);if(s)s.querySelector('.tf').classList.add('flip');tFlipSnd();},500+j*750);});
+    setTimeout(function(){
+      lsSet(T_KEY,JSON.stringify({date:TODAY,cards:st.picked.map(function(x){return st.deck[x];})}));
+      T_STATE=null; T_BUSY=false; T_JUST=true; render();
+      var tb=$('tabs'); if(tb&&tb.getBoundingClientRect().top<0) tb.scrollIntoView();
+    },500+3*750+700);
+  }
+  function tZoom(i){
+    var sv=tSaved(); if(!sv) return;
+    var c=Object.assign({},T_BY[sv.cards[i].id],{rev:!!sv.cards[i].rev});
+    var d=document.createElement('div'); d.className='tzoom'; d.setAttribute('role','dialog'); d.setAttribute('aria-label',c.en);
+    d.innerHTML='<div class="tzin">'+tImg(c)+'<div class="tzcap"><b>'+T_POS[i][0]+' · '+esc(c.th)+'</b><span>'+esc(c.en)+(c.rev?' (กลับหัว)':'')+'</span></div>'+
+      '<button type="button" class="btn">ปิด</button></div>';
+    d.onclick=function(){d.remove();};
+    document.body.appendChild(d);
+  }
+
   function render(){
-    if(SS_BUSY) return;   // กำลังเขย่าเซียมซีอยู่ — ข้อมูลที่โหลดเสร็จระหว่างนั้นค่อยวาดตอนเขย่าจบ (done เรียก render เอง)
+    if(SS_BUSY||T_BUSY) return;   // กำลังเขย่าเซียมซี / สับ-เปิดไพ่อยู่ — ข้อมูลที่โหลดเสร็จระหว่างนั้นค่อยวาดตอนจบ (ตัวจบเรียก render เอง)
     var P=(BIRTH&&BIRTH.date)?A.profile(BIRTH.date,BIRTH.time||'',TODAY,BIRTH.place||''):null;
     var fn=firstName(); $('head').textContent=fn?'ดวงของคุณ'+fn:'ดวงของคุณ';
     renderProfile(P);
-    var m=$('main'), on=P&&!FORM, graph=on&&TAB==='graph', ss=on&&TAB==='siamsi';
-    document.body.classList.toggle('t-alt',!!(graph||ss));
+    var m=$('main'), on=P&&!FORM, graph=on&&TAB==='graph', ss=on&&TAB==='siamsi', tr=on&&TAB==='tarot';
+    document.body.classList.toggle('t-alt',!!(graph||ss||tr));
     LIFE=null;
     if(!on){m.innerHTML='';return;}
-    m.innerHTML=tabsHtml()+(graph?lifeHtml(P):ss?siamsiHtml():'<div class="sech">ดวงวันนี้</div>'+taksaCard(P)+dayCard(P)+luckyCard(P)+
+    m.innerHTML=tabsHtml()+(graph?lifeHtml(P):ss?siamsiHtml():tr?tarotHtml():'<div class="sech">ดวงวันนี้</div>'+taksaCard(P)+dayCard(P)+luckyCard(P)+
       '<div class="sech">ดวงชะตาของคุณ</div>'+dasaCard(P)+signCard(P)+chineseCard(P)+numCard(P)+bhumiCard(P));
     Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'),function(b){b.onclick=function(){setTab(b.getAttribute('data-tab'));};});
     Array.prototype.forEach.call(document.querySelectorAll('[data-addtime]'),function(b){b.onclick=function(){FORM=true;render();window.scrollTo(0,0);};});
     if(graph){drawLife();showLife();bindLife();}
     if(ss) bindSiamsi();
+    if(tr) bindTarot();
     logHit(P);
   }
 
