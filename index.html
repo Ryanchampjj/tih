@@ -305,7 +305,8 @@
      หน้าเดียวกับกระดิ่งในแอปสแกน/พอร์ทัล tihkpn = attendance-live/notify.html (notify-core.js + notify.js ชุดเดียว)
      · กรอบขอตั๋ว {type:'nt-need-ticket'} → ส่งให้ทาง postMessage {type:'nt-ticket',token} เฉพาะกรอบนี้ (ไม่แนบใน URL)
      · กรอบส่งยอดกลับ {type:'nt-count',n} → ตัวเลขแดงบนแถว
-     · เปิดเต็มจอด้วย URL #notify → รีเฟรชแล้วยังอยู่หน้าเดิม · ปุ่มย้อนกลับของเครื่อง = ปิดกลับหน้าหลัก */
+     · เปิดเต็มจอด้วย URL #notify → รีเฟรชแล้วยังอยู่หน้าเดิม · ปุ่มย้อนกลับของเครื่อง = ปิดกลับหน้าหลัก
+     · #notify=<tab>/<sub> = การ์ดเด้งหลังสแกนในแอปสแกนส่งมา (04/10/2569) → บอกกรอบให้ลงตรงแท็บ/แท็บย่อยนั้น (ส่งไปกับ nt-ticket · เปิดอยู่แล้วส่ง nt-open) */
   var NOTIFY_ORIGIN=AUTH, NOTIFY_URL=AUTH+'/notify.html', NT_EMP=null;
   var ntView=document.getElementById('ntView'), ntFrame=document.getElementById('notifyFrame'), ntRow=document.getElementById('ntRow'), ntRowN=document.getElementById('ntRowN');
   function setNtCount(n){ n=+n||0; ntRowN.textContent=n>99?'99+':String(n); ntRowN.hidden=!(n>0); }
@@ -315,21 +316,34 @@
     if(NT_EMP===emp && ntFrame.getAttribute('src')) return;   // โหลดไว้แล้วของคนนี้
     NT_EMP=emp; setNtCount(0); ntFrame.src=NOTIFY_URL;
   }
-  function ntUnload(){ NT_EMP=null; setNtCount(0); if(ntFrame.getAttribute('src')) ntFrame.removeAttribute('src'); }   // ออกจากระบบ/ตั๋วหมด = ไม่ค้างของคนเดิม
+  function ntUnload(){ NT_EMP=null; NT_READY=false; NT_TOLD=''; setNtCount(0); if(ntFrame.getAttribute('src')) ntFrame.removeAttribute('src'); }   // ออกจากระบบ/ตั๋วหมด = ไม่ค้างของคนเดิม
   window.addEventListener('message',function(ev){
     if(ev.origin!==NOTIFY_ORIGIN || ev.source!==ntFrame.contentWindow) return;
     var m=ev.data||{};
-    if(m.type==='nt-need-ticket'){ var t=getTok(); if(!liveTok(t)) t=''; try{ ntFrame.contentWindow.postMessage({type:'nt-ticket',token:t},NOTIFY_ORIGIN); }catch(e){} }
-    else if(m.type==='nt-count') setNtCount(m.n);
+    if(m.type==='nt-need-ticket'){ var t=getTok(); if(!liveTok(t)) t=''; var h=ntHash()||{}; NT_READY=true;
+      try{ ntFrame.contentWindow.postMessage({type:'nt-ticket',token:t,tab:h.tab||'',sub:h.sub||''},NOTIFY_ORIGIN); }catch(e){} }
+    else if(m.type==='nt-count'){ NT_READY=true; setNtCount(m.n); }
   });
+  /* #notify หรือ #notify=<tab>/<sub> → {tab,sub} · ไม่ใช่ = null */
+  var NT_READY=false, NT_TOLD='';
+  function ntHash(){
+    var m=/^#notify(?:=([^\/]*)(?:\/(.*))?)?$/.exec(location.hash||''); if(!m) return null;
+    try{ return {tab:decodeURIComponent(m[1]||''), sub:decodeURIComponent(m[2]||'')}; }catch(e){ return {tab:'',sub:''}; }
+  }
+  /* กรอบเปิดอยู่แล้ว + แฮชบอกแท็บ → สั่งสลับ (ครั้งเดียวต่อค่าแฮช) · ถ้ากรอบยังไม่พร้อม แท็บจะไปกับ nt-ticket เอง */
+  function ntTell(h){
+    if(!h||!h.tab||!NT_READY) return;
+    var key=h.tab+'/'+h.sub; if(NT_TOLD===key) return; NT_TOLD=key;
+    try{ ntFrame.contentWindow.postMessage({type:'nt-open',tab:h.tab,sub:h.sub},NOTIFY_ORIGIN); }catch(e){}
+  }
   function ntSync(){
-    var open = location.hash==='#notify' && !appMenu.classList.contains('hidden');
+    var h=ntHash(), open = !!h && !appMenu.classList.contains('hidden');
     ntView.classList.toggle('hidden',!open);
     document.body.classList.toggle('ntopen',open);
-    if(open) loadNotify();
+    if(open){ loadNotify(); ntTell(h); } else NT_TOLD='';
   }
   window.addEventListener('hashchange',ntSync);
-  ntRow.addEventListener('click',function(){ if(location.hash==='#notify') ntSync(); else location.hash='notify'; });
+  ntRow.addEventListener('click',function(){ if(ntHash()) ntSync(); else location.hash='notify'; });
   document.getElementById('ntBack').addEventListener('click',function(){
     try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){ location.hash=''; }
     ntSync();
