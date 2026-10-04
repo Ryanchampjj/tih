@@ -1,4 +1,4 @@
-var CACHE = 'tih-portal-v39';
+var CACHE = 'tih-portal-v40';   // v40 04/10/2569: ล็อกอินก่อนทุกอย่าง · สแกนหน้าแนบตั๋ว · แถวการแจ้งเตือนบนหน้าหลัก · ต่ออายุตั๋วอัตโนมัติ
 var ASSETS = ['./', './index.html', './go.html', './app.html', './manifest.json', './icon.png',
   './logo.png', './hr.png', './fix.png', './car.png', './maid.png', './risk.png',
   './cheer.png', './sign.png', './goodday.png', './horo.png'];

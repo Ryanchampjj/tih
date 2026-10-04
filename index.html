@@ -17,6 +17,7 @@
 <link rel="preconnect" href="https://script.google.com" crossorigin>
 <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="dns-prefetch" href="https://script.google.com">
+<link rel="preconnect" href="https://attendance-live-thaiinter.vercel.app" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -56,6 +57,24 @@
   .scanbtn .t{font-size:20px;font-weight:600;line-height:1.15;}
   .scanbtn .d{font-size:13px;opacity:.92;margin-top:3px;}
   .scanbtn .ar{margin-left:auto;font-size:24px;line-height:1;}
+  /* ---- แถว "การแจ้งเตือน" ใต้ปุ่มสแกน (พี่เลือกแบบ 1 · 04/10/2569) — กดแล้วเปิดหน้าการแจ้งเตือนเต็มจอ ---- */
+  .ntrow{display:flex;align-items:center;gap:16px;width:100%;background:var(--card);border:0;border-radius:16px;padding:18px 22px;margin-bottom:18px;box-shadow:0 12px 22px rgba(0,0,0,.18);cursor:pointer;font-family:inherit;text-align:left;color:var(--text);-webkit-tap-highlight-color:transparent;transition:transform .15s ease;}
+  .ntrow:active{transform:scale(.99);}
+  .ntrow .nico{width:54px;height:54px;border-radius:14px;background:#E1EFFB;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .ntrow .nico svg{width:28px;height:28px;stroke:#2A78B8;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .ntrow .t{font-size:20px;font-weight:600;line-height:1.15;}
+  .ntrow .d{font-size:13px;color:var(--muted);margin-top:3px;}
+  .ntrow .n{margin-left:auto;min-width:30px;height:30px;padding:0 9px;border-radius:999px;background:#DC2626;color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .ntrow .n[hidden]{display:none;}
+  .ntrow .ar{font-size:24px;line-height:1;color:var(--muted);margin-left:6px;}
+  .ntrow .n[hidden]+.ar{margin-left:auto;}
+  /* หน้าการแจ้งเตือนเต็มจอ — กรอบ notify.html ของแอปสแกน (โค้ดชุดเดียวกับปุ่มกระดิ่งในแอปสแกน/พอร์ทัล tihkpn) */
+  .ntview{position:fixed;inset:0;z-index:50;background:#EEF4FA;display:flex;flex-direction:column;}
+  .ntbar{flex:0 0 auto;background:var(--blue);color:#fff;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 9px) 12px 9px;}
+  .ntbar button{font-family:inherit;font-size:15px;font-weight:600;color:#fff;background:rgba(255,255,255,.16);border:0;border-radius:9px;padding:8px 13px;cursor:pointer;white-space:nowrap;}
+  .ntbar .ttl{flex:1;font-size:16px;font-weight:600;}
+  #notifyFrame{flex:1 1 auto;width:100%;border:0;background:#fff;}
+  body.ntopen{overflow:hidden;}
   /* ---- login gate ---- */
   .card{background:var(--card);border-radius:16px;box-shadow:0 12px 26px rgba(0,0,0,.18);padding:24px 20px;margin-bottom:18px;}
   .card h2{font-size:20px;font-weight:700;color:var(--blue);margin-bottom:4px;}
@@ -86,14 +105,7 @@
     <div class="divider"></div>
   </header>
 
-  <!-- สแกนหน้า: เปิดได้เสมอ ไม่ต้องล็อกอินพอร์ทัล (ใช้ใบหน้ายืนยัน + เป็นที่ตั้ง PIN ครั้งแรก) -->
-  <a class="scanbtn" href="https://attendance-live-thaiinter.vercel.app/">
-    <span class="sico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10.5v1"/><path d="M15 10.5v1"/><path d="M9 14.5c1 1 5 1 6 0"/></svg></span>
-    <span><span class="t">สแกนหน้า เข้า/ออกงาน</span><span class="d">ลงเวลาทำงานประจำวัน</span></span>
-    <span class="ar">&#8594;</span>
-  </a>
-
-  <!-- หน้าเข้าสู่ระบบ (โชว์เมื่อยังไม่ได้ล็อกอิน) -->
+  <!-- หน้า 1: เข้าสู่ระบบ (โชว์เมื่อยังไม่ได้ล็อกอิน) — พี่สั่ง 04/10/2569: ล็อกอินครั้งเดียวที่นี่ แล้วสแกนหน้า/ทุกเมนูไม่ต้องล็อกอินซ้ำ -->
   <div class="card hidden" id="loginCard">
     <h2>เข้าสู่ระบบ</h2>
     <div class="csub">เลือกชื่อของคุณ แล้วใส่ PIN (ตัวเดียวกับที่ใช้ในแอปสแกนหน้าเข้างาน)</div>
@@ -113,12 +125,27 @@
     <div class="err" id="lgErr"></div>
   </div>
 
-  <!-- เมนูระบบงาน (โชว์เมื่อล็อกอินแล้ว) -->
+  <!-- หน้า 2: หน้าหลัก (โชว์เมื่อล็อกอินแล้ว) — ชื่อ/ออกจากระบบ → สแกนหน้า → การแจ้งเตือน → เมนูระบบงาน -->
   <div class="hidden" id="appMenu">
     <div class="userbar">
       <div class="who" id="lgWho"></div>
       <button class="logoutbtn" id="lgOut">ออกจากระบบ</button>
     </div>
+
+    <!-- สแกนหน้า: ย้ายมาอยู่หลังล็อกอิน แนบตั๋วให้แอปสแกน (?tk=) → เลือกชื่อ/ใส่ PIN ให้เองไม่ต้องทำซ้ำ (04/10/2569) -->
+    <a class="scanbtn" href="https://attendance-live-thaiinter.vercel.app/">
+      <span class="sico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10.5v1"/><path d="M15 10.5v1"/><path d="M9 14.5c1 1 5 1 6 0"/></svg></span>
+      <span><span class="t">สแกนหน้า เข้า/ออกงาน</span><span class="d">ลงเวลาทำงานประจำวัน</span></span>
+      <span class="ar">&#8594;</span>
+    </a>
+
+    <!-- การแจ้งเตือน: ใบลา/ฟอร์ม · ความเสี่ยง · เอกสาร · ประกาศ — หน้าเดียวกับกระดิ่งในแอปสแกน ตัวเลขแดง = งานที่รอ/ยังไม่ได้อ่าน -->
+    <button class="ntrow" id="ntRow" type="button" aria-label="การแจ้งเตือน">
+      <span class="nico"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
+      <span><span class="t">การแจ้งเตือน</span><br><span class="d">ใบลา/ฟอร์ม · ความเสี่ยง · เอกสาร · ประกาศ</span></span>
+      <span class="n" id="ntRowN" hidden>0</span>
+      <span class="ar">&#8250;</span>
+    </button>
 
     <nav class="grid" aria-label="เมนูระบบงาน">
 
@@ -158,6 +185,15 @@
     </nav>
   </div>
 
+  <!-- หน้าการแจ้งเตือนเต็มจอ (เปิดจากแถว "การแจ้งเตือน" · URL #notify = รีเฟรช/ปุ่มย้อนกลับของเครื่องทำงานถูก) -->
+  <div id="ntView" class="ntview hidden">
+    <div class="ntbar">
+      <button type="button" id="ntBack">&#8249; กลับ</button>
+      <div class="ttl">การแจ้งเตือน</div>
+    </div>
+    <iframe id="notifyFrame" title="การแจ้งเตือน" allow="clipboard-write"></iframe>
+  </div>
+
   <div id="toast" role="status" aria-live="polite"></div>
 
   <div id="installBar" style="display:none;margin:20px auto 0;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 8px 18px rgba(0,0,0,.12);">
@@ -175,14 +211,14 @@
 <script>
 /* ===================== ล็อกอินพอร์ทัล (SSO) =====================
    - ล็อกอินทีเดียว → เก็บ "ตั๋ว" (token) ไว้ในเครื่อง (localStorage) จำจนกว่าจะกด "ออกจากระบบ"
-   - เข้าแอปในเมนู = แนบตั๋วไปให้แอปรู้ว่าใคร (?tk=...)
-   - สแกนหน้าเข้า/ออกงาน = เปิดได้เสมอ ไม่ผ่านประตูนี้
+   - เข้าแอปในเมนู (รวมสแกนหน้า ตั้งแต่ 04/10/2569) = แนบตั๋วไปให้แอปรู้ว่าใคร (?tk=...)
+   - ต่ออายุตั๋วอัตโนมัติทุกครั้งที่เปิด/กลับมาดู (sliding) → ใช้งานอยู่ไม่มีวันหลุด · ตาข่ายนิรภัยอยู่ที่เซิร์ฟเวอร์ (SSO_TTL_SECONDS)
    - ตัวจริงกันปลอมอยู่ที่เซิร์ฟเวอร์แต่ละแอป (ตรวจตั๋วทุกครั้ง) — หน้านี้แค่ประตูให้สะดวก */
 (function(){
   var AUTH='https://attendance-live-thaiinter.vercel.app';
   var TK='tih_sso';
-  /* การ์ดที่ต้องล็อกอินก่อน → ชื่อระบบที่ส่งให้หน้ากลาง go.html */
-  var GATED={'.c-hr':'hr','.c-fix':'fix','.c-car':'car','.c-maid':'maid','.c-risk':'risk','.c-cheer':'cheer','.c-sign':'sign'};
+  /* การ์ดที่ต้องล็อกอินก่อน → ชื่อระบบ (คีย์เดียวกับ links.json) · สแกนหน้าอยู่หลังล็อกอินแล้ว แนบตั๋วเหมือนกัน */
+  var GATED={'.scanbtn':'scan','.c-hr':'hr','.c-fix':'fix','.c-car':'car','.c-maid':'maid','.c-risk':'risk','.c-cheer':'cheer','.c-sign':'sign'};
 
   var loginCard=document.getElementById('loginCard'),
       appMenu=document.getElementById('appMenu'),
@@ -199,12 +235,11 @@
   /* ตั๋วที่หมดอายุแล้วถือว่าใช้ไม่ได้ตั้งแต่ประตูพอร์ทัล
      (เดิมปล่อยผ่านเพื่อไม่ให้เด้ง login บ่อยตอนตั๋วอายุ 12 ชม. แต่กลายเป็นว่า
       ผู้ใช้เข้าเมนูได้ทั้งที่ทุกแอปปฏิเสธ แล้วกดกลับมาพอร์ทัลก็วนที่ตั๋วใบเดิม)
-     ตอนนี้ตั๋วอายุ 30 วัน จึงเด้งให้ล็อกอินใหม่แค่เดือนละครั้ง */
+     ตอนนี้ต่ออายุอัตโนมัติ + ตาข่าย 1 ปี (04/10/2569) จึงแทบไม่มีใครเจอหน้าล็อกอินอีก */
   function liveTok(t){ var p=parseTok(t); if(!p)return null; if(p.exp&&Math.floor(Date.now()/1000)>p.exp)return null; return p; }
   function getTok(){ try{ return localStorage.getItem(TK)||''; }catch(e){ return ''; } }
+  function setTok(t){ try{ if(t) localStorage.setItem(TK,t); else localStorage.removeItem(TK); }catch(e){} }
   function showErr(m){ lgErr.textContent=m||''; lgErr.className='err'+(m?' show':''); }
-
-  /* การแนบตั๋วย้ายไปทำที่ go.html แล้ว (หน้ากลาง) — ดูเหตุผลในไฟล์นั้น */
 
   var EMPS=[], BYDEPT={};
   function loadEmps(){
@@ -231,32 +266,77 @@
       .then(function(r){return r.json();}).then(function(d){
         lgBtn.disabled=false; lgBtn.textContent='เข้าสู่ระบบ';
         if(!d||!d.ok){ showErr((d&&d.message)||'เข้าสู่ระบบไม่สำเร็จ'); return; }
-        try{ localStorage.setItem(TK,d.token); }catch(e){}
+        setTok(d.token);
         pinIn.value=''; showErr(''); showMenu();
       }).catch(function(){ lgBtn.disabled=false; lgBtn.textContent='เข้าสู่ระบบ'; showErr('เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง'); });
   }
   lgBtn.addEventListener('click',doLogin);
   pinIn.addEventListener('keydown',function(e){ if(e.key==='Enter')doLogin(); });
 
-  function showLogin(msg){ appMenu.classList.add('hidden'); loginCard.classList.remove('hidden'); showErr(msg||''); if(!EMPS.length)loadEmps(); }
+  function showLogin(msg){ appMenu.classList.add('hidden'); loginCard.classList.remove('hidden'); showErr(msg||''); ntUnload(); ntSync(); if(!EMPS.length)loadEmps(); }
   function showMenu(){
     var p=liveTok(getTok()); if(!p){ showLogin(); return; }
     lgWho.innerHTML=esc(p.name||'')+(p.dept?'<small>'+esc(p.dept)+'</small>':'');
     loginCard.classList.add('hidden'); appMenu.classList.remove('hidden');
+    loadNotify();   // โหลดกรอบการแจ้งเตือนไว้ล่วงหน้า (ซ่อนอยู่) → ตัวเลขแดงขึ้นเลยโดยไม่ต้องกดเข้า
+    ntSync();
   }
-  lgOut.addEventListener('click',function(){ try{ localStorage.removeItem(TK); }catch(e){} showLogin(); });
+  lgOut.addEventListener('click',function(){ setTok(''); showLogin(); });
 
-  /* กดการ์ด → ไปหน้ากลาง go.html ก่อน แล้วให้หน้านั้นแนบตั๋วและเด้งต่อ
-     (กดลิงก์ script.google.com ตรงๆ บนมือถือ Android จะโยนไปให้แอป Google Drive เปิด แล้วขึ้น Page Not Found) */
-  /* ระบบที่เป็น Apps Script → เปิดในกรอบ (app.html) เพราะเปิดตรงๆ บนมือถือที่ล็อกอิน
-     Google หลายบัญชีจะโดนพาไป /macros/u/1/s/... แล้วขึ้น Page Not Found
-     ที่เหลือ (เว็บของเราเอง) → หน้ากลาง go.html เหมือนเดิม */
-  /* แจ้งซ่อมและระบบ HR ย้ายมาเป็นเว็บของเราเองแล้ว เปิดตรงได้เหมือนใบความเสี่ยง
-     ตอนนี้ย้ายมาเป็นเว็บของเราเองครบทุกใบแล้ว (แม่บ้านย้าย 16 ส.ค. 2569) จึงไม่เหลือตัวที่ต้องเปิดในกรอบ */
+  /* ---------- ต่ออายุตั๋ว (sliding) — พี่สั่ง 04/10/2569 "ไม่อยากกำหนดวัน"
+     ใบเดิมที่ยังไม่หมดอายุแลกใบใหม่อายุเต็มกับเซิร์ฟเวอร์ (อ่านสิทธิ์สดจากทะเบียน) → ใช้งานอยู่ = ไม่มีวันหลุด
+     จังหวะ 3 ที่: ตอนเปิด · ทุกชั่วโมง · ตอนกลับมาดูแท็บ (เครื่องหลับข้ามคืน timer ไม่วิ่ง) + กันยิงรัว 10 นาที
+     สำเร็จเท่านั้นถึงเขียนทับ · ถูกปฏิเสธ (บัญชีปิด/ถูกระงับ) = ล้างตั๋ว เด้งหน้าล็อกอิน · เน็ตล้ม = ใช้ใบเดิมต่อ ไม่เตะ */
+  var RENEW_AT=0;
+  function renewTok(force){
+    var t=getTok(); if(!liveTok(t)) return;
+    if(!force && Date.now()-RENEW_AT<10*60*1000) return;
+    RENEW_AT=Date.now();
+    fetch(AUTH+'/api/verifypin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'renew',token:t})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d&&d.ok&&d.token){ setTok(d.token); }
+        else if(d&&d.code==='unauth'){ setTok(''); showLogin(d.message||'เซสชันหมดอายุแล้ว กรุณาเข้าสู่ระบบใหม่'); }
+      }).catch(function(){});
+  }
+  setInterval(function(){ renewTok(); }, 60*60*1000);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) renewTok(); });
+
+  /* ---------- การแจ้งเตือน (พี่สั่ง 04/10/2569 "ยกกล่องข้อความมาอยู่หน้านี้เลย" · เลือกแบบ 1 แถวปุ่มใหญ่ใต้ปุ่มสแกน)
+     หน้าเดียวกับกระดิ่งในแอปสแกน/พอร์ทัล tihkpn = attendance-live/notify.html (notify-core.js + notify.js ชุดเดียว)
+     · กรอบขอตั๋ว {type:'nt-need-ticket'} → ส่งให้ทาง postMessage {type:'nt-ticket',token} เฉพาะกรอบนี้ (ไม่แนบใน URL)
+     · กรอบส่งยอดกลับ {type:'nt-count',n} → ตัวเลขแดงบนแถว
+     · เปิดเต็มจอด้วย URL #notify → รีเฟรชแล้วยังอยู่หน้าเดิม · ปุ่มย้อนกลับของเครื่อง = ปิดกลับหน้าหลัก */
+  var NOTIFY_ORIGIN=AUTH, NOTIFY_URL=AUTH+'/notify.html', NT_EMP=null;
+  var ntView=document.getElementById('ntView'), ntFrame=document.getElementById('notifyFrame'), ntRow=document.getElementById('ntRow'), ntRowN=document.getElementById('ntRowN');
+  function setNtCount(n){ n=+n||0; ntRowN.textContent=n>99?'99+':String(n); ntRowN.hidden=!(n>0); }
+  function loadNotify(){
+    var p=liveTok(getTok()), emp=(p&&p.emp!=null)?String(p.emp):'';
+    if(!emp){ ntUnload(); return; }
+    if(NT_EMP===emp && ntFrame.getAttribute('src')) return;   // โหลดไว้แล้วของคนนี้
+    NT_EMP=emp; setNtCount(0); ntFrame.src=NOTIFY_URL;
+  }
+  function ntUnload(){ NT_EMP=null; setNtCount(0); if(ntFrame.getAttribute('src')) ntFrame.removeAttribute('src'); }   // ออกจากระบบ/ตั๋วหมด = ไม่ค้างของคนเดิม
+  window.addEventListener('message',function(ev){
+    if(ev.origin!==NOTIFY_ORIGIN || ev.source!==ntFrame.contentWindow) return;
+    var m=ev.data||{};
+    if(m.type==='nt-need-ticket'){ var t=getTok(); if(!liveTok(t)) t=''; try{ ntFrame.contentWindow.postMessage({type:'nt-ticket',token:t},NOTIFY_ORIGIN); }catch(e){} }
+    else if(m.type==='nt-count') setNtCount(m.n);
+  });
+  function ntSync(){
+    var open = location.hash==='#notify' && !appMenu.classList.contains('hidden');
+    ntView.classList.toggle('hidden',!open);
+    document.body.classList.toggle('ntopen',open);
+    if(open) loadNotify();
+  }
+  window.addEventListener('hashchange',ntSync);
+  ntRow.addEventListener('click',function(){ if(location.hash==='#notify') ntSync(); else location.hash='notify'; });
+  document.getElementById('ntBack').addEventListener('click',function(){
+    try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){ location.hash=''; }
+    ntSync();
+  });
+
+  /* กดการ์ด → แนบตั๋วแล้วไปตรง (เว็บของเราเองทุกใบแล้ว ไม่เหลือตัวที่ต้องเปิดในกรอบ app.html / หน้ากลาง go.html) */
   var INFRAME={};
-  /* ปลุกเครื่องฝั่ง Apps Script ตั้งแต่นิ้วแตะการ์ด (ก่อนเปลี่ยนหน้าจริงราวครึ่งวินาที)
-     ช่วยลดเวลารอ "ปลุกเครื่อง" ที่ Apps Script กินทุกครั้งที่ไม่มีคนใช้สักพัก
-     ยิงแค่ครั้งเดียวต่อระบบต่อการเปิดแอป เพื่อไม่ให้เปลืองโควตาสคริปต์ */
   var warmed={};
   function warm(k){
     if(!INFRAME[k]||warmed[k])return; warmed[k]=1;
@@ -271,28 +351,28 @@
       a.addEventListener('mouseenter',function(){ warm(k); });
       a.addEventListener('click',function(e){
         e.preventDefault();
-        /* Apps Script → ต้องเปิดในกรอบ (กันกูเกิลสลับบัญชีแล้วขึ้น Page Not Found)
-           เว็บของเราเอง → ไปตรงพร้อมแนบตั๋วเลย ไม่ต้องผ่านหน้ากลางให้เห็นจอแว้บ */
         if(INFRAME[k]){ window.location.href='app.html?a='+k; return; }
         var url=a.getAttribute('href')||'', t=getTok();
+        if(!liveTok(t)) t='';
         if(!url){ window.location.href='go.html?a='+k; return; }
         window.location.href=url+(t?((url.indexOf('?')<0?'?':'&')+'tk='+encodeURIComponent(t)):'');
       });
     });
   });
 
-  /* boot: มีตั๋วที่ยังไม่หมดอายุ → เข้าเมนูเลย (จำจนกว่าจะกดออกจากระบบ)
+  /* boot: มีตั๋วที่ยังไม่หมดอายุ → เข้าเมนูเลย (จำจนกว่าจะกดออกจากระบบ) + ต่ออายุเบื้องหลัง
      ตั๋วหมดอายุ → ล้างทิ้งแล้วบอกให้เข้าใหม่ (ไม่งั้นเข้าเมนูได้แต่ทุกแอปปฏิเสธ)
      มาจากหน้าแอปที่บอกว่าตั๋วใช้ไม่ได้ (?relogin=1) → ล้างตั๋วทิ้งเลย ไม่ให้วนลูป */
   var wantRelogin=/[?&]relogin=1/.test(location.search);
-  if(wantRelogin){ try{ history.replaceState(null,'',location.pathname); }catch(e){} }
+  if(wantRelogin){ try{ history.replaceState(null,'',location.pathname+location.hash); }catch(e){} }
   var boot=liveTok(getTok());
   if(wantRelogin || !boot){
     var had=!!getTok();
-    if(wantRelogin || had){ try{ localStorage.removeItem(TK); }catch(e){} }
+    if(wantRelogin || had) setTok('');
     showLogin(had?'เซสชันหมดอายุแล้ว กรุณาเข้าสู่ระบบใหม่':'');
   } else {
     showMenu();
+    renewTok(true);
   }
 })();
 </script>
